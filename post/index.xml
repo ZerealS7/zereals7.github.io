@@ -6,57 +6,25 @@
     <description>Recent content in Posts on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 24 Jun 2020 16:29:34 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>9</title>
-      <link>https://zereals7.github.io/post/9/</link>
-      <pubDate>Wed, 24 Jun 2020 16:29:34 +0800</pubDate>
+      <title></title>
+      <link>https://zereals7.github.io/post/github%E5%9F%9F%E5%90%8D%E7%BB%91%E5%AE%9A/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://zereals7.github.io/post/9/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>5</title>
-      <link>https://zereals7.github.io/post/5/</link>
-      <pubDate>Wed, 24 Jun 2020 14:22:21 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/5/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>6</title>
-      <link>https://zereals7.github.io/post/6/</link>
-      <pubDate>Wed, 24 Jun 2020 14:17:35 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/6/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>2</title>
-      <link>https://zereals7.github.io/post/2/</link>
-      <pubDate>Wed, 24 Jun 2020 13:49:30 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/2/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>1</title>
-      <link>https://zereals7.github.io/post/1/</link>
-      <pubDate>Tue, 23 Jun 2020 21:38:24 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/1/</guid>
-      <description>markdown是一种纯文本格式的标记语言。通过简单的标记语法，它可以使普通文本内容具有一定的格式。
-一、markdown下载 markdown破解版下载地址: http://www.pc6.com/softview/SoftView_73153.html#download
-二、安装及破解  傻瓜式安装，直接下一步下一步  直接解压安装包  运行后会出现下图  点击 enter key出现下图所示  Email address :  Soar360@live.comLicense key :
-GBPduHjWfJU1mZqcPM3BikjYKF6xKhlKIys3i1MU2eJHqWGImDHzWdD6xhMNLGVpbP2M5SN6bnxn2kSE8qHqNY5QaaRxmO3YSMHxlv2EYpjdwLcPwfeTG7kUdnhKE0vVy4RidP6Y2wZ0q74f47fzsZo45JE2hfQBFi2O9Jldjp1mW8HUpTtLA2a5/sQytXJUQl/QKO0jUQY4pa5CCx20sV1ClOTZtAGngSOJtIOFXK599sBr5aIEFyH0K7H4BoNMiiDMnxt1rD8Vb/ikJdhGMMQr0R4B+L3nWU97eaVPTRKfWGDE8/eAgKzpGwrQQoDh+nzX1xoVQ8NAuH+s4UcSeQ==6.点击OK即可</description>
+      <guid>https://zereals7.github.io/post/github%E5%9F%9F%E5%90%8D%E7%BB%91%E5%AE%9A/</guid>
+      <description>自定义域名 github 给我们提供了免费域名，但是我们还可以绑定自己的域名。
+很简单，在仓库的 Settings 里的 Github Pages 部分，有个 Custom domain 的设置，将其设置为你需要绑定的域名（它会新建一个 commit，就是创建一个 CNAME 文件，内容是你填的域名），你也可以自己手动创建一个 CNAME 文件，效果是一样的。
+注： 由于自定义域名需要仓库里面有个 CNAME 文件，用上面的第二种方式（源文件与编译结果在不同仓库）管理的话，每次编译会覆盖 public 目录下除 .git 目录的文件，CNAME 文件可能就不在了，没关系，在源文件的 static 目录下放入 CNAME 文件即可保证每次编译的结果里面都会有 CNAME 文件。
+下一步就是登录你的域名提供商的后台管理，设置DNS解析：
+绑定根域名 如果你想要绑定自己域名的根域名（如：imroc.io），新建两个A记录，分别指向下面两个IP：
+ 192.30.252.153 192.30.252.154
+ 绑定二级域名 如果你想要绑定自己域名的二级域名（如：blog.imroc.io），新建一个 CNAME 记录，值为你的 github 域名，如： imroc.github.io
+自定义域名开启https 如果绑定了自定义域名，github pages 原则上是不能启用https的，但是可以借助 cloudflare
+ 在cloudflare上注册并获得 nameserver 在域名注册机构的后台管理页面将 nameservers 设置为 cloudflare 上的（即让 cloudflare 来管理 dns） 确保 Crypto-SSL 为 Full   配置 Page Rules：加入一条规则，举例： http://imroc.</description>
     </item>
     
   </channel>
