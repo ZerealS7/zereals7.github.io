@@ -1,0 +1,14 @@
+hugo new site zereals7
+cd zereals7
+hugo new post/1.md
+ hugo --theme=m10c --baseUrl="https://zereals7.github.io/" --buildDrafts
+hugo server -t m10c --buildDrafts
+加入github page 的两个文件 README.md _config.yml
+cd public
+git init
+git add .
+git remote add origin https://github.com/ZerealS7/zereals7.github.io.git
+
+git commit -m “技术博客”
+git pull --rebase origin master
+git push -u origin master
