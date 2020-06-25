@@ -6,47 +6,10 @@
     <description>Recent content on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 25 Jun 2020 23:30:38 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 25 Jun 2020 23:21:45 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>MarkDown语法进阶（文字居中、图片处理、插入视频音乐、标准字体）</title>
-      <link>https://zereals7.github.io/post/markdown%E8%AF%AD%E6%B3%95%E8%BF%9B%E9%98%B6%E6%96%87%E5%AD%97%E5%B1%85%E4%B8%AD%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86%E6%8F%92%E5%85%A5%E8%A7%86%E9%A2%91%E9%9F%B3%E4%B9%90%E6%A0%87%E5%87%86%E5%AD%97%E4%BD%93/</link>
-      <pubDate>Thu, 25 Jun 2020 23:30:38 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/markdown%E8%AF%AD%E6%B3%95%E8%BF%9B%E9%98%B6%E6%96%87%E5%AD%97%E5%B1%85%E4%B8%AD%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86%E6%8F%92%E5%85%A5%E8%A7%86%E9%A2%91%E9%9F%B3%E4%B9%90%E6%A0%87%E5%87%86%E5%AD%97%E4%BD%93/</guid>
-      <description>Markdown编辑器本身是内容写作工具，本身并不支持文字排版，理论上它只是指出哪些内容是表格、哪些内容是标题、哪些是正文图片代码超链。 但是由于markdown需要输出，自带html/css整合，因此需要指定格式时可以通过内嵌html或者内嵌css来实现。
-如果对Markdown 语法不够熟悉，可以查看下面两篇博客：
-MarkDown下载以及入门语法（一）
-Markdown字体大小颜色、大小、背景色 （二）
-1、文字居中：
-2、插入图片及图片居中、定义大小
-让图片靠左 显示
-基本形式是：例子：定义尺寸
-定义大小并居中显示
-3、插入音乐
-4、插入视频
-不支持优酷，可以用youtube。
-5、跳转链接
-跳到自己博客列表跳到自己博客列表：&amp;lt;a href=&amp;quot;http://askunix.top/&amp;rdquo;
-target=&amp;rdquo;_blank&amp;quot;&amp;gt;http://askunix.top/12345
-跳到自己博客列表 跳到自己博客列表：http://askunix.top/
-6、使用标准字体
-我是黑体字我是微软雅黑我是华文彩云123
-我是黑体字 我是微软雅黑 我是华文彩云
-7、多种矩阵形式输入
-不带括号的：
-$$\begin{matrix} 1&amp;amp;2 \ 3&amp;amp;4 \ 5&amp;amp;6 \end{matrix} $$1234
-135246123456
-带大括号的：
-$$\left{ \begin{matrix} 1&amp;amp;2 \ 3&amp;amp;4 \ 5&amp;amp;6 \end{matrix} \right} $$123456
-⎧⎩⎨⎪⎪135246⎫⎭⎬⎪⎪{123456}
-带中括号的
-$$\left[ \begin{matrix} 1&amp;amp;2 \ 3&amp;amp;4 \ 5&amp;amp;6 \end{matrix} \right] $$123456
-⎡⎣⎢135246⎤⎦⎥ ———————————————— 版权声明：本文为CSDN博主「askunix_hjh」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。 原文链接：https://blog.csdn.net/m0_37925202/java/article/details/80461714</description>
-    </item>
     
     <item>
       <title>博客 | Hugo 博客添加 utterances 评论</title>
