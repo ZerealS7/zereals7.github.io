@@ -6,10 +6,31 @@
     <description>Recent content on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 25 Jun 2020 23:21:45 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 26 Jun 2020 00:52:37 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>232427600</title>
+      <link>https://zereals7.github.io/post/232427600/</link>
+      <pubDate>Fri, 26 Jun 2020 00:52:37 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/232427600/</guid>
+      <description>博客已经基本从 hexo 迁移到 hugo ，对使用的 Even 主题非常满意，虽自带了评论系统 gitment 的支持，但更喜欢迁移之前在hexo博客中使用的一个非常清新的评论系统，那就是 valine，本文就讲一下如何在 Even 中添加 Valine 的支持。
+ Valine - 一款快速、简洁且高效的无后端评论系统。
+  Valine 诞生于2017年8月7日，是一款基于Leancloud的快速、简洁且高效的无后端评论系统。
+  理论上支持但不限于静态博客，目前已有Hexo、Jekyll、Typecho等博客程序在使用Valine。
+  @Valine
+ 所以，理论上它也是支持 Hugo 的， 实践证明，确实如此。其特性如下：
+ 快速 安全 Emoji 😉 无后端实现 MarkDown 全语法支持 轻量易用(~15kb gzipped) 文章阅读量统计 v1.2.0-beta1+  这么好的评论系统，值得宣传，希望看到此文章的童鞋，也支持一下 Valine。下面就讲一下我是如何一步步添加 Valine 支持的。
+Tips:
+ 整个过程，是以Even主题为例的，其它主题操作大同小异。 配置之前应该先阅读Valine快速开始  Leancloud相关配置 评论系统依赖于leancloud，所以需要先在leancloud中进行相关的准备工作。
+  登录 或 注册 LeanCloud
+  登录成功后，进入后台点击左上角的创建应用：
+  创建好应用，进入应用，左边栏找到
+设置</description>
+    </item>
     
     <item>
       <title>博客 | Hugo 博客添加 utterances 评论</title>
@@ -26,27 +47,6 @@
 1. 创建公开的仓库 在 github 创建一个公开的仓库。
 2. 安装 utterances app 通过 https://utteranc.es/ 主页的 configuration → Repository 进入 utterances app 主页（或者直接在浏览器输入 https://github.com/apps/utterances 进入）。
 3. 配置 utterances utterances app 安装完成后，回到 https://utteranc.</description>
-    </item>
-    
-    <item>
-      <title>hugo博客添加评论系统Valine</title>
-      <link>https://zereals7.github.io/post/hugo%E5%8D%9A%E5%AE%A2%E6%B7%BB%E5%8A%A0%E8%AF%84%E8%AE%BA%E7%B3%BB%E7%BB%9Fvaline/</link>
-      <pubDate>Thu, 25 Jun 2020 00:12:15 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/hugo%E5%8D%9A%E5%AE%A2%E6%B7%BB%E5%8A%A0%E8%AF%84%E8%AE%BA%E7%B3%BB%E7%BB%9Fvaline/</guid>
-      <description>博客已经基本从 hexo 迁移到 hugo ，对使用的 Even 主题非常满意，虽自带了评论系统 gitment 的支持，但更喜欢迁移之前在hexo博客中使用的一个非常清新的评论系统，那就是 valine，本文就讲一下如何在 Even 中添加 Valine 的支持。
- Valine - 一款快速、简洁且高效的无后端评论系统。
-  Valine 诞生于2017年8月7日，是一款基于Leancloud的快速、简洁且高效的无后端评论系统。
-  理论上支持但不限于静态博客，目前已有Hexo、Jekyll、Typecho等博客程序在使用Valine。
-  @Valine
- 所以，理论上它也是支持 Hugo 的， 实践证明，确实如此。其特性如下：
- 快速 安全 Emoji 😉 无后端实现 MarkDown 全语法支持 轻量易用(~15kb gzipped) 文章阅读量统计 v1.2.0-beta1+  这么好的评论系统，值得宣传，希望看到此文章的童鞋，也支持一下 Valine。下面就讲一下我是如何一步步添加 Valine 支持的。
-Tips:
- 整个过程，是以Even主题为例的，其它主题操作大同小异。 配置之前应该先阅读Valine快速开始  Leancloud相关配置 评论系统依赖于leancloud，所以需要先在leancloud中进行相关的准备工作。
-  登录 或 注册 LeanCloud
-  登录成功后，进入后台点击左上角的创建应用：
-  创建好应用，进入应用，左边栏找到
-设置</description>
     </item>
     
   </channel>
