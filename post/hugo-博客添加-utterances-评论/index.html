@@ -196,6 +196,34 @@ disable_comments: true
     <div class="post-footer">
       
     </div>
+    <div class="post-comment">
+      
+      
+import Valine from 'valine';
+
+
+<span id="/post/hugo-%E5%8D%9A%E5%AE%A2%E6%B7%BB%E5%8A%A0-utterances-%E8%AF%84%E8%AE%BA/" class="leancloud_visitors" data-flag-title="博客 | Hugo 博客添加 utterances 评论">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+  new Valine({
+    el: '#vcomments' ,
+    appId: 'cScQmclMsD4OOWCclCP1pNsz-gzGzoHsz',
+    appKey: 'dtSaHLmdH3J4ICVVInYg9YFM',
+    notify:  false ,
+  verify:  false ,
+  avatar:'mm',
+    placeholder: '说点什么吧...',
+    visitor:  true 
+  });
+</script>
+
+    </div>
   </article>
 
     </main>
