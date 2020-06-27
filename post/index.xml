@@ -6,28 +6,10 @@
     <description>Recent content in Posts on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Jun 2020 14:50:09 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jun 2020 10:40:50 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>170806700</title>
-      <link>https://zereals7.github.io/post/170806700/</link>
-      <pubDate>Sat, 27 Jun 2020 14:50:09 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/170806700/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>056128500</title>
-      <link>https://zereals7.github.io/post/056128500/</link>
-      <pubDate>Sat, 27 Jun 2020 14:46:03 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/056128500/</guid>
-      <description></description>
-    </item>
     
     <item>
       <title>hugo增加搜索模块</title>
