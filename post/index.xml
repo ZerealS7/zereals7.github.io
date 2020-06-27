@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Jun 2020 10:40:50 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 28 Jun 2020 00:36:53 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>816531400</title>
+      <link>https://zereals7.github.io/post/816531400/</link>
+      <pubDate>Sun, 28 Jun 2020 00:36:53 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/816531400/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>hugo增加搜索模块</title>
@@ -20,11 +29,14 @@
       <description>前言 之前主题里面采用的是谷歌的站内搜索，感觉不是太好，所以想找找替代方案。Hugo 官方文档里面提供了几种方案，最后采用了Algolia，以下为折腾过程。
 Algolia属于商业解决方案，但是提供了免费计划，对于我这种小站免费就够用了。
 参考教程：
- Add Algolia Search To Hugo Static Website Static site search with Hugo + Algolia  Index 配置过程 生成 Algolia 端索引  前往Algolia注册，然后前往Algolia 主页，点击NEW APPLICATION，Name可选，方案选择FREE，然后创建，随后的地区选择邻近地区即可；
-new-application.png 选择地区后会跳转到Dashboard，此时点击侧栏的Indices，然后点击Create Index，Index name自定义（例如自己的域名）；
-algolia-index.png 点击侧栏API Keys，记住以下的 keys，之后都会用到；
-api-keys.png  本地生成搜索索引   自定义输出格式，在config.toml中添加以下内容：
-[outputFormats.Algolia] baseName = &amp;#34;algolia&amp;#34; isPlainText = true mediaType = &amp;#34;application/json&amp;#34; notAlternative = true [params.algolia] vars = [&amp;#34;title&amp;#34;, &amp;#34;summary&amp;#34;, &amp;#34;date&amp;#34;, &amp;#34;publishdate&amp;#34;, &amp;#34;expirydate&amp;#34;, &amp;#34;permalink&amp;#34;] params = [&amp;#34;categories&amp;#34;, &amp;#34;tags&amp;#34;,&amp;#34;series&amp;#34;]  vars是 Hugo 内置变量； params是自定义变量，按自己情况增减。</description>
+ Add Algolia Search To Hugo Static Website Static site search with Hugo + Algolia  Index 配置过程 生成 Algolia 端索引   前往Algolia注册，然后前往Algolia 主页，点击NEW APPLICATION，Name可选，方案选择FREE，然后创建，随后的地区选择邻近地区即可；
+    &amp;lt;img src=&amp;quot;https://i.loli.net/2018/11/23/5bf785c4b789b.png” width=300px height=auto&amp;gt;
+    选择地区后会跳转到Dashboard，此时点击侧栏的Indices，然后点击Create Index，Index name自定义（例如自己的域名）；
+algolia-index.png
+  点击侧栏API Keys，记住以下的 keys，之后都会用到；
+api-keys.png
+  本地生成搜索索引   自定义输出格式，在config.toml中添加以下内容：
+[outputFormats.Algolia] baseName = &amp;#34;algolia&amp;#34; isPlainText = true mediaType = &amp;#34;application/json&amp;#34; notAlternative = true [params.</description>
     </item>
     
     <item>
