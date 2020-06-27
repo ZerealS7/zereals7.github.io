@@ -6,72 +6,18 @@
     <description>Recent content on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Jun 2020 10:45:17 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jun 2020 10:40:50 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>825907200</title>
-      <link>https://zereals7.github.io/post/825907200/</link>
-      <pubDate>Sat, 27 Jun 2020 10:45:17 +0800</pubDate>
+      <title>搜索</title>
+      <link>https://zereals7.github.io/search/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://zereals7.github.io/post/825907200/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>963190600</title>
-      <link>https://zereals7.github.io/post/963190600/</link>
-      <pubDate>Sat, 27 Jun 2020 10:43:30 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/963190600/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>329258600</title>
-      <link>https://zereals7.github.io/post/329258600/</link>
-      <pubDate>Sat, 27 Jun 2020 10:43:25 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/329258600/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>936328600</title>
-      <link>https://zereals7.github.io/post/936328600/</link>
-      <pubDate>Sat, 27 Jun 2020 10:43:25 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/936328600/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>227060000</title>
-      <link>https://zereals7.github.io/post/227060000/</link>
-      <pubDate>Sat, 27 Jun 2020 10:43:22 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/227060000/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>662098800</title>
-      <link>https://zereals7.github.io/post/662098800/</link>
-      <pubDate>Sat, 27 Jun 2020 10:43:22 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/662098800/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>916897400</title>
-      <link>https://zereals7.github.io/post/916897400/</link>
-      <pubDate>Sat, 27 Jun 2020 10:43:20 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/916897400/</guid>
-      <description></description>
+      <guid>https://zereals7.github.io/search/</guid>
+      <description>/* 手机适配 */@media screen and (max-width: 500px) {.search{padding-right: 25px;}.search input{width: 100%;}.search button{display: none;}}/* 电脑适配 */@media screen and (min-width: 500px) {.search{width: 500px;}.search input{width: 444px;}}/* 通用样式 */.search{margin: auto;}.search input{outline: none;border: 2px solid #c05b4d;height: 32px;padding: 10px;}.search button{outline: none;border: 0px;height: 56px;width:56px;position:absolute;background-color:#c05b4d ;}.</description>
     </item>
     
     <item>
