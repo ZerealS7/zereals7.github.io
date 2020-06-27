@@ -6,10 +6,19 @@
     <description>Recent content on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Jun 2020 15:34:03 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jun 2020 16:28:58 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>032746700</title>
+      <link>https://zereals7.github.io/post/032746700/</link>
+      <pubDate>Sat, 27 Jun 2020 16:28:58 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/032746700/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>html网页宽度自动适应手机屏幕宽度的方法</title>
