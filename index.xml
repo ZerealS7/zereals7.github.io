@@ -6,28 +6,10 @@
     <description>Recent content on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Jun 2020 12:34:53 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jun 2020 10:40:50 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>搜索</title>
-      <link>https://zereals7.github.io/search/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zereals7.github.io/search/</guid>
-      <description>/* 手机适配 */@media screen and (max-width: 500px) {.search{padding-right: 25px;}.search input{width: 100%;}.search button{display: none;}}/* 电脑适配 */@media screen and (min-width: 500px) {.search{width: 500px;}.search input{width: 444px;}}/* 通用样式 */.search{margin: auto;}.search input{outline: none;border: 2px solid #c05b4d;height: 32px;padding: 10px;}.search button{outline: none;border: 0px;height: 56px;width:56px;position:absolute;background-color:#c05b4d ;}.</description>
-    </item>
-    
-    <item>
-      <title>982471300</title>
-      <link>https://zereals7.github.io/post/982471300/</link>
-      <pubDate>Sat, 27 Jun 2020 12:34:53 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/982471300/</guid>
-      <description></description>
-    </item>
     
     <item>
       <title>hugo增加搜索模块</title>
