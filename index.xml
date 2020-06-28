@@ -6,19 +6,10 @@
     <description>Recent content on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 28 Jun 2020 11:19:39 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 28 Jun 2020 11:08:35 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>661439300</title>
-      <link>https://zereals7.github.io/post/661439300/</link>
-      <pubDate>Sun, 28 Jun 2020 11:19:39 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/661439300/</guid>
-      <description></description>
-    </item>
     
     <item>
       <title>Hexo 优化 --- Valine 扩展之邮件通知 </title>
@@ -97,6 +88,15 @@ cccat_traffic
 1. 创建公开的仓库 在 github 创建一个公开的仓库。
 2. 安装 utterances app 通过 https://utteranc.es/ 主页的 configuration → Repository 进入 utterances app 主页（或者直接在浏览器输入 https://github.com/apps/utterances 进入）。
 3. 配置 utterances utterances app 安装完成后，回到 https://utteranc.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://zereals7.github.io/post/%E6%96%B0%E5%BB%BA%E6%96%87%E6%9C%AC%E6%96%87%E6%A1%A3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zereals7.github.io/post/%E6%96%B0%E5%BB%BA%E6%96%87%E6%9C%AC%E6%96%87%E6%A1%A3/</guid>
+      <description></description>
     </item>
     
   </channel>
