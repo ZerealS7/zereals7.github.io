@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Jun 2020 10:40:50 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 28 Jun 2020 09:46:09 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>716035600</title>
+      <link>https://zereals7.github.io/post/716035600/</link>
+      <pubDate>Sun, 28 Jun 2020 09:46:09 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/716035600/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>hugo增加搜索模块</title>
@@ -54,6 +63,23 @@ cccat_traffic
 以上两家机场节点几乎还是直连，以目前的网络环境来说，效果可能不是很好（尤其是移动及二级运营商用户），具体情况视本地网络情况而定
 蓝岸 注册链接：含 aff
 蓝岸是一家 V2Ray 机场，算是最早一批的 V2Ray 机场了。价格不便宜。我入群的时候也是不到 100 人的小团体，100 人的时候发放了一个 1 元月付循环优惠码，是的，你没看错，就是 1 元。当时人少，可能也没啥人看群，被我捡了个漏。</description>
+    </item>
+    
+    <item>
+      <title>博客 | Hugo 博客添加 utterances 评论</title>
+      <link>https://zereals7.github.io/post/hugo-%E5%8D%9A%E5%AE%A2%E6%B7%BB%E5%8A%A0-utterances-%E8%AF%84%E8%AE%BA/</link>
+      <pubDate>Thu, 25 Jun 2020 23:21:45 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/hugo-%E5%8D%9A%E5%AE%A2%E6%B7%BB%E5%8A%A0-utterances-%E8%AF%84%E8%AE%BA/</guid>
+      <description>因为是用 Hugo 搭建的博客，所以只看中了三个评论系统：1、Disqus 2、Valine 3、Utterances 。
+说下三者区别：
+  Disqus
+   优点：漂亮，hugo 自带，官方文档中有写如何启动，直接在 config.toml 文件中启用就可以用。 缺点：广告多，国外的，容易被墙。    Valine
+   官方的介绍说，是一款快速、简洁且高效的无后端评论系统。对于第三方评论系统，经历了多说关闭的影响，不太敢用。具体如何本人的确也没用过，暂不评论。    Utterances
+   优点：基于 GitHub issues 的评论工具，开源免费，加载快，配置较简单，没有广告，没有追踪（很多评论系统有追踪，感觉不是很尊重访客隐私）。 缺点：貌似不能在已经发表的评论中追加评论。    好像三个都支持 Markdown 。
+1. 创建公开的仓库 在 github 创建一个公开的仓库。
+2. 安装 utterances app 通过 https://utteranc.es/ 主页的 configuration → Repository 进入 utterances app 主页（或者直接在浏览器输入 https://github.com/apps/utterances 进入）。
+3. 配置 utterances utterances app 安装完成后，回到 https://utteranc.</description>
     </item>
     
   </channel>
