@@ -18,7 +18,7 @@ Algolia属于商业解决方案，但是提供了免费计划，对于我这种�
  Add Algolia Search To Hugo Static Website Static site search with Hugo &#43; Algolia  Index 配置过程 生成 Algolia 端索引   前往Algolia注册，然后前往Algolia 主页，点击NEW APPLICATION，Name可选，方案选择FREE，然后创建，随后的地区选择邻近地区即可；
   选择地区后会跳转到Dashboard，此时点击侧栏的Indices，然后点击Create Index，Index name自定义（例如自己的域名）；
   点击侧栏API Keys，记住以下的 keys，之后都会用到；
-  本地生成搜索索引   自定义输出格式，在config.toml中添加以下内容：
+   本地生成搜索索引   自定义输出格式，在config.toml中添加以下内容：
 [outputFormats.Algolia] baseName = &#34;algolia&#34; isPlainText = true mediaType = &#34;application/json&#34; notAlternative = true [params.algolia] vars = [&#34;title&#34;, &#34;summary&#34;, &#34;date&#34;, &#34;publishdate&#34;, &#34;expirydate&#34;, &#34;permalink&#34;] params = [&#34;categories&#34;, &#34;tags&#34;,&#34;series&#34;]  vars是 Hugo 内置变量； params是自定义变量，按自己情况增减。"/>
 
     <meta property="og:title" content="hugo增加搜索模块" />
@@ -28,7 +28,7 @@ Algolia属于商业解决方案，但是提供了免费计划，对于我这种�
  Add Algolia Search To Hugo Static Website Static site search with Hugo &#43; Algolia  Index 配置过程 生成 Algolia 端索引   前往Algolia注册，然后前往Algolia 主页，点击NEW APPLICATION，Name可选，方案选择FREE，然后创建，随后的地区选择邻近地区即可；
   选择地区后会跳转到Dashboard，此时点击侧栏的Indices，然后点击Create Index，Index name自定义（例如自己的域名）；
   点击侧栏API Keys，记住以下的 keys，之后都会用到；
-  本地生成搜索索引   自定义输出格式，在config.toml中添加以下内容：
+   本地生成搜索索引   自定义输出格式，在config.toml中添加以下内容：
 [outputFormats.Algolia] baseName = &#34;algolia&#34; isPlainText = true mediaType = &#34;application/json&#34; notAlternative = true [params.algolia] vars = [&#34;title&#34;, &#34;summary&#34;, &#34;date&#34;, &#34;publishdate&#34;, &#34;expirydate&#34;, &#34;permalink&#34;] params = [&#34;categories&#34;, &#34;tags&#34;,&#34;series&#34;]  vars是 Hugo 内置变量； params是自定义变量，按自己情况增减。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://zereals7.github.io/post/hugo%E5%A2%9E%E5%8A%A0%E6%90%9C%E7%B4%A2%E6%A8%A1%E5%9D%97/" />
@@ -92,10 +92,11 @@ Algolia属于商业解决方案，但是提供了免费计划，对于我这种�
 <!-- raw HTML omitted --></p>
 </li>
 <li>
-<p>点击侧栏<strong>API Keys</strong>，记住以下的 keys，之后都会用到；<br>
-<!-- raw HTML omitted --></p>
+<p>点击侧栏<strong>API Keys</strong>，记住以下的 keys，之后都会用到；</p>
 </li>
+<li></li>
 </ul>
+<p><!-- raw HTML omitted --></p>
 <h3 id="本地生成搜索索引">本地生成搜索索引</h3>
 <ol>
 <li>
@@ -302,7 +303,7 @@ ALGOLIA_INDEX_FILE={{ PATH/TO/algolia.json }}
 <p>至此，就基本完成了，我的搜索界面效果如下：<br>
 <!-- raw HTML omitted --></p>
 <h2 id="结束语">结束语</h2>
-<p>本来准备用 Serverless <a href="https://webtask.io/">Webtask Function</a>来实现 Algolia Index 的自动化更新，但是建立 Webtasks profile 过程中验证码一直提示错误，暂时放弃了。</p>
+<p>本来准备用 Serverless <a href="https://webtask.io/">Webtask Function</a>来实现 Algolia Index 的自动化更新，但是建立 Webtasks profile 过程中验证码一直提示错误，暂时放弃了。````</p>
 
     </div>
     <div class="post-footer">
