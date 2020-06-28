@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Jun 2020 00:28:26 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 28 Jun 2020 20:13:14 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>948104000</title>
+      <link>https://zereals7.github.io/post/948104000/</link>
+      <pubDate>Sun, 28 Jun 2020 20:13:14 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/948104000/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>科学上网总结</title>
@@ -38,15 +47,6 @@ cccat_traffic
 以上两家机场节点几乎还是直连，以目前的网络环境来说，效果可能不是很好（尤其是移动及二级运营商用户），具体情况视本地网络情况而定
 蓝岸 注册链接：含 aff
 蓝岸是一家 V2Ray 机场，算是最早一批的 V2Ray 机场了。价格不便宜。我入群的时候也是不到 100 人的小团体，100 人的时候发放了一个 1 元月付循环优惠码，是的，你没看错，就是 1 元。当时人少，可能也没啥人看群，被我捡了个漏。</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>https://zereals7.github.io/post/%E6%96%B0%E5%BB%BA%E6%96%87%E6%9C%AC%E6%96%87%E6%A1%A3/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zereals7.github.io/post/%E6%96%B0%E5%BB%BA%E6%96%87%E6%9C%AC%E6%96%87%E6%A1%A3/</guid>
-      <description></description>
     </item>
     
   </channel>
