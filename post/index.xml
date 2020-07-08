@@ -6,13 +6,29 @@
     <description>Recent content in Posts on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 29 Jun 2020 22:26:08 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 08 Jul 2020 19:48:44 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>003505300</title>
+      <title>mac 环境搭建</title>
+      <link>https://zereals7.github.io/post/834797500/</link>
+      <pubDate>Wed, 08 Jul 2020 19:48:44 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/834797500/</guid>
+      <description>作者：腾讯技术工程
+说 Mac 适合编程的答案总结地都差不多了，当你确定要用 Mac 作为开发工具后，那下一步面临的问题就是：拿到一台 Mac 怎么把它配置成一台顺手的开发工具了。
+下面分享一下鹅厂程序猿 GG 的配置心得：
+一、基本设置  升级到新版本操作系统(macOS Mojave 10.14.3) 关闭菜单栏效果, 减少资源占用和产生的热量   系统偏好设置/辅助功能/显示, 勾选 (减弱动态效果、减少透明度)
+  配置睡眠保护   系统偏好设置/安全性与隐私/通用, 勾选(进入睡眠或开始保护程序 立即 要求输入密码)
+  配置触发角   系统偏好设置/屏幕保护程序/触发角, 选择(右上桌面，左下启动台，右下启动屏幕保护)
+ 二、工具安装  Xcode Command Line Tools   xcode-select &amp;ndash;install
+  Homebrew  # 这里必须设置 代理地址，否则无法安装brew /usr/bin/ruby -e &amp;#34;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install  brew cask list brew 安装常用工具  &amp;lt;img src=&amp;quot;https://pic1.</description>
+    </item>
+    
+    <item>
+      <title>白手起家</title>
       <link>https://zereals7.github.io/post/%E7%9B%88%E5%88%A9%E6%80%9D%E7%BB%B4/</link>
       <pubDate>Mon, 29 Jun 2020 22:26:08 +0800</pubDate>
       
