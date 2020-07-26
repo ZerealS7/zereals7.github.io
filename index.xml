@@ -6,62 +6,10 @@
     <description>Recent content on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 21 Jul 2020 11:18:17 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 29 Jun 2020 22:26:08 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>947122800</title>
-      <link>https://zereals7.github.io/post/947122800/</link>
-      <pubDate>Tue, 21 Jul 2020 11:18:17 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/947122800/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>016529100</title>
-      <link>https://zereals7.github.io/post/016529100/</link>
-      <pubDate>Sat, 18 Jul 2020 13:49:46 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/016529100/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>812692500</title>
-      <link>https://zereals7.github.io/post/812692500/</link>
-      <pubDate>Sun, 12 Jul 2020 19:05:12 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/812692500/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>903057600</title>
-      <link>https://zereals7.github.io/post/903057600/</link>
-      <pubDate>Sun, 12 Jul 2020 18:58:17 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/903057600/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>mac 环境搭建</title>
-      <link>https://zereals7.github.io/post/834797500/</link>
-      <pubDate>Wed, 08 Jul 2020 19:48:44 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/834797500/</guid>
-      <description>作者：腾讯技术工程
-说 Mac 适合编程的答案总结地都差不多了，当你确定要用 Mac 作为开发工具后，那下一步面临的问题就是：拿到一台 Mac 怎么把它配置成一台顺手的开发工具了。
-下面分享一下鹅厂程序猿 GG 的配置心得：
-一、基本设置  升级到新版本操作系统(macOS Mojave 10.14.3) 关闭菜单栏效果, 减少资源占用和产生的热量   系统偏好设置/辅助功能/显示, 勾选 (减弱动态效果、减少透明度)
-  配置睡眠保护   系统偏好设置/安全性与隐私/通用, 勾选(进入睡眠或开始保护程序 立即 要求输入密码)
-  配置触发角   系统偏好设置/屏幕保护程序/触发角, 选择(右上桌面，左下启动台，右下启动屏幕保护)
- 二、工具安装  Xcode Command Line Tools   xcode-select &amp;ndash;install
-  Homebrew  # 这里必须设置 代理地址，否则无法安装brew /usr/bin/ruby -e &amp;#34;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install  brew cask list brew 安装常用工具  &amp;lt;img src=&amp;quot;https://pic1.</description>
-    </item>
     
     <item>
       <title>白手起家公务员副业</title>
@@ -81,7 +29,10 @@
 10.帮别人远程刷机(手机，电脑)
 11.考证：司法，注会，注册岩土
 12.摆摊
-手机赚钱（脚本薅羊毛项目） 买房出租 写书 讲课培训 做app加入开发者联盟 做微商，开快手小店，抖音带货 做网站赚钱 写一个自动洗稿，自动找热点写文章的软件 写一个自动根据文案剪辑做视频的软件 在职或者非全研究生 知识布袋和百度知道视频答题结合，通过百度知道视频回答创作知识类，文案可由回答中提取 海火森主打科技类，可以开展刷机业务，闲鱼收购倒卖（远程邮寄刷机）  25.拼多多</description>
+手机赚钱（脚本薅羊毛项目） 买房出租 写书 讲课培训 做app加入开发者联盟 做微商，开快手小店，抖音带货 做网站赚钱 写一个自动洗稿，自动找热点写文章的软件 写一个自动根据文案剪辑做视频的软件 在职或者非全研究生 知识布袋和百度知道视频答题结合，通过百度知道视频回答创作知识类，文案可由回答中提取 海火森主打科技类，可以开展刷机业务，闲鱼收购倒卖（远程邮寄刷机）  25.拼多多
+26.百度知道抢单
+27.众包服务项目
+28.送外卖或者开滴滴</description>
     </item>
     
   </channel>
