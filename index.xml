@@ -6,10 +6,42 @@
     <description>Recent content on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 28 Jul 2020 19:04:05 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 26 Sep 2020 19:51:41 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Bean实例化的三种方式</title>
+      <link>https://zereals7.github.io/post/589074000/</link>
+      <pubDate>Sat, 26 Sep 2020 19:51:41 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/589074000/</guid>
+      <description>无参构造方法实例化
+工厂静态方法实例化
+工厂实例方法实例化</description>
+    </item>
+    
+    <item>
+      <title>Bean标签范围配置</title>
+      <link>https://zereals7.github.io/post/839169100/</link>
+      <pubDate>Sat, 26 Sep 2020 19:17:48 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/839169100/</guid>
+      <description>1）当scope 的取值为singleton时
+Bean的实例化个数：1个
+Bean的实例化时机：当Spring核心文件被加载时，实例化配置Bean实例
+Bean的生命周期：
+对象创建：当应用加载，创建容器时，对象被创建
+对象运行：只要容器在，对象一直活着
+对象销毁：当应用卸载，销毁容器时，对象就被销毁了
+2）当scope的取值为prototype时
+Bean的实例化个数：多个
+Bean的实例化时机：当调用getBean()方法时实例化Bean
+对象创建：当使用对象时，创建新的对象实例
+对象运行：只要对象在使用中，就一直活着
+对象销毁：当对象长时间不用时，就Java的垃圾回收器GC回收了</description>
+    </item>
     
     <item>
       <title>自媒体视频创作技巧流程---纯手机制作</title>
