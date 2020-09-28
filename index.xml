@@ -6,10 +6,24 @@
     <description>Recent content on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 26 Sep 2020 19:51:41 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 27 Sep 2020 14:55:31 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>需要注意的细节</title>
+      <link>https://zereals7.github.io/post/117842300/</link>
+      <pubDate>Sun, 27 Sep 2020 14:55:31 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/117842300/</guid>
+      <description>1.注入各种常量时，注意不要有空格
+分模块开发 实际开发中，Spring的配置内容非常多，这就导致Spring配置很繁杂且体积很大，所以，可以将部分配置拆解到其他配置文件中，而在Spring主配置文件通过import标签进行加载  例如： 3.重点配置
+4.Spring相关API
+![img](file:///C:\Users\Zereal\Documents\Tencent Files\644349596\Image\C2C\3BA9F749C41BCDA3E4169BE4BF63449E.png)
+容器中某一个类型存在多个的情况下用id方式 &amp;mdash;app.getBean(id)
+单个的情况下可以用类类型的方式 &amp;mdash;-app.getBean(Class)</description>
+    </item>
     
     <item>
       <title>Bean实例化的三种方式</title>
