@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>SSM第二章-Java设计模式 // Zereal-宋致远技术博客</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75，minimum-scale=0.75, maximum-scale=0.75, user-scalable=no" />
+    <meta name="author" content="Zereal" />
+    <meta name="description" content="" />
+    <meta name="referrer" content="never"/>
+    <link rel="stylesheet" href="https://zereals7.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="SSM第二章-Java设计模式"/>
+<meta name="twitter:description" content="2.1 Java反射技术 Java反射技术应用广泛，它能够配置：类的全限定名、方法和参数，完成对象的初始化，甚至是反射某些方法。这样就可以大大增强Java的可配置性，Spring IOC的基本原理他也是如此，当然Spring IOC的代码要复杂得多。
+2.1.1 通过反射构建对象 在Java中允许通过反射配置信息构建对象。
+这里的代码就是生成一个对象，然后将其返回。下面这行代码的目的就是给类加载器注册了一个类对象，使用反射的方式也十分简单。
+object=(ReflectServiceImpl)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl&quot;).newInstance();
+这是一个构建方法，没有任何参数的类的反射生成，所以还剩下一个问题，即如果一个类的所有构建方法都至少存在一个参数，如何用反射构建它。其实，只要少排位改变就可以。
+使用如下代码发生你和生成对象：
+object=(ReflectServiceImpl2)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl2&quot;).getConstructor(String.class).newInstance(&quot;张三&quot;)；
+先通过forName加载到类的加载器。然后通过getConstructor方法，它的参数可以是多个，这里定义为String.class，意为有且只有一个参数类型为String的方法。通过这个方法可以对重名方法进行排除，此时再用newInstance方法生成对象，只是newInstance方法也多了一个参数“张三&quot;而已。实际就等于object=new ReflectServiceImpl2(&ldquo;张三&rdquo;)，只是这里用反射机制来生成这个对象而已。
+反射的优点是只要配置就可以生成对象，可以接触程序的耦合度，比较灵活。反射的缺点是运行比较慢。但是大部分情况下为了灵活度，降低程序的耦合度，我们还是会使用反射的，比如Spring IOC容器。
+2.1.2 反射方法 在使用反射方法前要获取方法对象，得到了方法才能去反射。
+![2021-04-0654_3](C:/Users/Zereal/Documents/Tencent Files/644349596/FileRecv/MobileFile/2021-04-0654_3.jpg)
+当有具体的对象target，而不知道具体是哪个类时，也可以使用getClass方法找到全限定类名
+target.getClass().getMethod(&quot;sayHello&quot;,String.class);代替它，其中第一个参数是方法名称，第二个参数是参数类型，是一个列表，多个参数可以继续编写多个类型，这样便能获得反射的方法对象。
+反射方法是运用 returnObj=method.invoke(target,&quot;张三&quot;)；代码完成的。
+第一个参数为target，就是确定用哪个对象调用方法，而”张三“是参数，这行就等于target.sayhello(&ldquo;张三&rdquo;)；。
+如果存在多个参数，可以写成Method.invoke(target，obj1,obj2,obj3&hellip;..),这些要根据对象的具体方法来确定。"/>
+
+    <meta property="og:title" content="SSM第二章-Java设计模式" />
+<meta property="og:description" content="2.1 Java反射技术 Java反射技术应用广泛，它能够配置：类的全限定名、方法和参数，完成对象的初始化，甚至是反射某些方法。这样就可以大大增强Java的可配置性，Spring IOC的基本原理他也是如此，当然Spring IOC的代码要复杂得多。
+2.1.1 通过反射构建对象 在Java中允许通过反射配置信息构建对象。
+这里的代码就是生成一个对象，然后将其返回。下面这行代码的目的就是给类加载器注册了一个类对象，使用反射的方式也十分简单。
+object=(ReflectServiceImpl)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl&quot;).newInstance();
+这是一个构建方法，没有任何参数的类的反射生成，所以还剩下一个问题，即如果一个类的所有构建方法都至少存在一个参数，如何用反射构建它。其实，只要少排位改变就可以。
+使用如下代码发生你和生成对象：
+object=(ReflectServiceImpl2)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl2&quot;).getConstructor(String.class).newInstance(&quot;张三&quot;)；
+先通过forName加载到类的加载器。然后通过getConstructor方法，它的参数可以是多个，这里定义为String.class，意为有且只有一个参数类型为String的方法。通过这个方法可以对重名方法进行排除，此时再用newInstance方法生成对象，只是newInstance方法也多了一个参数“张三&quot;而已。实际就等于object=new ReflectServiceImpl2(&ldquo;张三&rdquo;)，只是这里用反射机制来生成这个对象而已。
+反射的优点是只要配置就可以生成对象，可以接触程序的耦合度，比较灵活。反射的缺点是运行比较慢。但是大部分情况下为了灵活度，降低程序的耦合度，我们还是会使用反射的，比如Spring IOC容器。
+2.1.2 反射方法 在使用反射方法前要获取方法对象，得到了方法才能去反射。
+![2021-04-0654_3](C:/Users/Zereal/Documents/Tencent Files/644349596/FileRecv/MobileFile/2021-04-0654_3.jpg)
+当有具体的对象target，而不知道具体是哪个类时，也可以使用getClass方法找到全限定类名
+target.getClass().getMethod(&quot;sayHello&quot;,String.class);代替它，其中第一个参数是方法名称，第二个参数是参数类型，是一个列表，多个参数可以继续编写多个类型，这样便能获得反射的方法对象。
+反射方法是运用 returnObj=method.invoke(target,&quot;张三&quot;)；代码完成的。
+第一个参数为target，就是确定用哪个对象调用方法，而”张三“是参数，这行就等于target.sayhello(&ldquo;张三&rdquo;)；。
+如果存在多个参数，可以写成Method.invoke(target，obj1,obj2,obj3&hellip;..),这些要根据对象的具体方法来确定。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zereals7.github.io/post/java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" />
+<meta property="article:published_time" content="2021-04-15T00:24:01+08:00" />
+<meta property="article:modified_time" content="2021-04-15T00:24:01+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://zereals7.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Zereal" /></a>
+      <h1>Zereal</h1>
+      <p>Java coder</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ZerealS7" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">SSM第二章-Java设计模式</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Apr 15, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          1 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      <h1 id="21-java反射技术">2.1 Java反射技术</h1>
+<p>Java反射技术应用广泛，它能够配置：类的全限定名、方法和参数，完成对象的初始化，甚至是反射某些方法。这样就可以大大增强Java的可配置性，Spring IOC的基本原理他也是如此，当然Spring IOC的代码要复杂得多。</p>
+<h2 id="211-通过反射构建对象">2.1.1 通过反射构建对象</h2>
+<p>在Java中允许通过反射配置信息构建对象。</p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/20210415003231.jpg" alt="2021-04-0654_2 (Copy)"></p>
+<p>这里的代码就是生成一个对象，然后将其返回。下面这行代码的目的就是给类加载器注册了一个类对象，使用反射的方式也十分简单。</p>
+<p><code>object=(ReflectServiceImpl)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl&quot;).newInstance();</code></p>
+<p>这是一个构建方法，没有任何参数的类的反射生成，所以还剩下一个问题，即如果一个类的所有构建方法都至少存在一个参数，如何用反射构建它。其实，只要少排位改变就可以。</p>
+<p>使用如下代码发生你和生成对象：</p>
+<p><code>object=(ReflectServiceImpl2)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl2&quot;).getConstructor(String.class).newInstance(&quot;张三&quot;)；</code></p>
+<p>先通过forName加载到类的加载器。然后通过getConstructor方法，它的参数可以是多个，这里定义为String.class，意为有且只有一个参数类型为String的方法。通过这个方法可以对重名方法进行排除，此时再用newInstance方法生成对象，只是newInstance方法也多了一个参数“张三&quot;而已。实际就等于object=new ReflectServiceImpl2(&ldquo;张三&rdquo;)，只是这里用反射机制来生成这个对象而已。</p>
+<p>反射的优点是只要配置就可以生成对象，可以接触程序的耦合度，比较灵活。反射的缺点是运行比较慢。但是大部分情况下为了灵活度，降低程序的耦合度，我们还是会使用反射的，比如Spring IOC容器。</p>
+<h2 id="212-反射方法">2.1.2 反射方法</h2>
+<p>在使用反射方法前要获取方法对象，得到了方法才能去反射。</p>
+<p>![2021-04-0654_3](C:/Users/Zereal/Documents/Tencent Files/644349596/FileRecv/MobileFile/2021-04-0654_3.jpg)</p>
+<p>当有具体的对象target，而不知道具体是哪个类时，也可以使用getClass方法找到全限定类名</p>
+<p><code>target.getClass().getMethod(&quot;sayHello&quot;,String.class);</code>代替它，其中第一个参数是方法名称，第二个参数是参数类型，是一个列表，多个参数可以继续编写多个类型，这样便能获得反射的方法对象。</p>
+<p>反射方法是运用 <code>returnObj=method.invoke(target,&quot;张三&quot;)；</code>代码完成的。</p>
+<p>第一个参数为target，就是确定用哪个对象调用方法，而”张三“是参数，这行就等于target.sayhello(&ldquo;张三&rdquo;)；。</p>
+<p>如果存在多个参数，可以写成Method.invoke(target，obj1,obj2,obj3&hellip;..),这些要根据对象的具体方法来确定。</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+    <div class="post-comment">
+      
+      
+
+
+<span id="/post/java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="leancloud_visitors" data-flag-title="SSM第二章-Java设计模式">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+  new Valine({
+    el: '#vcomments' ,
+    appId: 'cScQmclMsD4OOWCclCP1pNsz-gzGzoHsz',
+    appKey: 'dtSaHLmdH3J4ICVVInYg9YFM',
+    notify:  false ,
+  verify:  false ,
+  avatar:'mm',
+    placeholder: '说点什么吧...',
+    visitor:  true 
+  });
+</script>
+
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

@@ -6,10 +6,34 @@
     <description>Recent content on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 14 Apr 2021 21:56:15 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 15 Apr 2021 00:24:01 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>SSM第二章-Java设计模式</title>
+      <link>https://zereals7.github.io/post/java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</link>
+      <pubDate>Thu, 15 Apr 2021 00:24:01 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</guid>
+      <description>2.1 Java反射技术 Java反射技术应用广泛，它能够配置：类的全限定名、方法和参数，完成对象的初始化，甚至是反射某些方法。这样就可以大大增强Java的可配置性，Spring IOC的基本原理他也是如此，当然Spring IOC的代码要复杂得多。
+2.1.1 通过反射构建对象 在Java中允许通过反射配置信息构建对象。
+这里的代码就是生成一个对象，然后将其返回。下面这行代码的目的就是给类加载器注册了一个类对象，使用反射的方式也十分简单。
+object=(ReflectServiceImpl)Class.forName(&amp;quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl&amp;quot;).newInstance();
+这是一个构建方法，没有任何参数的类的反射生成，所以还剩下一个问题，即如果一个类的所有构建方法都至少存在一个参数，如何用反射构建它。其实，只要少排位改变就可以。
+使用如下代码发生你和生成对象：
+object=(ReflectServiceImpl2)Class.forName(&amp;quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl2&amp;quot;).getConstructor(String.class).newInstance(&amp;quot;张三&amp;quot;)；
+先通过forName加载到类的加载器。然后通过getConstructor方法，它的参数可以是多个，这里定义为String.class，意为有且只有一个参数类型为String的方法。通过这个方法可以对重名方法进行排除，此时再用newInstance方法生成对象，只是newInstance方法也多了一个参数“张三&amp;quot;而已。实际就等于object=new ReflectServiceImpl2(&amp;ldquo;张三&amp;rdquo;)，只是这里用反射机制来生成这个对象而已。
+反射的优点是只要配置就可以生成对象，可以接触程序的耦合度，比较灵活。反射的缺点是运行比较慢。但是大部分情况下为了灵活度，降低程序的耦合度，我们还是会使用反射的，比如Spring IOC容器。
+2.1.2 反射方法 在使用反射方法前要获取方法对象，得到了方法才能去反射。
+![2021-04-0654_3](C:/Users/Zereal/Documents/Tencent Files/644349596/FileRecv/MobileFile/2021-04-0654_3.jpg)
+当有具体的对象target，而不知道具体是哪个类时，也可以使用getClass方法找到全限定类名
+target.getClass().getMethod(&amp;quot;sayHello&amp;quot;,String.class);代替它，其中第一个参数是方法名称，第二个参数是参数类型，是一个列表，多个参数可以继续编写多个类型，这样便能获得反射的方法对象。
+反射方法是运用 returnObj=method.invoke(target,&amp;quot;张三&amp;quot;)；代码完成的。
+第一个参数为target，就是确定用哪个对象调用方法，而”张三“是参数，这行就等于target.sayhello(&amp;ldquo;张三&amp;rdquo;)；。
+如果存在多个参数，可以写成Method.invoke(target，obj1,obj2,obj3&amp;hellip;..),这些要根据对象的具体方法来确定。</description>
+    </item>
     
     <item>
       <title>SSM入门和Redis</title>
