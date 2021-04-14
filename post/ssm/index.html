@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>SSM入门和Redis // Zereal-宋致远技术博客</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75，minimum-scale=0.75, maximum-scale=0.75, user-scalable=no" />
+    <meta name="author" content="Zereal" />
+    <meta name="description" content="" />
+    <meta name="referrer" content="never"/>
+    <link rel="stylesheet" href="https://zereals7.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="SSM入门和Redis"/>
+<meta name="twitter:description" content="1.1 Spring框架 1.1.1 Spring IOC简介 IOC是一个容器，在Spring中，它会认为一切Java资源都是Java Bean,容器的目标就是管理这些Bean和它们之间的关系。
+各个Java Bean之间会存在一定的依赖关系，容器能够对其进行管理。SPringIOC管理对象和依赖关系，采用的不是认为主动创建，而是SPring IOC自己通过描述创建的。
+当需要某个实现类，可以通过配置实现依赖的注入 。这是一种被动的行为，控制权在IOC容器，它会根据描述找到使用者需要的资源。
+当需要使用某个实现类时，通过配置信息就可以完成了。不需要用new来创建对象，依赖关系也可以通过配置完成，从而即插即拔地管理它们之间的关系。
+总结：你不需要去找资源，只要向SPring IOC容器描述所需资源，SPring IOC自己会找到你需要的资源，这就是SPring IOC的理念。这样就把Bean之间的依赖关系解耦了，更容易写出结构清晰的程序。除此之外，SPring IOC还提供对Java Bean生命周期的管理，可以延迟加载，可以在其生命周期内定义一些行为等，更加方便有效地使用和管理Java资源，这就是SPring IOC的魅力。
+1.1.2 SPring AOP IOC的目标时为了管理Java Bean,而Bean是Java面向对象的基础设计。但是，有些情况面向对象没办法处理。举个例子，生产部门的订单、生产部门、财务部门三者符合OOP的设计理念。订单发出，生产部门审批通过准备付款，但是财务部门发现订单的价格超支了，需要取消当你孤单。显然超支限定已经不只是影响财务部门了，还会影响生产部门之前所做的审批，需要把它们作废。我们把预算超支这个条件称为切面，它影响了订单、生产部门、财务部门三个OOP对象。在现实中，这样的切面条件跨越了3个甚至更多的对象，并且影响了它们的协作。所以只用OOP并不完善，还需要面向切面的编程，通过它去管理在切面上的某些对象的协作。
+Spring AOP常用于数据库事务的编程，在默认的情况下，只要Spring接收到了异常信息，它会将数据库的事务回滚，从而保证数据的一致性。Spring提供了隔离级别和传播行为去控制复杂的事务。
+1.2 MyBatis简介 MyBatis优势在于灵活，他几乎可以代替JDBC，同时提供了接口编程。目前MyBatis的数据访问层DAO是不需要实现类的，只需要一个接口和XML，或是注解。MyBatis提供自动映射，动态SQL、级联、缓存、注解、代码和SQL分离等特性。同时也可以对SQL进行优化。一位内具有封装少、映射多样化、支持存储过程、可以进行SQL优化等特点。
+1.2.1 Hibernate简介 在MyBatis或者HIberNate中使用注解或者XML都是可以的。MyBatis中注解方式会受到一定的限制，所以MyBatis通常用XML方式实现映射关系。
+我们把POJO对象和数据表相互映射的框架称为对象关系映射ORM。MyBatis和HIbernate都是ORM框架，只是Hibernate完全面向POJO，而前者不是。Hibernate基本不需要编写SQL就可以通过映射关系来操作数据库，是一种全表映射，而MyBatis不同，需要提供SQL去运行。
+没有SQL是因为Hibernate会根据映射关系来生成对应的SQL。
+1.2.2 Mybatis 在移动互联网时代，Mybatis是互联网Java持久框架的首选，与HIbernate消除SQL不同，MyBatis不屏蔽SQL。不屏蔽SQL的优势在于，程序员可以自己制定SQL规则，无须HIbernate自动生成规则，这样能够更加精确地定义SQL，从而优化性能。它更符合移动互联网、大数据、高并发、高性能、高响应的要求。
+与HIbernate一样，MyBatis需要一个映射文件把POJO和数据库的表对应起来。
+resultMap元素用于定义映射规则，Mybatis在满足一定规则下，完成自动映射。
+mapper元素中的namespace属性，要和一个接口的全限定类名保持一致。里面的SQL的id也要和接口定义的方法保持完全一致。
+定义了MyBatis的映射文件，就不再需要定义一个实现类。
+Mybatis需要提供接口和SQL，意味着它的工作量会比HIbernate大，但是由于自定义SQL、映射关系，所以其灵活性、可优化性就超过了HIbernate。
+1.2.3 HIbernate和MyBatis的区别 两者的增删查改对于业务逻辑层来说大同小异，对于映射层而言HIbernate的配置不需要接口和SQL，相反MyBatis是需要的。对于HIbernate而言，不需要编写大量的SQL就可以完全映射，同时提供了日志、缓存、级联等特性（级联比Mybatis强大）等特性，此外还提供了HQL对POJO操作，使用十分方便，但也有致命的缺陷。
+由于无须SQL，当多表关联超过3个的时候，通过HIbernate的级联会造成太多的性能丢失，又或者我现在访问财务的表，然后它会关联财产信息表，财产又分为机械、原料等，显然机械和原料的字段不一样，这样关联的字段只能根据特定的条件变化而变化，而HIbernate无法支持这样的变化。遇到存储过程HIbernate只能作罢。
+Mybatis可以自由书写SQL、支持动态SQL、处理列表、动态生成表名、支持存储过程。这样可以灵活定义查询语句，满足各类需求和性能优化的需要，这些在互联网系统中十分重要.
+Mybatis也有缺陷。首先，要编写SQL和映射规则，其工作量稍微大于HIbernate。其次，支持的工具有限，不能像HIbernate那样有许多的插件可以帮助生成映射代码和关联关系，而即使使用生成工具，往往也需要开发者进一步简化，Mybatis通过手工编码，工作量相对大些。
+所以对于性能要求不太苛刻的系统，比如管理系统、ERP等推荐HIbernate；而对于性能要求高、响应快、灵活的系统则推荐使用Mybatis。
+1.3 Spring MVC简介 SPring MVC结构层次清晰，类比较简单，并且与SPring的核心IOC和AOP无缝对接。
+MVC模式把应用程序分成不同的方面，同时提供这些元素的松耦合。
+Model，封装了应用程序的数据和由它们组成的POJO
+View，负责把模型数据渲染到视图上，将数据以一定的形式展现给用户。
+Controller，负责处理用户请求，并建立适当的模型把它传递给试图渲染。
+在SpringMVC中可以定义逻辑视图，通过其提供的试图解析器能够很方便地找到对应的视图进行渲染，或者使用其消息转换的功能，比如在Controller的方法内加入注解@ResponseBody后，SPring MVC就可以通过其消息转换系统，将数据转换为JSON，提供给前端Ajax请求使用。
+SpriingMVC包括控制器、视图解析器、视图等重要内容。
+1.4 最流行的NoSQL-Redis Redis是当前互联网最为流行的NoSQL。NoSQL在互联网系统中的作用很大，因为它可以在很大程度上提高互联网系统的性能。它具备一定持久层的功能，也可以作为一种缓存工具。对于NOSQL数据库而言，作为持久层，它存储的是半结构化的，这意味着计算机在读入内存中有更少的规则，读入速度更快。对于那些结构化、多范式规则的数据库系统而言，它更具性能优势。作为缓存，它可以支持大数据存入内存中，只要命中率高，就能快速响应，因为在内存中的数据读写比数据库读写磁盘的速度快几十上百倍。
+Redis具有以下特点：
+1、响应快速：Redis响应非常快，每秒课执行大约110000个写入操作，或者81000个读操作，其速度远超数据库。如果存入一些常用的数据，就能有效提高系统的性能。
+2、支持6种数据结构：包括字符串、哈希结构、列表、集合、可排序集合和基数。比如对于字符串可以存入一些Java基础数据类型，哈希可以存储对象，列表可以存储List对象等。这使得在应用中很容易根据在自己的需要选择存储的数据类型，方便开发。既可以满足存储各种数据结构体的需要，又因为数据类型少，使得规则就少，需要的判断和裸机就少，这样读写速度就更快。
+3、操作都是原子的：所有Redis的操作都是原子的，从而确保当两个客户同时访问Redis服务器时，得到的是更新后的值。在需要高并发的场合可以考虑使用Redis的事务，处理一些需要锁的事务。
+4、MultiUtility工具：Redis可以在如缓存、消息传递队列中使用（支持“发布&#43;订阅”的消息模式），在应用程序如Web应用程序会话、网站页面点击数等任何短暂的数据中使用。"/>
+
+    <meta property="og:title" content="SSM入门和Redis" />
+<meta property="og:description" content="1.1 Spring框架 1.1.1 Spring IOC简介 IOC是一个容器，在Spring中，它会认为一切Java资源都是Java Bean,容器的目标就是管理这些Bean和它们之间的关系。
+各个Java Bean之间会存在一定的依赖关系，容器能够对其进行管理。SPringIOC管理对象和依赖关系，采用的不是认为主动创建，而是SPring IOC自己通过描述创建的。
+当需要某个实现类，可以通过配置实现依赖的注入 。这是一种被动的行为，控制权在IOC容器，它会根据描述找到使用者需要的资源。
+当需要使用某个实现类时，通过配置信息就可以完成了。不需要用new来创建对象，依赖关系也可以通过配置完成，从而即插即拔地管理它们之间的关系。
+总结：你不需要去找资源，只要向SPring IOC容器描述所需资源，SPring IOC自己会找到你需要的资源，这就是SPring IOC的理念。这样就把Bean之间的依赖关系解耦了，更容易写出结构清晰的程序。除此之外，SPring IOC还提供对Java Bean生命周期的管理，可以延迟加载，可以在其生命周期内定义一些行为等，更加方便有效地使用和管理Java资源，这就是SPring IOC的魅力。
+1.1.2 SPring AOP IOC的目标时为了管理Java Bean,而Bean是Java面向对象的基础设计。但是，有些情况面向对象没办法处理。举个例子，生产部门的订单、生产部门、财务部门三者符合OOP的设计理念。订单发出，生产部门审批通过准备付款，但是财务部门发现订单的价格超支了，需要取消当你孤单。显然超支限定已经不只是影响财务部门了，还会影响生产部门之前所做的审批，需要把它们作废。我们把预算超支这个条件称为切面，它影响了订单、生产部门、财务部门三个OOP对象。在现实中，这样的切面条件跨越了3个甚至更多的对象，并且影响了它们的协作。所以只用OOP并不完善，还需要面向切面的编程，通过它去管理在切面上的某些对象的协作。
+Spring AOP常用于数据库事务的编程，在默认的情况下，只要Spring接收到了异常信息，它会将数据库的事务回滚，从而保证数据的一致性。Spring提供了隔离级别和传播行为去控制复杂的事务。
+1.2 MyBatis简介 MyBatis优势在于灵活，他几乎可以代替JDBC，同时提供了接口编程。目前MyBatis的数据访问层DAO是不需要实现类的，只需要一个接口和XML，或是注解。MyBatis提供自动映射，动态SQL、级联、缓存、注解、代码和SQL分离等特性。同时也可以对SQL进行优化。一位内具有封装少、映射多样化、支持存储过程、可以进行SQL优化等特点。
+1.2.1 Hibernate简介 在MyBatis或者HIberNate中使用注解或者XML都是可以的。MyBatis中注解方式会受到一定的限制，所以MyBatis通常用XML方式实现映射关系。
+我们把POJO对象和数据表相互映射的框架称为对象关系映射ORM。MyBatis和HIbernate都是ORM框架，只是Hibernate完全面向POJO，而前者不是。Hibernate基本不需要编写SQL就可以通过映射关系来操作数据库，是一种全表映射，而MyBatis不同，需要提供SQL去运行。
+没有SQL是因为Hibernate会根据映射关系来生成对应的SQL。
+1.2.2 Mybatis 在移动互联网时代，Mybatis是互联网Java持久框架的首选，与HIbernate消除SQL不同，MyBatis不屏蔽SQL。不屏蔽SQL的优势在于，程序员可以自己制定SQL规则，无须HIbernate自动生成规则，这样能够更加精确地定义SQL，从而优化性能。它更符合移动互联网、大数据、高并发、高性能、高响应的要求。
+与HIbernate一样，MyBatis需要一个映射文件把POJO和数据库的表对应起来。
+resultMap元素用于定义映射规则，Mybatis在满足一定规则下，完成自动映射。
+mapper元素中的namespace属性，要和一个接口的全限定类名保持一致。里面的SQL的id也要和接口定义的方法保持完全一致。
+定义了MyBatis的映射文件，就不再需要定义一个实现类。
+Mybatis需要提供接口和SQL，意味着它的工作量会比HIbernate大，但是由于自定义SQL、映射关系，所以其灵活性、可优化性就超过了HIbernate。
+1.2.3 HIbernate和MyBatis的区别 两者的增删查改对于业务逻辑层来说大同小异，对于映射层而言HIbernate的配置不需要接口和SQL，相反MyBatis是需要的。对于HIbernate而言，不需要编写大量的SQL就可以完全映射，同时提供了日志、缓存、级联等特性（级联比Mybatis强大）等特性，此外还提供了HQL对POJO操作，使用十分方便，但也有致命的缺陷。
+由于无须SQL，当多表关联超过3个的时候，通过HIbernate的级联会造成太多的性能丢失，又或者我现在访问财务的表，然后它会关联财产信息表，财产又分为机械、原料等，显然机械和原料的字段不一样，这样关联的字段只能根据特定的条件变化而变化，而HIbernate无法支持这样的变化。遇到存储过程HIbernate只能作罢。
+Mybatis可以自由书写SQL、支持动态SQL、处理列表、动态生成表名、支持存储过程。这样可以灵活定义查询语句，满足各类需求和性能优化的需要，这些在互联网系统中十分重要.
+Mybatis也有缺陷。首先，要编写SQL和映射规则，其工作量稍微大于HIbernate。其次，支持的工具有限，不能像HIbernate那样有许多的插件可以帮助生成映射代码和关联关系，而即使使用生成工具，往往也需要开发者进一步简化，Mybatis通过手工编码，工作量相对大些。
+所以对于性能要求不太苛刻的系统，比如管理系统、ERP等推荐HIbernate；而对于性能要求高、响应快、灵活的系统则推荐使用Mybatis。
+1.3 Spring MVC简介 SPring MVC结构层次清晰，类比较简单，并且与SPring的核心IOC和AOP无缝对接。
+MVC模式把应用程序分成不同的方面，同时提供这些元素的松耦合。
+Model，封装了应用程序的数据和由它们组成的POJO
+View，负责把模型数据渲染到视图上，将数据以一定的形式展现给用户。
+Controller，负责处理用户请求，并建立适当的模型把它传递给试图渲染。
+在SpringMVC中可以定义逻辑视图，通过其提供的试图解析器能够很方便地找到对应的视图进行渲染，或者使用其消息转换的功能，比如在Controller的方法内加入注解@ResponseBody后，SPring MVC就可以通过其消息转换系统，将数据转换为JSON，提供给前端Ajax请求使用。
+SpriingMVC包括控制器、视图解析器、视图等重要内容。
+1.4 最流行的NoSQL-Redis Redis是当前互联网最为流行的NoSQL。NoSQL在互联网系统中的作用很大，因为它可以在很大程度上提高互联网系统的性能。它具备一定持久层的功能，也可以作为一种缓存工具。对于NOSQL数据库而言，作为持久层，它存储的是半结构化的，这意味着计算机在读入内存中有更少的规则，读入速度更快。对于那些结构化、多范式规则的数据库系统而言，它更具性能优势。作为缓存，它可以支持大数据存入内存中，只要命中率高，就能快速响应，因为在内存中的数据读写比数据库读写磁盘的速度快几十上百倍。
+Redis具有以下特点：
+1、响应快速：Redis响应非常快，每秒课执行大约110000个写入操作，或者81000个读操作，其速度远超数据库。如果存入一些常用的数据，就能有效提高系统的性能。
+2、支持6种数据结构：包括字符串、哈希结构、列表、集合、可排序集合和基数。比如对于字符串可以存入一些Java基础数据类型，哈希可以存储对象，列表可以存储List对象等。这使得在应用中很容易根据在自己的需要选择存储的数据类型，方便开发。既可以满足存储各种数据结构体的需要，又因为数据类型少，使得规则就少，需要的判断和裸机就少，这样读写速度就更快。
+3、操作都是原子的：所有Redis的操作都是原子的，从而确保当两个客户同时访问Redis服务器时，得到的是更新后的值。在需要高并发的场合可以考虑使用Redis的事务，处理一些需要锁的事务。
+4、MultiUtility工具：Redis可以在如缓存、消息传递队列中使用（支持“发布&#43;订阅”的消息模式），在应用程序如Web应用程序会话、网站页面点击数等任何短暂的数据中使用。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zereals7.github.io/post/ssm/" />
+<meta property="article:published_time" content="2021-04-14T21:56:15+08:00" />
+<meta property="article:modified_time" content="2021-04-14T21:56:15+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://zereals7.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Zereal" /></a>
+      <h1>Zereal</h1>
+      <p>Java coder</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ZerealS7" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">SSM入门和Redis</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Apr 14, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          1 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      <h1 id="11-spring框架">1.1 Spring框架</h1>
+<h2 id="111-spring-ioc简介">1.1.1 Spring IOC简介</h2>
+<p>IOC是一个容器，在Spring中，它会认为一切Java资源都是Java Bean,容器的目标就是管理这些Bean和它们之间的关系。</p>
+<p>各个Java Bean之间会存在一定的依赖关系，容器能够对其进行管理。SPringIOC管理对象和依赖关系，采用的不是认为主动创建，而是SPring IOC自己通过描述创建的。</p>
+<p>当需要某个实现类，可以通过配置实现依赖的注入 。这是一种被动的行为，控制权在IOC容器，它会根据描述找到使用者需要的资源。</p>
+<p>当需要使用某个实现类时，通过配置信息就可以完成了。不需要用new来创建对象，依赖关系也可以通过配置完成，从而即插即拔地管理它们之间的关系。</p>
+<p>总结：你不需要去找资源，只要向SPring IOC容器描述所需资源，SPring IOC自己会找到你需要的资源，这就是SPring IOC的理念。这样就把Bean之间的依赖关系解耦了，更容易写出结构清晰的程序。除此之外，SPring IOC还提供对Java Bean生命周期的管理，可以延迟加载，可以在其生命周期内定义一些行为等，更加方便有效地使用和管理Java资源，这就是SPring IOC的魅力。</p>
+<h2 id="112-spring-aop">1.1.2 SPring AOP</h2>
+<p>IOC的目标时为了管理Java Bean,而Bean是Java面向对象的基础设计。但是，有些情况面向对象没办法处理。举个例子，生产部门的订单、生产部门、财务部门三者符合OOP的设计理念。订单发出，生产部门审批通过准备付款，但是财务部门发现订单的价格超支了，需要取消当你孤单。显然超支限定已经不只是影响财务部门了，还会影响生产部门之前所做的审批，需要把它们作废。我们把预算超支这个条件称为切面，它影响了订单、生产部门、财务部门三个OOP对象。在现实中，这样的切面条件跨越了3个甚至更多的对象，并且影响了它们的协作。所以只用OOP并不完善，还需要面向切面的编程，通过它去管理在切面上的某些对象的协作。</p>
+<p>Spring AOP常用于数据库事务的编程，在默认的情况下，只要Spring接收到了异常信息，它会将数据库的事务回滚，从而保证数据的一致性。Spring提供了隔离级别和传播行为去控制复杂的事务。</p>
+<h1 id="12-mybatis简介">1.2 MyBatis简介</h1>
+<p>MyBatis优势在于灵活，他几乎可以代替JDBC，同时提供了接口编程。目前MyBatis的数据访问层DAO是不需要实现类的，只需要一个接口和XML，或是注解。MyBatis提供自动映射，动态SQL、级联、缓存、注解、代码和SQL分离等特性。同时也可以对SQL进行优化。一位内具有封装少、映射多样化、支持存储过程、可以进行SQL优化等特点。</p>
+<h2 id="121-hibernate简介">1.2.1 Hibernate简介</h2>
+<p>在MyBatis或者HIberNate中使用注解或者XML都是可以的。MyBatis中注解方式会受到一定的限制，所以MyBatis通常用XML方式实现映射关系。</p>
+<p>我们把POJO对象和数据表相互映射的框架称为对象关系映射ORM。MyBatis和HIbernate都是ORM框架，只是Hibernate完全面向POJO，而前者不是。Hibernate基本不需要编写SQL就可以通过映射关系来操作数据库，是一种全表映射，而MyBatis不同，需要提供SQL去运行。</p>
+<p>没有SQL是因为Hibernate会根据映射关系来生成对应的SQL。</p>
+<h2 id="122-mybatis">1.2.2 Mybatis</h2>
+<p>在移动互联网时代，Mybatis是互联网Java持久框架的首选，与HIbernate消除SQL不同，MyBatis不屏蔽SQL。不屏蔽SQL的优势在于，程序员可以自己制定SQL规则，无须HIbernate自动生成规则，这样能够更加精确地定义SQL，从而优化性能。它更符合移动互联网、大数据、高并发、高性能、高响应的要求。</p>
+<p>与HIbernate一样，MyBatis需要一个映射文件把POJO和数据库的表对应起来。</p>
+<p>resultMap元素用于定义映射规则，Mybatis在满足一定规则下，完成自动映射。</p>
+<p>mapper元素中的namespace属性，要和一个接口的全限定类名保持一致。里面的SQL的id也要和接口定义的方法保持完全一致。</p>
+<p>定义了MyBatis的映射文件，就不再需要定义一个实现类。</p>
+<p>Mybatis需要提供接口和SQL，意味着它的工作量会比HIbernate大，但是由于自定义SQL、映射关系，所以其灵活性、可优化性就超过了HIbernate。</p>
+<h2 id="123-hibernate和mybatis的区别">1.2.3 HIbernate和MyBatis的区别</h2>
+<p>两者的增删查改对于业务逻辑层来说大同小异，对于映射层而言HIbernate的配置不需要接口和SQL，相反MyBatis是需要的。对于HIbernate而言，不需要编写大量的SQL就可以完全映射，同时提供了日志、缓存、级联等特性（级联比Mybatis强大）等特性，此外还提供了HQL对POJO操作，使用十分方便，但也有致命的缺陷。</p>
+<p>由于无须SQL，当多表关联超过3个的时候，通过HIbernate的级联会造成太多的性能丢失，又或者我现在访问财务的表，然后它会关联财产信息表，财产又分为机械、原料等，显然机械和原料的字段不一样，这样关联的字段只能根据特定的条件变化而变化，而HIbernate无法支持这样的变化。遇到存储过程HIbernate只能作罢。</p>
+<p>Mybatis可以自由书写SQL、支持动态SQL、处理列表、动态生成表名、支持存储过程。这样可以灵活定义查询语句，满足各类需求和性能优化的需要，这些在互联网系统中十分重要.</p>
+<p>Mybatis也有缺陷。首先，要编写SQL和映射规则，其工作量稍微大于HIbernate。其次，支持的工具有限，不能像HIbernate那样有许多的插件可以帮助生成映射代码和关联关系，而即使使用生成工具，往往也需要开发者进一步简化，Mybatis通过手工编码，工作量相对大些。</p>
+<p>所以对于性能要求不太苛刻的系统，比如管理系统、ERP等推荐HIbernate；而对于性能要求高、响应快、灵活的系统则推荐使用Mybatis。</p>
+<h1 id="13-spring-mvc简介">1.3 Spring MVC简介</h1>
+<p>SPring MVC结构层次清晰，类比较简单，并且与SPring的核心IOC和AOP无缝对接。</p>
+<p>MVC模式把应用程序分成不同的方面，同时提供这些元素的松耦合。</p>
+<p>Model，封装了应用程序的数据和由它们组成的POJO</p>
+<p>View，负责把模型数据渲染到视图上，将数据以一定的形式展现给用户。</p>
+<p>Controller，负责处理用户请求，并建立适当的模型把它传递给试图渲染。</p>
+<p>在SpringMVC中可以定义逻辑视图，通过其提供的试图解析器能够很方便地找到对应的视图进行渲染，或者使用其消息转换的功能，比如在Controller的方法内加入注解@ResponseBody后，SPring MVC就可以通过其消息转换系统，将数据转换为JSON，提供给前端Ajax请求使用。</p>
+<p>SpriingMVC包括控制器、视图解析器、视图等重要内容。</p>
+<h1 id="14-最流行的nosql-redis">1.4 最流行的NoSQL-Redis</h1>
+<p>Redis是当前互联网最为流行的NoSQL。NoSQL在互联网系统中的作用很大，因为它可以在很大程度上提高互联网系统的性能。它具备一定持久层的功能，也可以作为一种缓存工具。对于NOSQL数据库而言，作为持久层，它存储的是半结构化的，这意味着计算机在读入内存中有更少的规则，读入速度更快。对于那些结构化、多范式规则的数据库系统而言，它更具性能优势。作为缓存，它可以支持大数据存入内存中，只要命中率高，就能快速响应，因为在内存中的数据读写比数据库读写磁盘的速度快几十上百倍。</p>
+<p>Redis具有以下特点：</p>
+<p>1、响应快速：Redis响应非常快，每秒课执行大约110000个写入操作，或者81000个读操作，其速度远超数据库。如果存入一些常用的数据，就能有效提高系统的性能。</p>
+<p>2、支持6种数据结构：包括字符串、哈希结构、列表、集合、可排序集合和基数。比如对于字符串可以存入一些Java基础数据类型，哈希可以存储对象，列表可以存储List对象等。这使得在应用中很容易根据在自己的需要选择存储的数据类型，方便开发。既可以满足存储各种数据结构体的需要，又因为数据类型少，使得规则就少，需要的判断和裸机就少，这样读写速度就更快。</p>
+<p>3、操作都是原子的：所有Redis的操作都是原子的，从而确保当两个客户同时访问Redis服务器时，得到的是更新后的值。在需要高并发的场合可以考虑使用Redis的事务，处理一些需要锁的事务。</p>
+<p>4、MultiUtility工具：Redis可以在如缓存、消息传递队列中使用（支持“发布+订阅”的消息模式），在应用程序如Web应用程序会话、网站页面点击数等任何短暂的数据中使用。</p>
+<p>总结：使用NOSQL从数据库中读区数据进行缓存，就可以从内存中读取数据了，而不像数据库一样读磁盘。现实是读操作远比写操作要多得多，所以缓存常用的数据，提高其命中率有助于整体性能的提高，并且能减缓数据库的压力，对互联网系统架构是十分有利的。另一方面，他也能满足互联网高并发需要高速处理数据的场合，比如抢红包、商品秒杀等场景，这些场合需要高速处理，并保证并发数据安全和一致性。</p>
+<h1 id="15-ssmredis结构框图及概述">1.5 SSM+Redis结构框图及概述</h1>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/20210415000911.jpg" alt="2021-04-1507 (Copy)"></p>
+<p>功能介绍</p>
+<ul>
+<li>SPringIOC承担了一个资源管理、整合、即插即拔的功能。</li>
+<li>SPringAOP提供切面管理，特别是数据库事务管理的功能。</li>
+<li>SPringMVC用于把模型、试图、控制器分层，组合成一个有机灵活的系统。</li>
+<li>MyBatis提供了一个数据库访问的持久层，通过Mybatis-SPring项目，它便能和SPring无缝对接。</li>
+<li>Redis作为缓存工具，它提供了高速度处理数据和缓存数据的功能，使得系统大部分只需要访问缓存，而无须从数据库磁盘中重复读写；在一些需要高速运算的场合中，也可以先用它来完成运算，再把数据批量存入数据库，这样便能极大地提升互联网系统的性能和响应能力。</li>
+</ul>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+    <div class="post-comment">
+      
+      
+
+
+<span id="/post/ssm/" class="leancloud_visitors" data-flag-title="SSM入门和Redis">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+  new Valine({
+    el: '#vcomments' ,
+    appId: 'cScQmclMsD4OOWCclCP1pNsz-gzGzoHsz',
+    appKey: 'dtSaHLmdH3J4ICVVInYg9YFM',
+    notify:  false ,
+  verify:  false ,
+  avatar:'mm',
+    placeholder: '说点什么吧...',
+    visitor:  true 
+  });
+</script>
+
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
