@@ -19,15 +19,37 @@
 object=(ReflectServiceImpl)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl&quot;).newInstance();
 这是一个构建方法，没有任何参数的类的反射生成，所以还剩下一个问题，即如果一个类的所有构建方法都至少存在一个参数，如何用反射构建它。其实，只要少排位改变就可以。
 使用如下代码发生你和生成对象：
-object=(ReflectServiceImpl2)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl2&quot;).getConstructor(String.class).newInstance(&quot;张三&quot;)；
-先通过forName加载到类的加载器。然后通过getConstructor方法，它的参数可以是多个，这里定义为String.class，意为有且只有一个参数类型为String的方法。通过这个方法可以对重名方法进行排除，此时再用newInstance方法生成对象，只是newInstance方法也多了一个参数“张三&quot;而已。实际就等于object=new ReflectServiceImpl2(&ldquo;张三&rdquo;)，只是这里用反射机制来生成这个对象而已。
+`object=(ReflectServiceImpl2)Class.forName(&#34;com.learn.ssm.chapter2.reflect.ReflectServiceImpl2&#34;).getConstructor(String.class).newInstance(&#34;张三&#34;)；` 先通过forName加载到类的加载器。然后通过getConstructor方法，它的参数可以是多个，这里定义为String.class，意为有且只有一个参数类型为String的方法。通过这个方法可以对重名方法进行排除，此时再用newInstance方法生成对象，只是newInstance方法也多了一个参数“张三&quot;而已。实际就等于object=new ReflectServiceImpl2(&ldquo;张三&rdquo;)，只是这里用反射机制来生成这个对象而已。
 反射的优点是只要配置就可以生成对象，可以接触程序的耦合度，比较灵活。反射的缺点是运行比较慢。但是大部分情况下为了灵活度，降低程序的耦合度，我们还是会使用反射的，比如Spring IOC容器。
 2.1.2 反射方法 在使用反射方法前要获取方法对象，得到了方法才能去反射。
 当有具体的对象target，而不知道具体是哪个类时，也可以使用getClass方法找到全限定类名
-target.getClass().getMethod(&quot;sayHello&quot;,String.class);代替它，其中第一个参数是方法名称，第二个参数是参数类型，是一个列表，多个参数可以继续编写多个类型，这样便能获得反射的方法对象。
-反射方法是运用 returnObj=method.invoke(target,&quot;张三&quot;)；代码完成的。
+target.getClass().getMethod(&#34;sayHello&#34;,String.class); 代替它，其中第一个参数是方法名称，第二个参数是参数类型，是一个列表，多个参数可以继续编写多个类型，这样便能获得反射的方法对象。
+反射方法是运用
+returnObj=method.invoke(target,&#34;张三&#34;)； 代码完成的。
 第一个参数为target，就是确定用哪个对象调用方法，而”张三“是参数，这行就等于target.sayhello(&ldquo;张三&rdquo;)；。
-如果存在多个参数，可以写成Method.invoke(target，obj1,obj2,obj3&hellip;..),这些要根据对象的具体方法来确定。"/>
+如果存在多个参数，可以写成Method.invoke(target，obj1,obj2,obj3&hellip;..),这些要根据对象的具体方法来确定。
+对象在反射机制生成后，反射了方法，我们完全可以通过配置完成对象和方法的反射，大大增强了Java的可配置性和可扩展性，其中Spring IOC就是一个典型的样例。
+2.2 动态代理模式和责任链模式 动态代理的意义在于生成一个代理对象（占位），来代理真实对象，从而控制真实对象的访问。
+代理模式举例：假设你的公司是一家软件公司，你是一位软件工程师。客户带着需求找公司不不会直接和你谈，而是找商务谈，此时客户会认为商务就代表公司。
+显然客户是通过商务区访问软件工程师的，那么商务(代理对象)的意义是什么呢？商务可以进行谈判，比如项目启动前的商务谈判，软件的价格、交付、进度的事件节点等，或者项目完成后的商务追讨应收账款等。商务也有可能在开发软件之前谈判失败，此时商务就会根据公司规则去结束和客户的合作关系，这些都不用软件工程师来处理。因此，代理的作用就是，在真实对象访问之前或之后加入对应的逻辑，或者根据其他规则控制是否使用真实对象，显然这个例子里商务控制了客户对软件工程师的访问。
+商务和软件工程师是代理和被代理的关系，客户是经过商务去访问软件工程师的。此时客户就是程序中的调用者，商务就是代理对象，软件工程师就是真实对象。我们需要在调用者调用对象之前产生一个代理对象，而这个代理对象需要和真实对象建立代理关系，所以代理必须分为两个步骤：
+ 代理对象和真实对象建立代理关系 实现代理对象的代理逻辑方法  在Java中有多种动态代理技术，比如JDK、CGLIB、Javassist、ASM，其中最常用的动态代理技术有两种：一种是JDK动态代理，这是JDK自带的功能；另一种是CGLIB,这是第三方提供的一个技术。目前，SPring 常用JDK和CGLIB，而MyBatis还使用了Javassist，无论使用哪种代理其技术，理念相似。
+在JDK动态代理中，我们必须使用接口，而CGLIB不需要，所以使用CGLIB会更简单一些。
+AOP的实现方式：动态代理。与静态代理对比，动态代理是在runtime动态生成Java代理类，由代理类完成对具体方法的封装，实现AOP的功能。
+2.2.1 JDK动态代理 JDK动态代理是java.lang.reflect.*包提供的方式，它必须借助一个接口才能产生代理对象，所以先定义接口。
+然后提供实现类来实现接口。有了接口和实现类，此时可以开始动态代理了。按照我们之前的分析，先要建立起代理对象和真实服务对象的关系，然后实现代理逻辑，所以一共 分为两个步骤。
+在JDK动态代理中，要实现代理逻辑类必须去实现java.lang.reflect.InvocationHandler接口，它里面定义了一个invoke方法,并提供接口数组用于下挂代理对象。
+***第一步，建立代理对象和真实对象的关系。***这里是使用了bind方法去完成的，方法里面首先用类的属性target保存了真实对象，然后 通过如下代码建立并生成代理对象。
+其中newProxyInstance方法包含3个参数
+第一个是类加载器，我们采用了target本身的类加载器。
+第二个是把生成的动态代理对象下挂在哪些接口下，这个写法就是放在target实现的接口下。
+第三个是定义实现方法逻辑的代理类，this表示当前对象，它必须实现InvocationHandler接口的invoke方法，它就是代理逻辑方法的现实方法。
+​
+***第二步，实现代理逻辑方法。***invoke方法可以实现代理逻辑，invoke方法的三个参数如下：
+ Proxy,代理对象，就是bind方法生成的对象。 method，当前调度的方法。 args，调度方法的参数。  当我们使用了代理对象调度方法后，它就会进入到invoke方法里面。
+Object obj =method.invoke(target,args); 这行代码相当于调度真实对象的方法，只是通过反射实现而已。
+类比之前的例子，proxy相当于商务对象，target相当于软件工程师对象，bind方法是建立商务和软件工程师代理关系的方法。而invoke就是商务逻辑，它将控制软件工程师的访问。
+测试JDK动态代理"/>
 
     <meta property="og:title" content="SSM第二章-Java设计模式" />
 <meta property="og:description" content="2.1 Java反射技术 Java反射技术应用广泛，它能够配置：类的全限定名、方法和参数，完成对象的初始化，甚至是反射某些方法。这样就可以大大增强Java的可配置性，Spring IOC的基本原理他也是如此，当然Spring IOC的代码要复杂得多。
@@ -36,15 +58,37 @@ target.getClass().getMethod(&quot;sayHello&quot;,String.class);代替它，其�
 object=(ReflectServiceImpl)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl&quot;).newInstance();
 这是一个构建方法，没有任何参数的类的反射生成，所以还剩下一个问题，即如果一个类的所有构建方法都至少存在一个参数，如何用反射构建它。其实，只要少排位改变就可以。
 使用如下代码发生你和生成对象：
-object=(ReflectServiceImpl2)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl2&quot;).getConstructor(String.class).newInstance(&quot;张三&quot;)；
-先通过forName加载到类的加载器。然后通过getConstructor方法，它的参数可以是多个，这里定义为String.class，意为有且只有一个参数类型为String的方法。通过这个方法可以对重名方法进行排除，此时再用newInstance方法生成对象，只是newInstance方法也多了一个参数“张三&quot;而已。实际就等于object=new ReflectServiceImpl2(&ldquo;张三&rdquo;)，只是这里用反射机制来生成这个对象而已。
+`object=(ReflectServiceImpl2)Class.forName(&#34;com.learn.ssm.chapter2.reflect.ReflectServiceImpl2&#34;).getConstructor(String.class).newInstance(&#34;张三&#34;)；` 先通过forName加载到类的加载器。然后通过getConstructor方法，它的参数可以是多个，这里定义为String.class，意为有且只有一个参数类型为String的方法。通过这个方法可以对重名方法进行排除，此时再用newInstance方法生成对象，只是newInstance方法也多了一个参数“张三&quot;而已。实际就等于object=new ReflectServiceImpl2(&ldquo;张三&rdquo;)，只是这里用反射机制来生成这个对象而已。
 反射的优点是只要配置就可以生成对象，可以接触程序的耦合度，比较灵活。反射的缺点是运行比较慢。但是大部分情况下为了灵活度，降低程序的耦合度，我们还是会使用反射的，比如Spring IOC容器。
 2.1.2 反射方法 在使用反射方法前要获取方法对象，得到了方法才能去反射。
 当有具体的对象target，而不知道具体是哪个类时，也可以使用getClass方法找到全限定类名
-target.getClass().getMethod(&quot;sayHello&quot;,String.class);代替它，其中第一个参数是方法名称，第二个参数是参数类型，是一个列表，多个参数可以继续编写多个类型，这样便能获得反射的方法对象。
-反射方法是运用 returnObj=method.invoke(target,&quot;张三&quot;)；代码完成的。
+target.getClass().getMethod(&#34;sayHello&#34;,String.class); 代替它，其中第一个参数是方法名称，第二个参数是参数类型，是一个列表，多个参数可以继续编写多个类型，这样便能获得反射的方法对象。
+反射方法是运用
+returnObj=method.invoke(target,&#34;张三&#34;)； 代码完成的。
 第一个参数为target，就是确定用哪个对象调用方法，而”张三“是参数，这行就等于target.sayhello(&ldquo;张三&rdquo;)；。
-如果存在多个参数，可以写成Method.invoke(target，obj1,obj2,obj3&hellip;..),这些要根据对象的具体方法来确定。" />
+如果存在多个参数，可以写成Method.invoke(target，obj1,obj2,obj3&hellip;..),这些要根据对象的具体方法来确定。
+对象在反射机制生成后，反射了方法，我们完全可以通过配置完成对象和方法的反射，大大增强了Java的可配置性和可扩展性，其中Spring IOC就是一个典型的样例。
+2.2 动态代理模式和责任链模式 动态代理的意义在于生成一个代理对象（占位），来代理真实对象，从而控制真实对象的访问。
+代理模式举例：假设你的公司是一家软件公司，你是一位软件工程师。客户带着需求找公司不不会直接和你谈，而是找商务谈，此时客户会认为商务就代表公司。
+显然客户是通过商务区访问软件工程师的，那么商务(代理对象)的意义是什么呢？商务可以进行谈判，比如项目启动前的商务谈判，软件的价格、交付、进度的事件节点等，或者项目完成后的商务追讨应收账款等。商务也有可能在开发软件之前谈判失败，此时商务就会根据公司规则去结束和客户的合作关系，这些都不用软件工程师来处理。因此，代理的作用就是，在真实对象访问之前或之后加入对应的逻辑，或者根据其他规则控制是否使用真实对象，显然这个例子里商务控制了客户对软件工程师的访问。
+商务和软件工程师是代理和被代理的关系，客户是经过商务去访问软件工程师的。此时客户就是程序中的调用者，商务就是代理对象，软件工程师就是真实对象。我们需要在调用者调用对象之前产生一个代理对象，而这个代理对象需要和真实对象建立代理关系，所以代理必须分为两个步骤：
+ 代理对象和真实对象建立代理关系 实现代理对象的代理逻辑方法  在Java中有多种动态代理技术，比如JDK、CGLIB、Javassist、ASM，其中最常用的动态代理技术有两种：一种是JDK动态代理，这是JDK自带的功能；另一种是CGLIB,这是第三方提供的一个技术。目前，SPring 常用JDK和CGLIB，而MyBatis还使用了Javassist，无论使用哪种代理其技术，理念相似。
+在JDK动态代理中，我们必须使用接口，而CGLIB不需要，所以使用CGLIB会更简单一些。
+AOP的实现方式：动态代理。与静态代理对比，动态代理是在runtime动态生成Java代理类，由代理类完成对具体方法的封装，实现AOP的功能。
+2.2.1 JDK动态代理 JDK动态代理是java.lang.reflect.*包提供的方式，它必须借助一个接口才能产生代理对象，所以先定义接口。
+然后提供实现类来实现接口。有了接口和实现类，此时可以开始动态代理了。按照我们之前的分析，先要建立起代理对象和真实服务对象的关系，然后实现代理逻辑，所以一共 分为两个步骤。
+在JDK动态代理中，要实现代理逻辑类必须去实现java.lang.reflect.InvocationHandler接口，它里面定义了一个invoke方法,并提供接口数组用于下挂代理对象。
+***第一步，建立代理对象和真实对象的关系。***这里是使用了bind方法去完成的，方法里面首先用类的属性target保存了真实对象，然后 通过如下代码建立并生成代理对象。
+其中newProxyInstance方法包含3个参数
+第一个是类加载器，我们采用了target本身的类加载器。
+第二个是把生成的动态代理对象下挂在哪些接口下，这个写法就是放在target实现的接口下。
+第三个是定义实现方法逻辑的代理类，this表示当前对象，它必须实现InvocationHandler接口的invoke方法，它就是代理逻辑方法的现实方法。
+​
+***第二步，实现代理逻辑方法。***invoke方法可以实现代理逻辑，invoke方法的三个参数如下：
+ Proxy,代理对象，就是bind方法生成的对象。 method，当前调度的方法。 args，调度方法的参数。  当我们使用了代理对象调度方法后，它就会进入到invoke方法里面。
+Object obj =method.invoke(target,args); 这行代码相当于调度真实对象的方法，只是通过反射实现而已。
+类比之前的例子，proxy相当于商务对象，target相当于软件工程师对象，bind方法是建立商务和软件工程师代理关系的方法。而invoke就是商务逻辑，它将控制软件工程师的访问。
+测试JDK动态代理" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://zereals7.github.io/post/java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" />
 <meta property="article:published_time" content="2021-04-15T00:24:01+08:00" />
@@ -84,7 +128,7 @@ target.getClass().getMethod(&quot;sayHello&quot;,String.class);代替它，其�
   <title>clock</title>
   <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
 </svg>
-          1 min read
+          2 min read
         </div></div>
     </header>
     <div class="post-content">
@@ -97,17 +141,252 @@ target.getClass().getMethod(&quot;sayHello&quot;,String.class);代替它，其�
 <p><code>object=(ReflectServiceImpl)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl&quot;).newInstance();</code></p>
 <p>这是一个构建方法，没有任何参数的类的反射生成，所以还剩下一个问题，即如果一个类的所有构建方法都至少存在一个参数，如何用反射构建它。其实，只要少排位改变就可以。</p>
 <p>使用如下代码发生你和生成对象：</p>
-<p><code>object=(ReflectServiceImpl2)Class.forName(&quot;com.learn.ssm.chapter2.reflect.ReflectServiceImpl2&quot;).getConstructor(String.class).newInstance(&quot;张三&quot;)；</code></p>
-<p>先通过forName加载到类的加载器。然后通过getConstructor方法，它的参数可以是多个，这里定义为String.class，意为有且只有一个参数类型为String的方法。通过这个方法可以对重名方法进行排除，此时再用newInstance方法生成对象，只是newInstance方法也多了一个参数“张三&quot;而已。实际就等于object=new ReflectServiceImpl2(&ldquo;张三&rdquo;)，只是这里用反射机制来生成这个对象而已。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#960050;background-color:#1e0010">`</span>object<span style="color:#f92672">=(</span>ReflectServiceImpl2<span style="color:#f92672">)</span>Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;com.learn.ssm.chapter2.reflect.ReflectServiceImpl2&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">getConstructor</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">).</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;张三&#34;</span><span style="color:#f92672">)</span><span style="color:#960050;background-color:#1e0010">；`</span>
+</code></pre></div><p>先通过forName加载到类的加载器。然后通过getConstructor方法，它的参数可以是多个，这里定义为String.class，意为有且只有一个参数类型为String的方法。通过这个方法可以对重名方法进行排除，此时再用newInstance方法生成对象，只是newInstance方法也多了一个参数“张三&quot;而已。实际就等于object=new ReflectServiceImpl2(&ldquo;张三&rdquo;)，只是这里用反射机制来生成这个对象而已。</p>
 <p>反射的优点是只要配置就可以生成对象，可以接触程序的耦合度，比较灵活。反射的缺点是运行比较慢。但是大部分情况下为了灵活度，降低程序的耦合度，我们还是会使用反射的，比如Spring IOC容器。</p>
 <h2 id="212-反射方法">2.1.2 反射方法</h2>
 <p>在使用反射方法前要获取方法对象，得到了方法才能去反射。</p>
 <p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/20210415012044.jpg" alt="2021-04-0654_3 (Copy)"></p>
 <p>当有具体的对象target，而不知道具体是哪个类时，也可以使用getClass方法找到全限定类名</p>
-<p><code>target.getClass().getMethod(&quot;sayHello&quot;,String.class);</code>代替它，其中第一个参数是方法名称，第二个参数是参数类型，是一个列表，多个参数可以继续编写多个类型，这样便能获得反射的方法对象。</p>
-<p>反射方法是运用 <code>returnObj=method.invoke(target,&quot;张三&quot;)；</code>代码完成的。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">target<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getMethod</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;sayHello&#34;</span><span style="color:#f92672">,</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+</code></pre></div><p>代替它，其中第一个参数是方法名称，第二个参数是参数类型，是一个列表，多个参数可以继续编写多个类型，这样便能获得反射的方法对象。</p>
+<p>反射方法是运用</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">returnObj<span style="color:#f92672">=</span>method<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>target<span style="color:#f92672">,</span><span style="color:#e6db74">&#34;张三&#34;</span><span style="color:#f92672">)</span><span style="color:#960050;background-color:#1e0010">；</span>
+</code></pre></div><p>代码完成的。</p>
 <p>第一个参数为target，就是确定用哪个对象调用方法，而”张三“是参数，这行就等于target.sayhello(&ldquo;张三&rdquo;)；。</p>
 <p>如果存在多个参数，可以写成Method.invoke(target，obj1,obj2,obj3&hellip;..),这些要根据对象的具体方法来确定。</p>
+<p>对象在反射机制生成后，反射了方法，我们完全可以通过配置完成对象和方法的反射，大大增强了Java的可配置性和可扩展性，其中Spring IOC就是一个典型的样例。</p>
+<h1 id="22-动态代理模式和责任链模式">2.2 动态代理模式和责任链模式</h1>
+<p>动态代理的意义在于生成一个代理对象（占位），来代理真实对象，从而控制真实对象的访问。</p>
+<p>代理模式举例：假设你的公司是一家软件公司，你是一位软件工程师。客户带着需求找公司不不会直接和你谈，而是找商务谈，此时客户会认为商务就代表公司。</p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/20210415134808.jpg" alt="2021-04-1545 (Copy)"></p>
+<p>显然客户是通过商务区访问软件工程师的，那么商务(代理对象)的意义是什么呢？商务可以进行谈判，比如项目启动前的商务谈判，软件的价格、交付、进度的事件节点等，或者项目完成后的商务追讨应收账款等。商务也有可能在开发软件之前谈判失败，此时商务就会根据公司规则去结束和客户的合作关系，这些都不用软件工程师来处理。因此，代理的作用就是，在真实对象访问之前或之后加入对应的逻辑，或者根据其他规则控制是否使用真实对象，显然这个例子里商务控制了客户对软件工程师的访问。</p>
+<p>商务和软件工程师是代理和被代理的关系，客户是经过商务去访问软件工程师的。此时客户就是程序中的调用者，商务就是代理对象，软件工程师就是真实对象。我们需要在调用者调用对象之前产生一个代理对象，而这个代理对象需要和真实对象建立代理关系，所以代理必须分为两个步骤：</p>
+<ul>
+<li>代理对象和真实对象建立代理关系</li>
+<li>实现代理对象的代理逻辑方法</li>
+</ul>
+<p>在Java中有多种动态代理技术，比如JDK、CGLIB、Javassist、ASM，其中最常用的动态代理技术有两种：一种是JDK动态代理，这是JDK自带的功能；另一种是CGLIB,这是第三方提供的一个技术。目前，SPring 常用JDK和CGLIB，而MyBatis还使用了Javassist，无论使用哪种代理其技术，理念相似。</p>
+<p>在JDK动态代理中，我们必须使用接口，而CGLIB不需要，所以使用CGLIB会更简单一些。</p>
+<p>AOP的实现方式：<strong>动态代理</strong>。与静态代理对比，动态代理是在runtime动态生成Java代理类，由代理类完成对具体方法的封装，实现AOP的功能。</p>
+<h2 id="221-jdk动态代理">2.2.1 JDK动态代理</h2>
+<p>JDK动态代理是java.lang.reflect.*包提供的方式，它必须借助一个接口才能产生代理对象，所以先定义接口。</p>
+<p>然后提供实现类来实现接口。有了接口和实现类，此时可以开始动态代理了。按照我们之前的分析，先要建立起代理对象和真实服务对象的关系，然后实现代理逻辑，所以一共 分为两个步骤。</p>
+<p>在JDK动态代理中，要实现代理逻辑类必须去实现java.lang.reflect.InvocationHandler接口，它里面定义了一个invoke方法,并提供接口数组用于下挂代理对象。</p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/20210415152225.jpg" alt="2021-04-1520 (Copy)"></p>
+<p>***第一步，建立代理对象和真实对象的关系。***这里是使用了bind方法去完成的，方法里面首先用类的属性target保存了真实对象，然后 通过如下代码建立并生成代理对象。</p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/20210415141057.jpg" alt="2021-04-1510 (Copy)"></p>
+<p>其中newProxyInstance方法包含3个参数</p>
+<p>第一个是类加载器，我们采用了target本身的类加载器。</p>
+<p>第二个是把生成的动态代理对象下挂在哪些接口下，这个写法就是放在target实现的接口下。</p>
+<p>第三个是定义实现方法逻辑的代理类，this表示当前对象，它必须实现InvocationHandler接口的invoke方法，它就是代理逻辑方法的现实方法。</p>
+<p>​</p>
+<p>***第二步，实现代理逻辑方法。***invoke方法可以实现代理逻辑，invoke方法的三个参数如下：</p>
+<ul>
+<li>Proxy,代理对象，就是bind方法生成的对象。</li>
+<li>method，当前调度的方法。</li>
+<li>args，调度方法的参数。</li>
+</ul>
+<p>当我们使用了代理对象调度方法后，它就会进入到invoke方法里面。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Object obj <span style="color:#f92672">=</span>method<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>target<span style="color:#f92672">,</span>args<span style="color:#f92672">);</span>
+</code></pre></div><p>这行代码相当于调度真实对象的方法，只是通过反射实现而已。</p>
+<p>类比之前的例子，proxy相当于商务对象，target相当于软件工程师对象，bind方法是建立商务和软件工程师代理关系的方法。而invoke就是商务逻辑，它将控制软件工程师的访问。</p>
+<p>测试JDK动态代理</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testJdkProxy</span><span style="color:#f92672">(){</span>
+    JdkProxyExample jdk <span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> JdkProxyExample<span style="color:#f92672">();</span>
+    <span style="color:#75715e">//绑定关系，因为挂在接口HelloWorld下，所以声明代理对象HelloWorld proxy
+</span><span style="color:#75715e"></span>    HelloWord proxy<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">（</span>HelloWorld<span style="color:#960050;background-color:#1e0010">）</span>jdk<span style="color:#f92672">.</span><span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> HelloWorldImpl<span style="color:#f92672">());</span>
+    <span style="color:#75715e">//注意，此时HelloWorld对象已经是一个代理对象，它会进入代理的逻辑方法invoke里
+</span><span style="color:#75715e"></span>    proxy<span style="color:#f92672">.</span><span style="color:#a6e22e">sayHelloWorld</span><span style="color:#f92672">();</span><span style="color:#75715e">//会进入invoke方法调用，代理对象的调用方法都是通过invoke方法来进行实现的
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</code></pre></div><p>首先通过bind方法绑定了代理关系，然后在代理对象调度sayHelloWorld方法时进入了代理的逻辑。</p>
+<p><strong>JDK动态代理类绑定真实对象返回的代理对象，是一个真实对象要实现的接口</strong>。</p>
+<p>总之bind方法三个参数，真实对象的类的类加载器，真实对象target的类实现的接口，代理类对象this,返回的对象是代理对象proxy</p>
+<p>invoke方法三个参数，代理对象proxy，要调度的方法，和调度方法的参数。</p>
+<p>可以  proxy.sayHelloWorld()；这样也会进入invoke方法调用，只是视情况加方法参数。</p>
+<h2 id="222-cglib动态代理">2.2.2 CGLIB动态代理</h2>
+<p>JDK动态代理必须提供接口才能使用,在一些不能提供接口的环境中，只能采用其他第三方技术，比如CGLIB动态代理。它的优势在于不需要提供接口，只要一个非抽象类就能实现动态代理。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CglibProxyExample</span> <span style="color:#66d9ef">implements</span> MethodInterceptor<span style="color:#f92672">{</span>
+	<span style="color:#75715e">/**
+</span><span style="color:#75715e">	*生成CGLIB代理对象
+</span><span style="color:#75715e">	*@param cls—Class类
+</span><span style="color:#75715e">	*@return Class类的CGLIB代理对象
+</span><span style="color:#75715e">	*/</span>
+    <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">getProxy</span><span style="color:#f92672">(</span>Class cls<span style="color:#f92672">){</span>
+        <span style="color:#75715e">//CGLIB enhancer增强类对象
+</span><span style="color:#75715e"></span>        Enhancer enhancer <span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> Enhancer<span style="color:#f92672">();</span>
+        <span style="color:#75715e">//设置增强类型
+</span><span style="color:#75715e"></span>        enhancer<span style="color:#f92672">.</span><span style="color:#a6e22e">setSuperclass</span><span style="color:#f92672">(</span>cls<span style="color:#f92672">);</span>
+        <span style="color:#75715e">//定义代理逻辑对象为当前对象，要求当前对象实现MethodInterceptor方法
+</span><span style="color:#75715e"></span>        enhancer<span style="color:#f92672">.</span><span style="color:#a6e22e">setCallback</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">);</span><span style="color:#75715e">//相当于设置当前类为代理类
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//生成并返回代理对象
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> enhancer<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+    
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">intercept</span><span style="color:#f92672">(</span>Object proxy<span style="color:#f92672">,</span>Method method<span style="color:#f92672">,</span>Object<span style="color:#f92672">[]</span> args<span style="color:#f92672">,</span>MethodProxy methodProxy<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Throwable <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;调用真实对象前&#34;</span><span style="color:#f92672">)</span><span style="color:#960050;background-color:#1e0010">；</span>
+         Object result <span style="color:#f92672">=</span>methodProxy<span style="color:#f92672">.</span><span style="color:#a6e22e">invokeSuper</span><span style="color:#f92672">(</span>proxy<span style="color:#f92672">,</span>args<span style="color:#f92672">);</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;调用真实对象后&#34;</span><span style="color:#f92672">)</span><span style="color:#960050;background-color:#1e0010">；</span>
+         <span style="color:#66d9ef">return</span> result<span style="color:#960050;background-color:#1e0010">；</span>
+     <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这里调用了CGLIB的加强者Enhancer，通过设置超类的方法（setSuperclass),然后通过setCallback方法设置哪个类为它的代理类。其中，参数为this就意味着是当前对象，那就要求用this这个对象实现接口MethodInterceptor的方法——intercept，然后返回代理对象。</p>
+<p>那么 此时当前类的intercept方法就是其代理逻辑方法，其参数内容间代码注解，我们在反射真实对象方法前后进行了打印，CGLIB是通过如下代码完成的。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Object result <span style="color:#f92672">=</span>methodProxy<span style="color:#f92672">.</span><span style="color:#a6e22e">invokeSuper</span><span style="color:#f92672">(</span>proxy<span style="color:#f92672">,</span>args<span style="color:#f92672">);</span>
+</code></pre></div><p>测试一下CGLIB动态代理</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">tesCGLIBPxroxy</span><span style="color:#f92672">(){</span>
+	CglibProxyExample cpe <span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> CglibProxyExample<span style="color:#f92672">();</span>
+	ReflectServiceImpl obj <span style="color:#f92672">=(</span>ReflectServiceImpl<span style="color:#f92672">)</span>cpe<span style="color:#f92672">.</span><span style="color:#a6e22e">getProxy</span><span style="color:#f92672">(</span>ReflectServiceImpl<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+	obj<span style="color:#f92672">.</span><span style="color:#a6e22e">sayHello</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;张三&#34;</span><span style="color:#f92672">)</span><span style="color:#960050;background-color:#1e0010">；</span><span style="color:#75715e">//代理对象直接调用真实对象的方法，底层用到了intercepter方法
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</code></pre></div><p>CGLIB通过代理逻辑对象cpe中的getProxy方法获取真实代理对象。然后通过代理对象调用相关的方法。</p>
+<p>代理对象对方法的调用：Object result =methodProxy.invokeSuper(proxy,args);</p>
+<p>应该是获取代理父类的方法并执行。代理的父类为非抽象类，不一定要有接口。用到了继承的思想。</p>
+<p>其中实现接口MethodInterceptor的方法——intercept中。要设置4个参数：</p>
+<ul>
+<li>代理对象proxy</li>
+<li>要调用的方法method</li>
+<li>方法的参数 args</li>
+<li><strong>方法的代理 methodProxy</strong></li>
+</ul>
+<p>如果你仔细和<code>JDK Proxy</code>比较，会发现它们其实是类似的：</p>
+<ol>
+<li>首先<code>JDK Proxy</code>提供interface列表，而<code>cglib</code>提供superclass供代理类继承，本质上都是一样的，就是提供这个代理类的<strong>签名</strong>，也就是对外表现为什么类型。</li>
+<li>然后是一个方法拦截器，<code>JDK Proxy</code>里是<code>InvocationHandler</code>，而<code>cglib</code>里一般就是<code>MethodInterceptor</code>，所有被代理的方法的调用是通过它们的<code>invoke</code>和<code>intercept</code>方法进行转接的，AOP的逻辑也是在这一层实现。</li>
+</ol>
+<p>它们不同之处上面已经说了，就在于<code>cglib</code>生成的动态代理类是直接继承原始类的，所以我们这里也可以大概刻画出这个代理类长什么样子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Java" data-lang="Java"><span style="color:#66d9ef">public</span> ProxyClass <span style="color:#66d9ef">extends</span> Real <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Method mAdd<span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> MethodProxy mAddProxy<span style="color:#f92672">;</span>
+
+  <span style="color:#66d9ef">private</span> MethodInterceptor interceptor<span style="color:#f92672">;</span>
+
+  <span style="color:#66d9ef">static</span> <span style="color:#f92672">{</span>
+    Class clazz <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ifc&#34;</span><span style="color:#f92672">);</span>
+    mAdd <span style="color:#f92672">=</span> clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getMethod</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;add&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+    <span style="color:#75715e">// Some logic to generate mAddProxy.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>  <span style="color:#f92672">}</span>
+  
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> x<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> y<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>Integer<span style="color:#f92672">)</span>interceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> mAdd<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[]</span> <span style="color:#f92672">{</span>x<span style="color:#f92672">,</span> y<span style="color:#f92672">},</span> mAddProxy<span style="color:#f92672">);</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>因为直接继承了<code>Real</code>，那自然就包含了<code>Real</code>的所有public方法，都通过<code>interceptor.invoke</code>进行拦截代理。这其实和上面<code>JDK Proxy</code>的原理是类似的，连<code>invoke</code>和<code>intercept</code>方法的签名都差不多，第一个参数是this指针代理类本身，第二个参数是方法的反射，第三个参数是方法调用的参数列表。唯一不同的是，这里多出一个<code>MethodProxy</code>，它是做什么用的？</p>
+<h3 id="methodproxy"><strong><code>MethodProxy</code></strong></h3>
+<p>如果你仔细看这里<code>invoke</code>方法内部的写法，当用户想调用原始类（这里是<code>Real</code>）定义的方法时，它必须使用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Object re <span style="color:#f92672">=</span> proxy<span style="color:#f92672">.</span><span style="color:#a6e22e">invokeSuper</span><span style="color:#f92672">(</span>obj<span style="color:#f92672">,</span> args<span style="color:#f92672">);</span>
+</code></pre></div><p>这里就用到了那个<code>MethodProxy</code>，那我们为什么不直接写：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Object re <span style="color:#f92672">=</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>obj<span style="color:#f92672">,</span> args<span style="color:#f92672">);</span>
+</code></pre></div><p>答案当然是不可以，你不妨试一下，程序会进入一个无限递归调用。这里的原因恰恰就是因为代理类是<strong>继承</strong>了原始类的，<code>obj</code>指向的就是代理类对象的实例，所以如果你对它使用<code>method.invoke</code>，由于多态性，就会又去调用代理类的<code>add</code>方法，继而又进入<code>invoke</code>方法，进入一个无限递归：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">obj<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+  interceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    obj<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+      interceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#f92672">...</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>那我如何才能在<code>interceptor.invoke()</code>里去调用基类<code>Real</code>的<code>add</code>方法呢？当然通常做法是<code>super.add()</code>，然而这是在<code>MethodInterceptor</code>的方法里，而且这里的method调用必须通过反射完成，你并不能在语法层面上做到这一点。所以<code>cglib</code>封装了一个类叫<code>MethodProxy</code>帮助你，这也是为什么那个方法的名字叫<code>invokeSuper</code>，表明它调用的是原始基类的真正方法。它究竟是怎么办到的呢？你可以简单理解为，动态代理类里会生成这样一个方法：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">super_add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> x<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> y<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>x<span style="color:#f92672">,</span> y<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>当然你并不知道有这么一个方法，但<code>invokeSuper</code>会最终找到这个方法并调用，这都是在生成代理类时通过一系列反射的机制实现的，这里就不细展开了。</p>
+<p><strong>小结</strong></p>
+<p>以上我对比了<code>JDK Proxy</code>和<code>cglib</code>动态代理的使用方法和实现上的区别，它们本质上是类似的，都是提供两个最重要的东西：</p>
+<ol>
+<li>接口列表或者基类，定义了代理类（当然也包括原始类）的签名。</li>
+<li>一个方法拦截器，完成方法的拦截和代理，是所有调用链的桥梁。</li>
+</ol>
+<p>需要说明的一点是，以上我给出的代理类<code>ProxyClass</code>的源代码，仅是参考性的最精简版本，只是为了说明原理，而不是<code>JDK Proxy</code>和<code>cglib</code>真正生成的代理类的样子，真正的代理类的逻辑要复杂的多，但是原理上基本是一致的。另外之前也说到过，事实上它们也不会生成源码，而是直接产生类的字节码，例如<code>cglib</code>是封装了<code>ASM</code>来直接生成Class数据的。</p>
+<h2 id="223-拦截器">2.2.3 拦截器</h2>
+<p>由于动态代理一般比较难理解，程序设计者会设计一个拦截器接口供开发者使用，开发者只要知道拦截器接口的方法、含义和作用即可，无须知道动态代理是怎么实现的。</p>
+<p>用JDK动态代理来实现一个拦截器的逻辑，为此先定义拦截器接口Intercepter</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Interceptor</span><span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">before</span><span style="color:#f92672">(</span>Object proxy<span style="color:#f92672">,</span>Object target<span style="color:#f92672">,</span>Method method<span style="color:#f92672">,</span>Object<span style="color:#f92672">[]</span> args<span style="color:#f92672">);</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">around</span><span style="color:#f92672">(</span>Object proxy<span style="color:#f92672">,</span>Object target<span style="color:#f92672">,</span>Method method<span style="color:#f92672">,</span>Object<span style="color:#f92672">[]</span> args<span style="color:#f92672">);</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">after</span><span style="color:#f92672">(</span>Object proxy<span style="color:#f92672">,</span>Object target<span style="color:#f92672">,</span>Method method<span style="color:#f92672">,</span>Object<span style="color:#f92672">[]</span> args<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这里定义了三个方法。</p>
+<p>三个方法的参数为：proxy代理对象、target真实对象、method方法、args运行方法参数。</p>
+<p>before方法返回boolean值，它在真实对象前调用。当返回为true时，则反射真实对象的方法；当返回为false时，则调用around方法。</p>
+<p>在before方法返回为false的情况下，调用around方法。</p>
+<p>在反射真实对象方法或者around方法执行之后，调用after方法。</p>
+<h3 id="在jdk动态代理中使用拦截器">在JDK动态代理中使用拦截器</h3>
+<p>首先创建一个实现了Interceptor接口的拦截器类</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">InterceptorJdkProxy</span> <span style="color:#66d9ef">implements</span> InvocationHandler<span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">private</span> Object target<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String interceptorClass<span style="color:#f92672">=</span><span style="color:#66d9ef">null</span><span style="color:#f92672">;</span><span style="color:#75715e">//拦截器全限定名
+</span><span style="color:#75715e"></span>	
+	<span style="color:#66d9ef">public</span> <span style="color:#a6e22e">InterceptorJdkProxy</span><span style="color:#f92672">(</span>Object target<span style="color:#f92672">,</span>String interceptorClass<span style="color:#f92672">){</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">target</span><span style="color:#f92672">=</span>target<span style="color:#f92672">;</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">interceptorClass</span><span style="color:#f92672">=</span>interceptorClass<span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+	<span style="color:#75715e">//绑定真实对象和拦截器对象
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Object <span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span>Object target<span style="color:#f92672">,</span>String interceptorClass<span style="color:#f92672">){</span>
+	<span style="color:#75715e">//取得代理对象
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> Proxy<span style="color:#f92672">.</span><span style="color:#a6e22e">newProxyInstance</span><span style="color:#f92672">(</span>target<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getClassLoader</span><span style="color:#f92672">(),</span>
+		target<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getInterfaces</span><span style="color:#f92672">(),</span>
+		<span style="color:#66d9ef">new</span> InterceptorJdkProxy<span style="color:#f92672">(</span>target<span style="color:#f92672">,</span>interceptorClass<span style="color:#f92672">));</span>
+		
+	<span style="color:#f92672">}</span>
+	
+	<span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>Object proxy<span style="color:#f92672">,</span>Method method<span style="color:#f92672">,</span>Object<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Throwable<span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>interceptorClass<span style="color:#f92672">==</span><span style="color:#66d9ef">null</span><span style="color:#f92672">){</span>
+            <span style="color:#75715e">//没有设置拦截器则直接反射原有方法
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>target<span style="color:#f92672">,</span>args<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+        Object result <span style="color:#f92672">=</span><span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">//通过反射生成拦截器
+</span><span style="color:#75715e"></span>       	Interceptor interceptor<span style="color:#f92672">=(</span>Interceptor<span style="color:#f92672">)</span>Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span>interceptorClass<span style="color:#f92672">).</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">();</span>
+        <span style="color:#75715e">//调用前置方法
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span><span style="color:#960050;background-color:#1e0010">（</span>interceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">before</span><span style="color:#960050;background-color:#1e0010">（</span>proxy<span style="color:#f92672">,</span>target<span style="color:#f92672">,</span>method<span style="color:#f92672">,</span>args<span style="color:#960050;background-color:#1e0010">））</span><span style="color:#f92672">{</span>
+            <span style="color:#75715e">//反射原有对象方法
+</span><span style="color:#75715e"></span>            result<span style="color:#f92672">=</span>method<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>target<span style="color:#f92672">,</span>args<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span><span style="color:#66d9ef">else</span><span style="color:#f92672">{</span>
+            <span style="color:#75715e">//返回false执行around方法
+</span><span style="color:#75715e"></span>            interceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">around</span><span style="color:#f92672">(</span>proxy<span style="color:#f92672">,</span>target<span style="color:#f92672">,</span>method<span style="color:#f92672">,</span>args<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#75715e">//调用后置方法
+</span><span style="color:#75715e"></span>        interceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">after</span><span style="color:#f92672">(</span>proxy<span style="color:#f92672">,</span>target<span style="color:#f92672">,</span>method<span style="color:#f92672">,</span>args<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">return</span> result<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+	
+	
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这里有两个属性，一个是target，它是真实对象；另一个是字符串interceptorClass,它是一个拦截器的全限定名。</p>
+<p>解释一下这段代码的执行步骤。</p>
+<p>第一步，在bind方法中用JDK动态代理绑定了一个对象，然后返回代理对象。</p>
+<p>第二步，如果没有设置拦截器，则直接反射真实对象的方法，然后结束，否则进行第三步。</p>
+<p>第三步，通过反射生成拦截器，并准备使用它。</p>
+<p>第四步，调用拦截器的before方法，如果返回为true，反射原来的方法；否则运行拦截器的around方法。</p>
+<p>第五步，调用拦截器的after方法。</p>
+<p>第六步，返回结果。</p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/20210415235955.jpg" alt="2021-04-1558 (Copy)"></p>
+<p>开发者只要知道拦截器的作用就可以编写拦截器了，编写完后可以设置拦截器，这样就完成了任务，所以对于开发者而言相对简单了。</p>
+<p>设计者可能是精通Java的开发人员，他来完成动态代理的逻辑。</p>
+<p>设计者只会把拦截器接口暴露给开发者使用，让动态代理的逻辑在开发者的视野中消失。</p>
+<p>拦截器可以进一步简化动态代理的使用方法，是程序变得更简单。</p>
+<p>测试MyInterceptor拦截器</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">){</span>
+
+	HelloWorld proxy <span style="color:#f92672">=(</span>HelloWorld<span style="color:#f92672">)</span>InterceptorJdkProxy<span style="color:#f92672">.</span><span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span>newHelloWorldImpl<span style="color:#f92672">(),</span>
+                                                       <span style="color:#e6db74">&#34;com.learn.ssm.chapter2.interceptor.MyInterceptor&#34;</span><span style="color:#f92672">);</span>
+
+	proxy<span style="color:#f92672">.</span><span style="color:#a6e22e">sayHelloWorld</span><span style="color:#f92672">();</span>
+
+<span style="color:#f92672">}</span>
+
+</code></pre></div><p>运行这段代码，会得到以下结果。</p>
+<pre><code>反射方法前逻辑
+取代了被代理对象的方法
+反射方法后逻辑
+</code></pre><p>显然拦截器已经生效</p>
+<h2 id="224-责任链模式">2.2.4 责任链模式</h2>
 
     </div>
     <div class="post-footer">
