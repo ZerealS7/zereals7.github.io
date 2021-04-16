@@ -128,7 +128,7 @@ Object obj =method.invoke(target,args); 这行代码相当于调度真实对象�
   <title>clock</title>
   <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
 </svg>
-          2 min read
+          3 min read
         </div></div>
     </header>
     <div class="post-content">
@@ -387,6 +387,38 @@ Object obj =method.invoke(target,args); 这行代码相当于调度真实对象�
 反射方法后逻辑
 </code></pre><p>显然拦截器已经生效</p>
 <h2 id="224-责任链模式">2.2.4 责任链模式</h2>
+<p>设计者往往会用拦截器去代替动态代理，然后将拦截器的接口提供给开发者，从而简化开发者的开发难度，但是拦截器可能有多个。举个例子，一个程序员需要请假一周。如果把请假申请单看作一个对象，那么它需要经过项目经理、部门经理、人事等多个角色的审批，每个角色都有机会通过拦截这个申请单进行审批或者修改。这个就要考虑提供项目经理、部门经理和人事的处理逻辑，所以需要提供三个拦截器，而传递的则是请假申请单。</p>
+<p>当一个对象在一条链上被多个拦截器拦截处理时（拦截器也可以选择不处理它），我们把这样的设计模式称为责任链模式。它用于一个对象在多个角色中传递的场景。还是刚才的例子，申请单走到项目经理那，经理可能把申请事件一周改为5天，从而影响了后面的审批，后面的审批都要根据前面的结果进行。这个时候可以考虑使用层层代理来实现，就是当申请单走到项目经理处，使用第一个动态代理proxy1。当走到部门经理处，部门经理会得到一个在项目经理的代理proxy1基础上生成的proxy2 来处理部门经理的逻辑。当它走到人事处，会在proxy2的基础上生成proxy3.</p>
+<p>测试责任链模式下的多拦截器</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Java" data-lang="Java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">){</span>
+	HelloWorld proxy1<span style="color:#f92672">=(</span>HelloWorld<span style="color:#f92672">)</span>InterceptorJdkproxy<span style="color:#f92672">.</span><span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> HelloWorldImpl<span style="color:#f92672">(),</span><span style="color:#e6db74">&#34;com.learn.ssm.chapter2.interceptor.Interceptor1&#34;</span><span style="color:#f92672">)</span>
+		HelloWorld proxy2<span style="color:#f92672">=(</span>HelloWorld<span style="color:#f92672">)</span>InterceptorJdkproxy<span style="color:#f92672">.</span><span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span>proxy1<span style="color:#f92672">,</span><span style="color:#e6db74">&#34;com.learn.ssm.chapter2.interceptor.Interceptor2&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#f92672">;</span>
+	HelloWorld proxy3<span style="color:#f92672">=(</span>HelloWorld<span style="color:#f92672">)</span>InterceptorJdkproxy<span style="color:#f92672">.</span><span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span>proxy2<span style="color:#f92672">,</span><span style="color:#e6db74">&#34;com.learn.ssm.chapter2.interceptor.Interceptor3&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#f92672">;</span>
+<span style="color:#f92672">};</span>
+</code></pre></div><p>运行这段代码后得到这样的结果 ，观察其方法的执行顺序</p>
+<pre><code>【拦截器3】的before方法
+【拦截器2】的before方法
+【拦截器1】的before方法
+Hello World
+【拦截器1】的before方法
+【拦截器2】的before方法
+【拦截器3】的before方法
+</code></pre><p>before方法按照从最后一个拦截器到第一个拦截器的加载顺序运行，而after方法则按照从第一个拦截器到最后一个拦截器的加载顺序运行。</p>
+<p>从代码可见，责任链模式的优点在于我们可以在传递链上加入新的拦截器，增加拦截逻辑，其缺点是会增加代理和反射，而代理和反射的性能不高。</p>
+<h2 id="23-观察者模式">2.3 观察者模式</h2>
+<p>观察者模式又称为发布订阅模式，是对象的行为模式。观察者模式定义了一种一对多的依赖关系，让多个观察者对象同时监视着被观察者的状态，当被观察者的状态发生变化时，会通知所有观察者，并让其自动更新自己。</p>
+<p>在现实中，有些条件发生变化，其他行为也需要发生变化，我们可以用IF语句来应对。举个例子，一个商家有一些商品，它和电商合作，每当有新产品时，就会把这些产品推送到电商，现在之和淘宝、京东合作。如果多达数百家电商，那么if的逻辑太复杂。如果推送商品给淘宝发生异常，需要捕捉异常，避免影响之后的电商接口，导致其不能往下进行，这样代码耦合会增多。其次，这样会在if语句里堆砌太多的代码，不利于维护，而合作的电商又是电商团队在维护，这样两个团队之间又要维护同一段代码，显然会造成责任不清的问题。</p>
+<p>而管擦或者模式更易于扩展，责任也更加清晰。首先把每一个电商接口堪称一个管擦或者，每一个观察者都能观察到产品列表。当公司发布新产品时，就会发送到这个产品列表上，于是产品列表（被监听对象）就发生了变化，这时就可以触发各个电商接口发送新产品到对应的合作电商哪里。</p>
+<p>类似一个对象(电商接口)会去监听另一个对象，当被监听对象（产品列表）发送变化时，对象就会触发一定的行为，以适合变化的逻辑模式，我们称为观察者模式，电商接口被称为观察者或者监听者，而产品对象被称为被观察者或者被监听者。</p>
+<p>这样的好处在于，程序不再出现if语句，观察者会根据被观察对象的变化而做出对应的行为，无论是淘宝、京东或者其他的电商接口只要维护自己的逻辑，而无须耦合在一起，同时责任也是明确的，产品团队只要维护产品列表，电商团队可以通过增加观察者去监听产品的电商接口，不会带来if语句导致的责任不清的情况。</p>
+<h2 id="24-抽象工厂模式">2.4 抽象工厂模式</h2>
+<p>抽象工厂模式可以向客户端提供一个接口，使得客户端在不必指定产品的具体情况下，创建多个产品族中的产品对象。</p>
+<h2 id="25建造者模式">2.5建造者模式</h2>
+<p>建造者模式属于对象的创建模式。可以将一个产品的内部表现与产品的生成过程分割开来，从而使一个建造过程具有不同的内部表象的产品对象。在大部分的情况下都可以使用new关键字或者工厂模式来创建对象，但是有些对象比较复杂，比如一些旅游套票可与分为：普通成年人、退休老人、等等，它们有不同的规定和优惠。如果通过new或者工厂模式来创建对象会造成不便 ，因为所需参数太多，对象也复杂。</p>
+<p>显然构建套票所需数据异常复杂，导致套票对象的构建难以进行。为了处理这个问题Builder模式出现了。Builder模式是一种分步构建对象的模式。</p>
+<p>构建模式把一个复杂的对象，一步步的构建。</p>
 
     </div>
     <div class="post-footer">
