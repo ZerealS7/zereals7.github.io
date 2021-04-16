@@ -6,10 +6,30 @@
     <description>Recent content in Posts on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 15 Apr 2021 00:24:01 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 16 Apr 2021 21:47:55 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>MyBatis核心组件</title>
+      <link>https://zereals7.github.io/post/mybatis%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/</link>
+      <pubDate>Fri, 16 Apr 2021 21:47:55 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/mybatis%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/</guid>
+      <description>3.1 持久层的概念和MyBatis的特点 持久层可以将业务数据存储到磁盘，具备长期存储能力，只要磁盘不损坏，在断电或者其他情况下，重新开启系统仍然可以读取这些数据。一般执行持久任务的都是数据库系统，持久层可以使用巨大的磁盘空间，也比较廉价，缺点就是慢，当然慢是针对内存而言的，在一般系统中运行是不存在问题的，比如内部管理系统，但是在互联网的秒杀场景下，每秒需要执行成千上万次数据操作，慢是不能承受的，极有可能导致宕机，在这样的场景下考虑使用Redis处理。
+MyBatis最大的成功来自于三点
+ 不屏蔽SQL，意味着可以更为精确的定位SQL语句，可以对其进行优化和改造，这有利于互联网系统性能的提高，符合互联网需要性能优化的特点。 提供强大、灵活的映射机制，方便Java开发者使用。提供动态SQL的功能，允许我们根据不同条件组装SQL，这个功能远比其他工具或者Java编码的可读性和可维护性高得多，满足各种应用系统的同时也满足了需求经常变化的互联网应用的要求。 在MyBatis中，提供了使用Mapper的接口编程，只要一个接口和一个XML就能创建映射器，进一步简化我们的工作，使得很多框架API在MyBatis中消失，开发者更集中于业务逻辑。  3.2 准备MyBatis环境 网上复制相关依赖
+3.3 MyBatis核心组件 MyBatis的核心组件分为4个部分
+ SqlSessionFactoryBuilder(构造器)：它会根据配置或者代码来生成SqlSessionFactory,采用的是分布构建的Builder模式。 SqlSessionFactory（工厂接口）：依靠它来生成SqlSession，使用的是工厂模式。 SqlSession(会话)：一个既可以发送SQL执行返回结果，也可以获取Mapper的接口。在现有的技术中，我们会让其在业务逻辑代码中消失，而使用的是MyBatis提供的SQL Mapper接口编程技术，它能提高代码的可读性和可维护性。 SQL Mapper（映射器）：MyBatis新设计的组件存在的组件，它由一个Java接口和XML文件构成，需要给出对应的SQL和映射规则。它负责发送SQL去执行，并返回结果。  无论是映射器还是SqlSession都可以发送SQL到数据库执行。
+3.4 SqlSessionFactory（工厂接口） 使用MyBatis首先是使用配置或者代码去生产SqlSessionFactory，而MyBatis提供了构造器SqlSessionFactoryBuilder。它提供了一个类org.apache.ibatis.session.Configuration作为引导，采用的是Builder模式。具体的分步是在Configuration类里面完成的。
+在MyBatis中，可以通过读取皮质的XML文件的形式生成SqlSessionFactory，也可以通过Java代码的形式取生产SqlSessionFactory。推荐使用XML的形式，因为代码的方式在需要修改的时候会比较麻烦。当配置了XML或者提供代码后，MyBatis会读取配置文件，通过Configuration类对象构建整个MyBatis的上下文。SqlSessionFactory是一个接口，在MyBatis中存在两个实现类：SqlSessionManager和DefaultSqlSessionFactory,一般而言，具体是由DefaultSqlSessionFactory去实现的，而SqlSessionManager使用在多线程的环境中，它的具体实现依靠DefaultSqlSessionFactory。
+每个基于MyBatis的应用都是以一个SqlSessionFacrory的实例为中心的，而SqlSessionFactory唯一的作用就是生产MyBatis的核心接口对象SqlSession,所以它的责任是唯一的。我们往往采用单例模式处理它，使用配置文件和Java代码两种形式去生成SqlSessionFactory的方法。
+3.4.1 使用XML构建SqlSessionFactory 首先，在MyBatis中的XML分为两类，一类是基础配置文件，通常只有一个，主要是配置一些最基本的上下文参数和运行环境；另一类是映射文件，它可以配置映射关系，SQL、参数等信息。
+基础配置文件：
+typeAlias元素定义了别名，可以代替全限定名。
+environment</description>
+    </item>
     
     <item>
       <title>SSM第二章-Java设计模式</title>
