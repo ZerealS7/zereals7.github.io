@@ -23,8 +23,16 @@ MyBatis最大的成功来自于三点
 每个基于MyBatis的应用都是以一个SqlSessionFacrory的实例为中心的，而SqlSessionFactory唯一的作用就是生产MyBatis的核心接口对象SqlSession,所以它的责任是唯一的。我们往往采用单例模式处理它，使用配置文件和Java代码两种形式去生成SqlSessionFactory的方法。
 3.4.1 使用XML构建SqlSessionFactory 首先，在MyBatis中的XML分为两类，一类是基础配置文件，通常只有一个，主要是配置一些最基本的上下文参数和运行环境；另一类是映射文件，它可以配置映射关系，SQL、参数等信息。
 基础配置文件：
-typeAlias元素定义了别名，可以代替全限定名。
-environment"/>
+元素定义了别名，可以代替全限定名。
+元素的定义，这里描述的是数据库。它里面的元素是配置事务管理器，这里采用的是MyBatis的JDBC管理器方式。然后采用元素配置数据库，其中属性 type=“POOLED”代表采用MyBatis内部提供的连接池方式。
+元素代表引入的那些映射器。
+通过XML构建SqlSessionFactory
+SqlSessionFactory SqlSessionFactory=null； String resource =&#34;mybatis-config.xml&#34;; InputStream inputStream; try{ inputStream =Resources.getResourceAsStream(resource); SqlSessionFactory= new SqlSessionFactoryBuilder().build(inputStream); }catch(IOException e){ e.printStarkTrace(); } 首先读取mybatis-config.xml,然后通过SqlSessionFactoryBuilder的Builder方法去创建SqlSessionFactory。整个过程比较简单，而里面的步骤还是比较烦琐的，只是MyBatis采用了Builder模式为开发者隐藏了这些细节。这样一个SqlSessionFactory就被创建出来了。
+推荐采用XML创建的形式，信息在配置文件中，有利于我们日后的维护和修改，避免了重新编译代码。
+3.4.2 使用代码创建SqlSessionFactory 代码冗长，如果发生系统修改，那么有可能需要重新编译代码才能继续，所以不是一个很好的方式。除非有特殊的需要，比如在配置文件中，需要配置加密过的数据库用户名和密码，需要我们在生产SqlSessionFactory前解密为明文的时候，才会考虑使用这样的方式。
+3.5 SqlSession 在MyBatis中，SqlSession是其核心接口。在MyBatis中有两个实现类，DefaultSqlSession和SqlSessionManager。DefaultSqlSession是单线程使用的，而SqlSessionManager在多线程环境下使用。SqlSession的作用类似于一个JDBC中的Connection对象，代表着一个连接资源的启用。具体而言，有三个作用。
+ 获取Mapper接口 发送SQL给数据库 控制数据库事务  创建SqlSession
+SqlSession sqlSession =SqlSessionFactory."/>
 
     <meta property="og:title" content="MyBatis核心组件" />
 <meta property="og:description" content="3.1 持久层的概念和MyBatis的特点 持久层可以将业务数据存储到磁盘，具备长期存储能力，只要磁盘不损坏，在断电或者其他情况下，重新开启系统仍然可以读取这些数据。一般执行持久任务的都是数据库系统，持久层可以使用巨大的磁盘空间，也比较廉价，缺点就是慢，当然慢是针对内存而言的，在一般系统中运行是不存在问题的，比如内部管理系统，但是在互联网的秒杀场景下，每秒需要执行成千上万次数据操作，慢是不能承受的，极有可能导致宕机，在这样的场景下考虑使用Redis处理。
@@ -37,8 +45,16 @@ MyBatis最大的成功来自于三点
 每个基于MyBatis的应用都是以一个SqlSessionFacrory的实例为中心的，而SqlSessionFactory唯一的作用就是生产MyBatis的核心接口对象SqlSession,所以它的责任是唯一的。我们往往采用单例模式处理它，使用配置文件和Java代码两种形式去生成SqlSessionFactory的方法。
 3.4.1 使用XML构建SqlSessionFactory 首先，在MyBatis中的XML分为两类，一类是基础配置文件，通常只有一个，主要是配置一些最基本的上下文参数和运行环境；另一类是映射文件，它可以配置映射关系，SQL、参数等信息。
 基础配置文件：
-typeAlias元素定义了别名，可以代替全限定名。
-environment" />
+元素定义了别名，可以代替全限定名。
+元素的定义，这里描述的是数据库。它里面的元素是配置事务管理器，这里采用的是MyBatis的JDBC管理器方式。然后采用元素配置数据库，其中属性 type=“POOLED”代表采用MyBatis内部提供的连接池方式。
+元素代表引入的那些映射器。
+通过XML构建SqlSessionFactory
+SqlSessionFactory SqlSessionFactory=null； String resource =&#34;mybatis-config.xml&#34;; InputStream inputStream; try{ inputStream =Resources.getResourceAsStream(resource); SqlSessionFactory= new SqlSessionFactoryBuilder().build(inputStream); }catch(IOException e){ e.printStarkTrace(); } 首先读取mybatis-config.xml,然后通过SqlSessionFactoryBuilder的Builder方法去创建SqlSessionFactory。整个过程比较简单，而里面的步骤还是比较烦琐的，只是MyBatis采用了Builder模式为开发者隐藏了这些细节。这样一个SqlSessionFactory就被创建出来了。
+推荐采用XML创建的形式，信息在配置文件中，有利于我们日后的维护和修改，避免了重新编译代码。
+3.4.2 使用代码创建SqlSessionFactory 代码冗长，如果发生系统修改，那么有可能需要重新编译代码才能继续，所以不是一个很好的方式。除非有特殊的需要，比如在配置文件中，需要配置加密过的数据库用户名和密码，需要我们在生产SqlSessionFactory前解密为明文的时候，才会考虑使用这样的方式。
+3.5 SqlSession 在MyBatis中，SqlSession是其核心接口。在MyBatis中有两个实现类，DefaultSqlSession和SqlSessionManager。DefaultSqlSession是单线程使用的，而SqlSessionManager在多线程环境下使用。SqlSession的作用类似于一个JDBC中的Connection对象，代表着一个连接资源的启用。具体而言，有三个作用。
+ 获取Mapper接口 发送SQL给数据库 控制数据库事务  创建SqlSession
+SqlSession sqlSession =SqlSessionFactory." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://zereals7.github.io/post/mybatis%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/" />
 <meta property="article:published_time" content="2021-04-16T21:47:55+08:00" />
@@ -108,8 +124,105 @@ environment" />
 <h2 id="341-使用xml构建sqlsessionfactory">3.4.1 使用XML构建SqlSessionFactory</h2>
 <p>首先，在MyBatis中的XML分为两类，<strong>一类是基础配置文件，通常只有一个，主要是配置一些最基本的上下文参数和运行环境；另一类是映射文件，它可以配置映射关系，SQL、参数等信息。</strong></p>
 <p>基础配置文件：</p>
-<p>typeAlias元素定义了别名，可以代替全限定名。</p>
-<p>environment</p>
+<p><!-- raw HTML omitted -->元素定义了别名，可以代替全限定名。</p>
+<p><!-- raw HTML omitted -->元素的定义，这里描述的是数据库。它里面的<!-- raw HTML omitted -->元素是配置事务管理器，这里采用的是MyBatis的JDBC管理器方式。然后采用<!-- raw HTML omitted -->元素配置数据库，其中属性 type=“POOLED”代表采用MyBatis内部提供的连接池方式。</p>
+<p><!-- raw HTML omitted -->元素代表引入的那些映射器。</p>
+<p>通过XML构建SqlSessionFactory</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">SqlSessionFactory SqlSessionFactory<span style="color:#f92672">=</span><span style="color:#66d9ef">null</span><span style="color:#960050;background-color:#1e0010">；</span>
+   String resource <span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mybatis-config.xml&#34;</span><span style="color:#f92672">;</span>
+InputStream inputStream<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">try</span><span style="color:#f92672">{</span>
+    inputStream <span style="color:#f92672">=</span>Resources<span style="color:#f92672">.</span><span style="color:#a6e22e">getResourceAsStream</span><span style="color:#f92672">(</span>resource<span style="color:#f92672">);</span>
+    SqlSessionFactory<span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SqlSessionFactoryBuilder<span style="color:#f92672">().</span><span style="color:#a6e22e">build</span><span style="color:#f92672">(</span>inputStream<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span><span style="color:#66d9ef">catch</span><span style="color:#f92672">(</span>IOException e<span style="color:#f92672">){</span>
+    e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStarkTrace</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>首先读取mybatis-config.xml,然后通过SqlSessionFactoryBuilder的Builder方法去创建SqlSessionFactory。整个过程比较简单，而里面的步骤还是比较烦琐的，只是MyBatis采用了Builder模式为开发者隐藏了这些细节。这样一个SqlSessionFactory就被创建出来了。</p>
+<p>推荐采用XML创建的形式，信息在配置文件中，有利于我们日后的维护和修改，避免了重新编译代码。</p>
+<h2 id="342-使用代码创建sqlsessionfactory">3.4.2 使用代码创建SqlSessionFactory</h2>
+<p>代码冗长，如果发生系统修改，那么有可能需要重新编译代码才能继续，所以不是一个很好的方式。除非有特殊的需要，比如在配置文件中，需要配置加密过的数据库用户名和密码，需要我们在生产SqlSessionFactory前解密为明文的时候，才会考虑使用这样的方式。</p>
+<h1 id="35-sqlsession">3.5 SqlSession</h1>
+<p>在MyBatis中，SqlSession是其核心接口。在MyBatis中有两个实现类，DefaultSqlSession和SqlSessionManager。DefaultSqlSession是单线程使用的，而SqlSessionManager在多线程环境下使用。SqlSession的作用类似于一个JDBC中的Connection对象，代表着一个连接资源的启用。具体而言，有三个作用。</p>
+<ul>
+<li>获取Mapper接口</li>
+<li>发送SQL给数据库</li>
+<li>控制数据库事务</li>
+</ul>
+<p><em><strong>创建SqlSession</strong></em></p>
+<pre><code>SqlSession sqlSession =SqlSessionFactory.openSession();
+</code></pre><p>注意,SqlSession只是一个门面接口，它有很多方法，可以直接发送SQL。它就好像是一家软件公司的商务人员，是一个门面，而实际干活的是软件工程师。在MyBatis中，真正干活的是Executor，我们会在底层看到它。</p>
+<p>数据库的连接资源，使用后及时关闭，如果不关闭，数据库的连接资源很快就会被耗费光，整个系统会陷入瘫痪状态，所以finally语句保证其顺利关闭。</p>
+<p>由于SqlSession的获取Mapper接口和发送SQL的功能需要先实现映射器的功能，而映射器接口也可以实现发送SQL的功能。</p>
+<h1 id="36映射器">3.6映射器</h1>
+<p>映射器是MyBatis中最重要、最复杂的组件，它由一个接口和对应的XML文件组成。可以配置以下内容。</p>
+<ul>
+<li>描述映射规则</li>
+<li>人提供SQL语句，并可以配置SQL参数类型、返回类型、缓存刷新等信息。</li>
+<li>配置缓存</li>
+<li>提供动态SQL</li>
+</ul>
+<p>映射器的主要作用就是将SQL查询到的结果映射为一个POJO，或者将POJO的数据插入到数据库中，并定义一些关于缓存等的重要内容。</p>
+<p>接口不能直接运行，MyBatis运用了动态代理技术使得接口能运行起来。MyBatis会为这个接口生成一个代理对象，代理对象回去处理相关的逻辑。</p>
+<h2 id="361-用xml实现映射器">3.6.1 用XML实现映射器</h2>
+<p>有了POJO对象，写一个映射器的接口。</p>
+<p>在MyBatis基础配置文件中引入映射器</p>
+<pre><code>&lt;mapper resource=&quot;com/learn/ssm/chapter3/mapper/RoleMapper.xml&quot;/&gt;
+</code></pre><p>作用就是引入一个XML文件。</p>
+<p>这个XML文件对应着一个POJO类的映射器接口</p>
+<p>一个接口对应一个XML文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">前面是mybatis的映射器约束
+<span style="color:#f92672">&lt;</span>mapper namespace<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.learn.ssm.chapter3.mapper.RoleMapper&#34;</span><span style="color:#f92672">&gt;</span>
+	<span style="color:#f92672">&lt;</span>select id<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">“</span>getRole<span style="color:#960050;background-color:#1e0010">”</span> parameterType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;long&#34;</span> resultType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;role&#34;</span><span style="color:#f92672">&gt;</span>
+		select id<span style="color:#f92672">,</span>role_name as roleName<span style="color:#f92672">,</span>note from t_role where id<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>id<span style="color:#f92672">}</span>
+	<span style="color:#f92672">&lt;/</span>select<span style="color:#f92672">&gt;</span>
+	<span style="color:#f92672">&lt;/</span>mapper<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>有了着两个文件，就完成了一个映射器的定义。XML文件还算比较简单：</p>
+<p><!-- raw HTML omitted -->元素中的属性namespace所对应的是一个接口的全限定名，于是MyBatis上下文就可以通过它找到对应的接口。</p>
+<p>Mybatis默认情况下提供自动映射，只要返回的列名能和POJO对应起来即可。可以把SQL的查询的结果通过自动映射的功能映射成为一个POJO。</p>
+<h2 id="362-注解实现映射器">3.6.2 注解实现映射器</h2>
+<p>除XML方式定义映射器外，还可以通过注解方式定义映射器，只需要一个接口就可以通过MyBatis注解来注入SQL。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> com.learn.ssm.chapter3.pojo.Role<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">RoleMapper2</span><span style="color:#f92672">{</span>
+		<span style="color:#a6e22e">@Select</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;select id,role_name as roleName,note from t_role where id =#{id}&#34;</span><span style="color:#f92672">)</span>
+		<span style="color:#66d9ef">public</span> Role <span style="color:#a6e22e">getRole</span><span style="color:#f92672">(</span>Long id<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>以上完全等同于XML方式创建映射器。如果注解和XML方式同时定义，XML方式将覆盖掉注解的方式。</p>
+<p>但是使用注解不利于日后的维护和修改。</p>
+<p>XML可以相互引入，而注解是不可以的，在一些复杂的场景下，使用XML方式会更加灵活和方便。所以大部分企业都是以XML为主。</p>
+<p>这个接口可以子啊XML中定义，我们仿造在mybatis-config.xml中而配置XML语句:</p>
+<!-- raw HTML omitted -->
+<p>把它修改成下面的形式即可</p>
+<!-- raw HTML omitted -->
+<p>也可以用configuration对象注册这个接口，比如：</p>
+<p>configuration.addMapper(RoleMapper2.class);</p>
+<h2 id="363-sqlsession发送sql">3.6.3 SqlSession发送SQL</h2>
+<p>用了映射器就可以同SqlSession发送 SQL了。</p>
+<p>以getRole这条SQL为例</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> Role role <span style="color:#f92672">=(</span>Role<span style="color:#f92672">)</span>sqlSession<span style="color:#f92672">.</span><span style="color:#a6e22e">selectOne</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;com.learn.ssm.chapter3.mapper.RoleMapper.getRole&#34;</span><span style="color:#f92672">,</span>1L<span style="color:#f92672">)</span>
+</code></pre></div><p>SelectOne方法表示使用查询并且只返回一个对象，而参数则是一个String对象和一个Object对象。这里是一个long参数，long参数是它的主键。</p>
+<p>String对象是由一个命名空间加上SQL id组合而成的，它完全定位了一条SQL，这样MyBatis就会找到对应的SQL。如果在MyBatis中只有一个id为getRole的SQL,那么也可以简写为</p>
+<p>Role role =(Role)sqlSession.selectOne(&ldquo;getRole&rdquo;,1L)</p>
+<h2 id="364-用mapper接口发送sql">3.6.4 用Mapper接口发送SQL</h2>
+<p>MyBatis存在两种发送SQL的方式，一种用SqlSession直接发送，另外一种通过SqlSession获取Mapper接口再发送。建议采用后组合，理由如下：</p>
+<ul>
+<li>使用Mapper接口编程可以消除SqlSession带来的功能性代码，提高可读性，而SqlSession发送SQL，需要一个SQL id 去匹配SQL，比较晦涩难懂。使用Mapper接口，类似roleMapper.getRole(1L)则是完全面向对象的语言，更能体现业务的逻辑。</li>
+<li>使用Mapper.getRole(1L)方式，IDE会提示错误和校验，而使用前者，只有在运行中才能知道是否会发生错误。</li>
+</ul>
+<p>当然Mapper映射器需要绑定接口。</p>
+<h1 id="37-生命周期">3.7 生命周期</h1>
+<p>生命周期是组件的重要问题，尤其是在多线程的环境中，比如互联网的应用、Socket请求等，而MyBatis也常用于多线程的环境中，错误使用会造成严重的多线程并发问题，为了正确的编写MyBatis的应用程序，我们需要掌握MyBatis的生命周期。</p>
+<p>所谓生命周期就是每一个对象应该存货的事件，比如一些对象一次用完后就要关闭使它们被Java虚拟机（JVM）销毁，以避免继续占用资源，所以我们会根据每一个组件的作用去确定其生命周期。</p>
+<h2 id="371-sqlsessionfactorybuilder">3.7.1 SqlSessionFactoryBuilder</h2>
+<p>SqlSessionFactoryBuilder的作用在于创建SqlSessionFactory，创建成功后SqlSessionFactoryBuilder就失去了作用，所以它只能存在于创建SqLSessionFactory的方法中，而不要让其长期存在。</p>
+<h2 id="372-sqlsessionfactory">3.7.2 SqlSessionFactory</h2>
+<p>SqlSessionFactory可以被认为是一个数据库连接池，它的作用是创建SqlSession接口对象。因为MyBatis的本质就是Java对数据库的操作，所以SqlSessionFactory的生命周期存在于整个MyBatis的应用之中，所以一旦创建了SqlSessionFactory，就要长期保存它，知道不再使用MyBatis应用，可以认为SqlSessionFactory的生命周期就等同于MyBatis的应用周期。</p>
+<p>由于SqlSessionFactory是一个对数据库的连接池，所以它占据着数据库的连接资源。如果创建多个SqlSessionFactory,那么就存在多个数据库连接池，这样不利于对数据库资源的控制，也会导致数据库连接资源被消耗光，出现系统宕机等情况，所以尽量避免发生这种情况。因此在一般的应用中我们往往希望SqlSessionFactory作为一个单例，让它在应用中被共享。</p>
+<h2 id="373-sqlsession">3.7.3 SqlSession</h2>
+<p>如果说SqlSessionFactory相对于数据库连接池，那么SqlSession就相当于一个数据库连接对象（connection对象），你可以在一个事务里面执行多条SQL，然后通过它的commit\rollback等方法，提交或者回滚事务。所以它应该存货在有个业务请求中，处理完整个请求后，有个关闭这条连接，让它归还给SqlSessionFactory， 否则数据库资源很快就会被耗费光，系统就会瘫痪，所以用try&hellip;.catch&hellip;finally&hellip;语句来保证其正确关闭。</p>
+<h2 id="374-mapper">3.7.4 Mapper</h2>
+<p>Mapper是一个接口，它由SqlSession所创建，所以它的最大生命周期至多和SqlSession保持一致，尽管它很好用，但是由于SqlSession的关闭，它的数据库连接资源也会消失，所以它的生命周期一个小于等于SqlSession的生命周期。Mapper代表的是一个请求中的业务处理，所以它应该在一个请求中，一旦处理完了相关的业务，就应该废弃它。</p>
+<p>构造方法中加入了private关键字，使得其他代码不能通过new的方式来创建它。而加入synchronized关键字加锁，主要是为了防止在多线程中多次实例化SqlSessionFactory对象，从而保证SqlSessionFactory的唯一性。</p>
+<p>通过log4j的文件配置，让MyBatis打印其运行过程的轨迹。可以清晰地看到日志打印出来的SQL、SQL参数，以及返回的结果数，这样有利于监控MyBatis的运行过程和定位问题所在。</p>
 
     </div>
     <div class="post-footer">

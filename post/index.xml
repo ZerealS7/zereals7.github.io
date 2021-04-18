@@ -27,8 +27,16 @@ MyBatis最大的成功来自于三点
 每个基于MyBatis的应用都是以一个SqlSessionFacrory的实例为中心的，而SqlSessionFactory唯一的作用就是生产MyBatis的核心接口对象SqlSession,所以它的责任是唯一的。我们往往采用单例模式处理它，使用配置文件和Java代码两种形式去生成SqlSessionFactory的方法。
 3.4.1 使用XML构建SqlSessionFactory 首先，在MyBatis中的XML分为两类，一类是基础配置文件，通常只有一个，主要是配置一些最基本的上下文参数和运行环境；另一类是映射文件，它可以配置映射关系，SQL、参数等信息。
 基础配置文件：
-typeAlias元素定义了别名，可以代替全限定名。
-environment</description>
+元素定义了别名，可以代替全限定名。
+元素的定义，这里描述的是数据库。它里面的元素是配置事务管理器，这里采用的是MyBatis的JDBC管理器方式。然后采用元素配置数据库，其中属性 type=“POOLED”代表采用MyBatis内部提供的连接池方式。
+元素代表引入的那些映射器。
+通过XML构建SqlSessionFactory
+SqlSessionFactory SqlSessionFactory=null； String resource =&amp;#34;mybatis-config.xml&amp;#34;; InputStream inputStream; try{ inputStream =Resources.getResourceAsStream(resource); SqlSessionFactory= new SqlSessionFactoryBuilder().build(inputStream); }catch(IOException e){ e.printStarkTrace(); } 首先读取mybatis-config.xml,然后通过SqlSessionFactoryBuilder的Builder方法去创建SqlSessionFactory。整个过程比较简单，而里面的步骤还是比较烦琐的，只是MyBatis采用了Builder模式为开发者隐藏了这些细节。这样一个SqlSessionFactory就被创建出来了。
+推荐采用XML创建的形式，信息在配置文件中，有利于我们日后的维护和修改，避免了重新编译代码。
+3.4.2 使用代码创建SqlSessionFactory 代码冗长，如果发生系统修改，那么有可能需要重新编译代码才能继续，所以不是一个很好的方式。除非有特殊的需要，比如在配置文件中，需要配置加密过的数据库用户名和密码，需要我们在生产SqlSessionFactory前解密为明文的时候，才会考虑使用这样的方式。
+3.5 SqlSession 在MyBatis中，SqlSession是其核心接口。在MyBatis中有两个实现类，DefaultSqlSession和SqlSessionManager。DefaultSqlSession是单线程使用的，而SqlSessionManager在多线程环境下使用。SqlSession的作用类似于一个JDBC中的Connection对象，代表着一个连接资源的启用。具体而言，有三个作用。
+ 获取Mapper接口 发送SQL给数据库 控制数据库事务  创建SqlSession
+SqlSession sqlSession =SqlSessionFactory.</description>
     </item>
     
     <item>
