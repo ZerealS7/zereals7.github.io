@@ -6,13 +6,22 @@
     <description>Recent content in Posts on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 16 Apr 2021 21:47:55 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 19 Apr 2021 01:38:36 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>MyBatis核心组件</title>
+      <title>SSM第四章-MyBatis配置</title>
+      <link>https://zereals7.github.io/post/ssm%E7%AC%AC%E5%9B%9B%E7%AB%A0-mybatis%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Mon, 19 Apr 2021 01:38:36 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/ssm%E7%AC%AC%E5%9B%9B%E7%AB%A0-mybatis%E9%85%8D%E7%BD%AE/</guid>
+      <description>4.1 概述 </description>
+    </item>
+    
+    <item>
+      <title>SSM第三章-MyBatis核心组件</title>
       <link>https://zereals7.github.io/post/mybatis%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/</link>
       <pubDate>Fri, 16 Apr 2021 21:47:55 +0800</pubDate>
       
@@ -85,7 +94,7 @@ Object obj =method.invoke(target,args); 这行代码相当于调度真实对象�
     </item>
     
     <item>
-      <title>SSM入门和Redis</title>
+      <title>SSM第一章-入门和Redis</title>
       <link>https://zereals7.github.io/post/ssm/</link>
       <pubDate>Wed, 14 Apr 2021 21:56:15 +0800</pubDate>
       
