@@ -210,6 +210,8 @@ typeHandler继承了BaseTypeHandler
 <li>EnumTypeHandler</li>
 </ul>
 <p>因为它们的作用不大，所以在大部分情况下，我们都不用它们。前者是按MyBatis根据枚举数组下标牵引的方式进行匹配的，它要求数据库返回一个整数作为其下标，它会根据下标找到对应的枚举类型。而后者会把使用的名称转化为对应的枚举。</p>
+<h2 id="451-文件操作">4.5.1 文件操作</h2>
+<p>MyBatis对数据库的Blob字段也进行了支持，它提供了一个BlobTypeHandler，为了应付更多的场景，它还提供了ByteArrayTypeHandler，只是不太常用。</p>
 
     </div>
     <div class="post-footer">
