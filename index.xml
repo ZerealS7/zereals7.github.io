@@ -17,7 +17,33 @@
       <pubDate>Mon, 19 Apr 2021 01:38:36 +0800</pubDate>
       
       <guid>https://zereals7.github.io/post/ssm%E7%AC%AC%E5%9B%9B%E7%AB%A0-mybatis%E9%85%8D%E7%BD%AE/</guid>
-      <description>4.1 概述 </description>
+      <description>4.1 概述 MyBatis配置文件不复杂
+配置文件元素
+&amp;lt;configuration&amp;gt;配置&amp;lt;properties/&amp;gt;属性&amp;lt;setting/s&amp;gt;设置&amp;lt;typeAliases/&amp;gt;类型别名&amp;lt;typeHandlers/&amp;gt;类型处理器&amp;lt;objectFactory/&amp;gt;对象工厂&amp;lt;plugins&amp;gt;插件&amp;lt;environments&amp;gt;配置环境&amp;lt;environment&amp;gt;环境变量&amp;lt;transactionManager&amp;gt;事务管理器&amp;lt;dataSource&amp;gt;数据源&amp;lt;/environment&amp;gt;&amp;lt;/environments&amp;gt;&amp;lt;databaseIdProvider/&amp;gt;数据库厂商标识&amp;lt;mappers&amp;gt;映射器&amp;lt;/configuration&amp;gt;需要注意配置的顺序不能颠倒。顺序错了，启动阶段就会发生异常，导致程序无法运行。
+4.2 properties属性 properties属性可以给系统配置一些运行参数，可以放在XML文件或者 properties文件中，而不是放在Java编码中，这样的好处在于方便参数修改，不会引起代码重新编译。
+可以使用元素 properties下的 propertie子元素定义。比如通过
+,可以定义数据库的驱动，然后可以通过${database.driver},定义一次，到处引用。如果属性参数有成百上千个，可以使用properties文件。
+使用properties文件是比较普遍的方法，一方面这个文件十分简单，其逻辑就是键值对应，我们可以配置多个键值放在一个properties文件中，也可以把多个键值对放在多个properties文件中，这些都是允许的，它方便日后维护和修改。
+在MyBatis中通过properties的属性resource来引入properties文件。
+&amp;lt;properties resource=&amp;#34;jdbc.properties&amp;#34;/&amp;gt; 也可以按${database.username}的方法引入properties文件的属性参数到MyBatis配置文件中。这个时候通过维护properties文件就可以维护我们的配置内容了。
+在真实的生产环境中，数据库的用户密码是对开发人员和其他人员保密的。运维人员为了保密，一般都需要把用户和密码经过加密成为密文后，配置到properties文件中。对于开发人员及其他人员而言，就不知道其真实的用户密码了，数据库也不可能用以及加密的字符串去连接，此时往往需要通过解密才能得到真实的用户和密码了。现在假设系统已经为提供了这样的一个CodeUtils.decode(str)进行解密，那么我们在创建SqlSessionFactory前，就需要把用户名和密码解密，然后把解密后的字符串重置到properties属性中。
+首先使用Resources对象读取了一个jdbc.properties配置文件，然后获取了它原来配置的用户和密码，进行解密并重置，最后使用SqlSessionFactoryBuilder的build方法，传递多个properties参数来完成。这将覆盖之前配置的密文，这样就能连接数据库了，同时也满足了运维人员对数据库用户和密码安全的要求。
+总结：以上是MyBatis使用properties的3种方式。这3种方式是有优先级的，最优先的是使用程序传递的方式，其次是使用properties文件的方式，最后使用子元素的方式。MyBatis会根据优先级来覆盖原先配置的属性值。
+建议采用properties文件的方式，因为管理它简单易行，而且可以从XML文件中剥离出来独立维护。
+4.3 settings设置 settings是MyBatis中最复杂的配置，它能深刻影响MyBatis底层的运行，但大部分情况下使用默认值便可以运行，所以大部分情况下不需要大量配置它，只需要修改一些常用的规则即可，比如自动映射、驼峰命名映射、级联规则、是否启动缓存、执行器类型等。
+settings的配置项很多，但是真正用到的不会太多，我们把常用的配置项研究清楚就可以了，比如关于缓存的CacheEnabled,关于级联的LazyloadingEnabled和aggressiveLazyLoading,关于自动映射的autoMappingBehavior和mapUnderscoreToCamelCase,关于执行器类型的defaultExecutorType等。
+4.4 typeAliases别名 由于类的全限定名很长，需要大量使用的时候，写那么长的名称不方便。在MyBatis中允许定义一个简写来代表这个类，这就是别名，别名分为系统定义别名和自定义别名。在MyBatis中别名由类TypeAliasRegistry去定义。注意，在MyBatis中别名不区分大小写。
+MyBatis也提供了用户自定义别名的规则。我们可以通过TypeAliasRegistry类的registerAlias方法注册，也可以采用配置文件或者扫描方式来自定义它。
+使用配置文件定义很简单：
+&amp;lt;typeAliases&amp;gt; &amp;lt;typeAliases alias=&amp;#34;role&amp;#34; type=&amp;#34;com.leartn.ssmchapter4.pojo.Role&amp;#34;/&amp;gt; &amp;lt;typeAliases alias=&amp;#34;user&amp;#34; type=&amp;#34;com.learn.ssm.chapter4.pojo.User&amp;#34;/&amp;gt; &amp;lt;/typeAliases&amp;gt; 这样就可以定义一个别名了。如果由很多类需要定义别名，那么用这样的方式进行配置可就不那么轻松了。MyBatis还支持扫描别名。比如上面的两个类都在包com.learn.ssm.chapter4.pojo之下，那么就可以定义为：
+&amp;lt;typeAliases&amp;gt; &amp;lt;package name=&amp;#34;com.learn.ssm.chapter4.pojo&amp;#34;/&amp;gt; &amp;lt;typeAliases&amp;gt; 这样MyBatis将扫描这个包里面的类，将其第一个字母变为小写作为其别名，比如类Role的别名会变成role，而User的别名会变成user。使用这样的规则有时候会出现重名，这个时候可以使用MyBatis提供的直接@Alias来进行区分。
+这样就能够避免因为别名重名导致的扫描失败的问题。
+4.5 typeHandler类型转换器 在JDBC中，需要在PreparedStatement对象中设置那些已经预编译过的SQL语句的参数。执行SQL后，会通过ResultSet对象获取得到数据库的数据，而这些MyBatis是根据数据的类型typeHandler来实现的。在typeHandler中，分为jdbcType和javaType,其中jdbcType用于定义数据库类型，而javaType用于定义Java类型，那么typeHandler的作用就是承担jdbcType和iavaType之间的相互转换。在很多情况下我们并不需要去配置typeHandler、jdbcType、javaType,因为MyBatis会探测应该使用什么类型的typeHandler进行处理，但是有些场景无法探测到。对于那些需要使用自定义枚举的场景，或者数据库使用特殊数据类型的场景，可以使用自定义的typeHandler去处理类型之间的转换问题。
+和别名一样，在MyBatis中存在系统定义typeHandler和自定义typeHandler。MyBatis会根据javaType和数据库的jdbcType来决定采用哪个typeHandler处理这些转换规则。系统提供的typeHandler能覆盖大部分场景的要求，但是有些情况下是不够的，比如我们由特殊的转换规则，枚举类就是这样。
+总之，typeHandler负责jdbcType和javaType之间的相互转换。
+在大部分的情况下无须显式地声明jdbcType和javaType，或者用typeHandler去指定对应的typeHandler来实现数据类型转换，因为MyBatis系统会自己探测。有时候需要修改一些转换规则，比如枚举类往往需要自己去编写规则。
+typeHandler继承了BaseTypeHandler
+ BaseTypeHandler是个抽象类，需要子类去实现其定义的4个抽象方法，而它本身实现类typeHandler接口的4个方法。 getResult方法，非空结果集是通过getNullableResult方法获取的。如果判断为空，则返回null。 setParameter方法，当参数parameter和jdbcType同时为空时，MyBatis将抛出异常，如果能明确jdbcType,则会进行空设置；如果参数不为空，那么它将采用setNonNullParameter方法设置参数。 getNullableResult方法用于存储过程。  MyBatis使用最多的typeHandler之一——StringTypeHandler。它用于字符串转换。它实现类BaseTypeHandler的4个抽象方法。</description>
     </item>
     
     <item>
