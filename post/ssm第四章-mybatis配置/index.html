@@ -108,7 +108,7 @@ typeHandler继承了BaseTypeHandler
   <title>clock</title>
   <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
 </svg>
-          1 min read
+          2 min read
         </div></div>
     </header>
     <div class="post-content">
@@ -212,6 +212,171 @@ typeHandler继承了BaseTypeHandler
 <p>因为它们的作用不大，所以在大部分情况下，我们都不用它们。前者是按MyBatis根据枚举数组下标牵引的方式进行匹配的，它要求数据库返回一个整数作为其下标，它会根据下标找到对应的枚举类型。而后者会把使用的名称转化为对应的枚举。</p>
 <h2 id="451-文件操作">4.5.1 文件操作</h2>
 <p>MyBatis对数据库的Blob字段也进行了支持，它提供了一个BlobTypeHandler，为了应付更多的场景，它还提供了ByteArrayTypeHandler，只是不太常用。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">create table <span style="color:#a6e22e">t_file</span><span style="color:#f92672">(</span>
+id <span style="color:#a6e22e">int</span><span style="color:#f92672">(</span>12<span style="color:#f92672">)</span> not <span style="color:#66d9ef">null</span> auto_increment<span style="color:#f92672">,</span>
+content blob not <span style="color:#66d9ef">null</span><span style="color:#f92672">,</span>
+primary <span style="color:#a6e22e">key</span><span style="color:#f92672">(</span>id<span style="color:#f92672">)</span>
+<span style="color:#f92672">);</span>
+</code></pre></div><p>使用了blob字段，用于存入文件。然后创建一个POJO，用于处理这个表。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.ssm.chapter5.pojo<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TestFile</span><span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">long</span> id<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> content<span style="color:#f92672">;</span>
+	下面是setter和getter方法
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这里需要把content属性和数据库的Blob字段转换，这个时候可以使用系统注册的typeHandler——BlobTypeHandler来转换。</p>
+<p>在resultMap属性中如此处理</p>
+<pre><code>&lt;resulyMap type=&quot;com.ssm.chapter5.pojo.TestFile&quot; id=&quot;file&quot;&gt;
+&lt;id colume=&quot;id&quot; property=&quot;id&quot;/&gt;
+&lt;id colume=&quot;content&quot; property=&quot;content&quot;
+typeHandler=&quot;org.apache.ibatis.type.BlobTypeHandler&quot;/&gt;
+&lt;/resultMap&gt;
+</code></pre><p>实际上，不加入加粗代码的typeHandler属性，MyBatis也能检测得到，并使用合适的typeHandler进行转换。</p>
+<p>在现实中，一次性地将大量数据加载到JVM中，会给服务器带来很大压力，所以在更多的时候，一个考虑使用文件流的形式。这个时候只要把POJO的属性content修改为inputStream即可。如果没有typeHandler声明，那么系统就会探测并使用BlobInputStreamTypeHandler为你转换结果，这个时候需要把typeHandler修改为BlobInuputStreamTypeHandler。</p>
+<p>因为性能不佳，文件的操作在大型互联网的网站并不常用。更多的时候，大型互联网的网站会采用文件服务器的形式，通过更为高速的文件系统操作。这是搭建高效服务器需要注意的地方。</p>
+<h1 id="46-objectfactory对象工厂">4.6 ObjectFactory(对象工厂)</h1>
+<p>当创建结果集时，MyBatis会使用一个对象工厂来完成创建这个结果集实例。在默认情况下，MyBatis会使用其定义的对象工厂 ——DefaultObjectFactory来完成对应的工作。MyBatis允许注册自定义的ObjectFactory。如果自定义，则需要实现接口ObjectFactory ，并给与配置，在大部分情况下，我们不需要自定义返回规则，因为这些比较复杂而且容易出错，在更多的情况下，都会考虑继承系统已经实现好的DefaultObjectFactory，通过一定的改写来完成我们所需要的工作。</p>
+<p>然后对它进行配置</p>
+<pre><code>&lt;objectFactory type=&quot;com.learn.chapter4.objectfactory.MyObjectFactory&quot;&gt;
+&lt;property name=&quot;prop1&quot; value=&quot;value1&quot;&gt;
+&lt;/objectFactory&gt;
+</code></pre><p>这样MyBatis就会采用配置的MyObjectFactory来生成结果集对象。</p>
+<p>如果打断点调试一步步跟进，那么你会发现MyBatis创建了一个List对象和一个Role对象。它会先调用方法1，然后调用方法2，只是最后生成同一个对象，所以在写入的判断中，始终返回的时true。因为返回的是一个Role对象，所以它会最后适配为一个Role对象，这就是它的工作过程。</p>
+<h1 id="47-插件">4.7 插件</h1>
+<p>插件时MyBatis中最强大和灵活的组件，同时也是最复杂、最难以使用的组件，而且它十分危险，因为它将覆盖MyBatis底层对象的核心方法和属性。如果操作不当将产生严重后果，甚至时摧毁MyBatis框架。所以在研究插件之前，要清楚掌握MyBatis底层的构成和运行原理，否则将难以安全高效地使用它。</p>
+<h1 id="48-environments">4.8 environments</h1>
+<p>在MyBatis中，运行环境主要的作用是配置数据库信息，它可以配置多个数据库，一般而言只需要配置其中的一个就可以了。它下面又分为两个可配置的元素：事务管理器、数据源。在实际的工作中，大部分情况下会采用Spring对数据源和数据库的事务进行管理。</p>
+<h2 id="481-transactionmanager">4.8.1 transactionManager</h2>
+<p>在MyBatis中，transactionManager提供了两个实现类  ，需要实现Transaction。它主要的工作就是提交、回滚和关闭数据库事务。MyBatis为Transaction提供了两个实现类：JdbcTransaction和ManagedTransaction。对应的两个工厂还需要实现TransactionFactory接口，通常它们会生成对应的Transaction对象。</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>JDBC使用JdbcTransactionFactory生成的JdbcTransaction对象实现。它是以JDBC的方式对数据库的提交和回滚进行操作。</p>
+<p>MANAGED使用ManagedTransactionFactory生成的ManagedTransaction对象实现。它的提交和回滚方法不用任何操作，而是把事务交给容器处理。在默认情况下，它会关闭连接，然而一些容器并不希望这样，因此需要将closeConnection属性设置为false来组织它的默认关闭行为。</p>
+<p>不想采用MyBatis的规则，我们可以这样配置：</p>
+<!-- raw HTML omitted -->
+<p>实现一个自定义事务工厂</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyTransactionFactory</span> <span style="color:#66d9ef">implements</span> TransactionFactory<span style="color:#f92672">{</span>
+	<span style="color:#a6e22e">@override</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setProperties</span><span style="color:#f92672">(</span>Properties props<span style="color:#f92672">){}</span>
+	
+	<span style="color:#a6e22e">@override</span>
+	<span style="color:#66d9ef">public</span> Transaction <span style="color:#a6e22e">newTransaction</span><span style="color:#f92672">(</span>Connection conn<span style="color:#f92672">){</span>
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> MyTransaction<span style="color:#f92672">(</span>conn<span style="color:#f92672">);</span>
+	<span style="color:#f92672">}</span>
+	
+	<span style="color:#a6e22e">@override</span>
+	<span style="color:#66d9ef">public</span> Transaction <span style="color:#a6e22e">newTransaction</span><span style="color:#f92672">(</span>DataSource dataSource<span style="color:#f92672">,</span>TransactionIsolationLevel level<span style="color:#f92672">,</span><span style="color:#66d9ef">boolean</span> autoCommit<span style="color:#f92672">){</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> MyTransaction<span style="color:#f92672">(</span>datasource<span style="color:#f92672">,</span>level<span style="color:#f92672">,</span>autoCommit<span style="color:#f92672">);</span>
+	<span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+	
+</code></pre></div><p>这里就实现了TransactionFactory所定义的工厂方法，这个时候还需要事务实现类MyTransaction,它用于实现Transaction接口。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyTransaction</span> <span style="color:#66d9ef">extends</span> JdbcTransaction <span style="color:#66d9ef">implements</span> Transaction<span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#a6e22e">MyTransaction</span><span style="color:#f92672">(</span>DataSource ds<span style="color:#f92672">,</span>TransactionIsolationLevel desiredLevel<span style="color:#f92672">,</span><span style="color:#66d9ef">boolean</span> desiredAutoCommit<span style="color:#f92672">){</span>
+		<span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>ds<span style="color:#f92672">,</span>desiredLevel<span style="color:#f92672">,</span>desiredAutoCommit<span style="color:#f92672">);</span>
+	<span style="color:#f92672">}</span>
+	
+	<span style="color:#66d9ef">public</span> <span style="color:#a6e22e">MyTransaction</span><span style="color:#f92672">(</span>Connection connection<span style="color:#f92672">){</span>
+	<span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>connection<span style="color:#f92672">);</span>
+	<span style="color:#f92672">}</span>
+	
+	<span style="color:#a6e22e">@override</span>
+	<span style="color:#66d9ef">public</span> Connection <span style="color:#a6e22e">getConnection</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> SQLException<span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getConnection</span><span style="color:#f92672">();</span>
+	<span style="color:#f92672">}</span>
+	
+	<span style="color:#a6e22e">@override</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">commit</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> SQLException<span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">commit</span><span style="color:#f92672">();</span>
+	<span style="color:#f92672">}</span> 
+	
+	<span style="color:#a6e22e">@override</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">rollback</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> SQLException<span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">rollback</span><span style="color:#f92672">();</span>
+	<span style="color:#f92672">}</span> 
+	
+	<span style="color:#a6e22e">@override</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">close</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> SQLException<span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">();</span>
+	<span style="color:#f92672">}</span> 
+	
+	<span style="color:#a6e22e">@override</span>
+	<span style="color:#66d9ef">public</span> Integer <span style="color:#a6e22e">getTimeout</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> SQLException<span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">return</span>	<span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getTimeout</span><span style="color:#f92672">();</span>
+	<span style="color:#f92672">}</span> 
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这样就能通过自定义事务规则，满足特殊的需要。</p>
+<h2 id="482-environment数据源环境">4.8.2 environment数据源环境</h2>
+<p>environment的主要作用是配置数据库，在MyBatis中，数据库通过PooledDataSourceFactory、UnpooledDataSourceFactory和JndiDataSourceFactory三个工厂类来提供，前两者对应产生PooledDataSource、UnpooledDataSource类对象，而JndiDataSourceFactory则会根据JNDI的信息拿到外部容器实现的数据库连接对象。无论如何这三个工厂类，最后生成的产品都会是一个实现了DataSource接口的数据库连接对象。</p>
+<p>由于存在三种数据源，所以可以按照下面的形式配置它们。</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>下面论述以下这三种数据源</p>
+<p><strong>1.UNPOOLED</strong></p>
+<p>UNPOOLED采用非数据库池的管理方式，每次请求都会打开一个新的数据库连接，所以创建会比较慢。在一些 对性能没有很高要求的场合可以使用它。对有些数据库而言，使用连接池不是那么重要，那么它也是一个比较理想的选择。UNPOOLED类型的数据源可以配置以下几种属性：</p>
+<p>driver数据库驱动名，比如com.mysql.jdbc.Driver</p>
+<p>url连接数据库的URL</p>
+<p>username用户名</p>
+<p>password密码</p>
+<p>defaultTransactionIsolationLevel默认的连接事务隔离级别。</p>
+<p>传递属性给数据库驱动也是一个可选项，注意属性的前缀为”driver.&ldquo;例如driver.encoding=UTF8。它会通过Driver Manager.getConnection(url,driverProperties)方法传递值为UTF8的encoding属性给数据库驱动。</p>
+<p>2.POOLED</p>
+<p>数据源POOLED利用“池”的概念将JDBC的Connection对象组织起来，它开始会有一些空置，并且已经连接好的数据库连接，所以请求时，无须再建立和验证，省去了创建新的连接实例时所必须的初始化和认证时间。它还控制最大连接数，避免过多的连接导致系统瓶颈。</p>
+<p>除了UNPOOLED下的属性外，会有更多属性用来配置POOLED的数据源：</p>
+<p>poolMaximumActiveConnections是在任意时间都存在的活动连接数量，默认值是10.</p>
+<p>poolMaximumIdleConnections是任意时间可能存在的空闲连接数</p>
+<p>poolMaximumCheckoutTime在被强制返回之前，池中连接被检出的时间，默认值为20000毫秒。</p>
+<p>poolTimeToWait是一个底层设置，如果获取连接花费相当长的时间，它会给连接池打印状态日志，并重新尝试获取一个连接（避免在误配置的情况下一直失败），默认值为20000毫秒。</p>
+<p>poolPingQuery为发送到数据库的侦测查询，用来检验连接是否是否处在政策工作秩序中，并准备接受请求。默认是“NO PING QUERY SET&rdquo; ，这会导致多数数据库驱动失败时带有一个恰当的错误消息。</p>
+<p>poolPingEnabled为是否启用侦测查询。若开启，也必须使用一个可执行的SQL语句设置poolPingQuery属性（最后时一个非常快的SQL），默认值为false。</p>
+<p>3.JNDI</p>
+<p>数据源JNDI的实现是为了能在如EJB或应用服务器这类容器中使用，容器可以集中或在外部配置数据源，然后放置一个JNDI上下文引用。这种数据源配置只需要连哥哥属性。</p>
+<p>initial_context 用来在InitialContext中寻找上下文。initial_context 是个可选属性，如果忽略，那么data_source属性将会直接从InitialContext中寻找。</p>
+<p>data_source是引用数据源实例位置上下文的路径。当提供initial_context配置时，data_source会在其返回的上下文中进行查找；当没有提供initial_context时，data_source直接在InitialContext中查找。</p>
+<p>与其他数据源配置类似，它可以通过添加前缀”env&quot;直接把属性传递给初始上下文。比如env.encoding=UTF8，就会在初试上下文实例化时往它的构造方法传递值为UTF8的encoding属性。</p>
+<p>MyBatis也支持第三方数据源，例如使用DBCP数据库，那么需要提供一个自定义的DataSourceFactory，这样MyBatis就会采用配置的数据源工厂来生产数据源了。</p>
+<h1 id="49-databaseidprovider数据库厂商标识">4.9 databaseIdProvider数据库厂商标识</h1>
+<p>databaseIdProvider元素主要是支持多种不同厂商的数据库，虽然这个元素并不常用，但是在一些公司却十分有用，因为有些软件公司需要给不同的客户提供系统，使用何种数据库往往是由客户决定的。举个例子，软件公司默认的是MySQL数据库，而客户只打算使用Oracle，那就麻烦了。虽然在移植性方面，MyBatis不如Hibernate，但是它也提供databaseIdProvider进行支持。</p>
+<h2 id="491-使用系统默认的databaseidprovider">4.9.1 使用系统默认的databaseIdProvider</h2>
+<p>配置databaseIdProvider属性</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>databaseIdProvider type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;DB_VENDER&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>property name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Oracle&#34;</span> value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;oracle&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>property name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;MYSQL&#34;</span> value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mysql&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>property name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;DB2&#34;</span> value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;db2&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/</span>databaseIdProvider<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>property元素的属性name是数据库的名称，如果不确定如何填写，那么可以使用JDBC创建其数据库连接对象Connection,然后通过代码connection.getMetaData().getDatabaseProductName()获取。而属性value是它的一个别名，在MyBatis里可以通过这个别名标识一条SQL适用于哪种数据库运行。然后，改造映射器的SQL。</p>
+<pre><code>&lt;select id=&quot;getRole&quot; parameterType=&quot;long&quot;
+resultType=&quot;role&quot; databaseId=&quot;oracle&quot;&gt;
+select id,role_name as roleName,note from t_role where id=#{id}
+&lt;/select&gt;
+</code></pre><p>使用多数据库SQL时需要配置databaseIdProvidertype的属性。当databaseIdProvidertype属性被配置时，系统会优先取到和数据库配置一致的SQL。如果没有，则取没有databaseId的SQL，可以把它当作默认值。如果还是取不到，则会抛出异常，说明无法匹配到对应的SQL。</p>
+<h2 id="492-不使用系统规则">4.9.2 不使用系统规则</h2>
+<p>4.9.1使用了Mybatis默认规则，当然也可以使用自定义的规则。只是它必须实现MyBatis提供的接口DatabaseIdProvider。</p>
+<p>简单论述一下，setProperties方法可以读取配置的参数，getDatabaseId方法则是需要完成的逻辑，比如判断是MYSQL数据库，则返回MYSQL，那么系统就会拿这个给返回值取匹配配置了databaseIdd SQL语句，然后对它进行配置。</p>
+<h1 id="410-引入映射器的方法">4.10 引入映射器的方法</h1>
+<p>映射器是MyBatis最复杂、最核心的组件。它定义命名空间的方法，命名空间对应的是一个接口的全路径，而不是实现类。</p>
+<p>首先，定义接口。然后，给出XML文件。</p>
+<p>引入映射器的方法一般分为以下几种。</p>
+<p><em><strong>1.用文件路径引入映射器</strong></em></p>
+<pre><code>&lt;mappers&gt;
+&lt;mapper resource=&quot;com/learn/ssm/chapter4/mapper/roleMapper.xml&quot;/&gt;
+&lt;/mappers&gt;
+</code></pre><p><em><strong>2.用包名引入映射器</strong></em></p>
+<pre><code>&lt;mappers&gt;
+&lt;package name=&quot;com.learn.ssm.chapter4.mapper&quot;/&gt;
+&lt;/mappers&gt;
+</code></pre><p><em><strong>3.用类注册引入映射器</strong></em></p>
+<pre><code>&lt;mappers&gt;
+&lt;mapper class=&quot;com.learn.ssm.chapter4.mapper.UserMapper&quot;/&gt;
+&lt;mapper class=&quot;com.learn.ssm.chapter4.mapper.RoleMapper&quot;/&gt;
+&lt;/mappers&gt;
+</code></pre><p><em><strong>4.用userMapper.xml引入映射器</strong></em></p>
+<pre><code>&lt;mappers&gt;
+&lt;mapper url=&quot;file:///var/mappers/com/learn/ssm/chapter4/mapper/roleMapper.xml&quot;/&gt;
+&lt;mapper url=&quot;file:///var/mappers/com/learn/ssm/chapter4/mapper/RoleMapper.xml&quot;/&gt;
+&lt;/mappers&gt;
+</code></pre><p>根据实际情况使用合适的方式引入它们。</p>
 
     </div>
     <div class="post-footer">
