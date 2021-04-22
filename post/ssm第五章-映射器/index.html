@@ -13,14 +13,26 @@
     
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="SSM第五章-映射器"/>
-<meta name="twitter:description" content=""/>
+<meta name="twitter:description" content="映射器是MyBatis最复杂且最重要的组件。它由一个接口加上XML文件（或者注解）组成。在映射器中可以配置参数、各类的SQL语句、存储过程、缓存、级联等复杂的内容，并且通过简易的映射规则映射到指定的POJO或者其他对象上，映射器能有效消除JDBC底层的代码。
+在MyBatis应用程序开发中，映射器的开发工作量占全部工作量的80%。在MyBatis中映射器的配置顶级元素不多，但是里面的一些细节，比如缓存、级联、#和￥字符的替换参数、存储过程需要我们进一步学习。
+MyBatis的映射器也可以使用注解完成，但是它在企业应用不广，原因主要来自3个方面：其一，面对复杂性，SQL会显得无力，尤其是长SQL。其二，注解的可读性比较差。其三，在功能上，注解丢失了XML上下文相互引用的功能。
+5.1 概述 ![2021-04-0654_4 (Copy)](C:/Users/Zereal/Desktop/2021-04-0654_4 (Copy).jpg)
+parameterMap是MyBatis官方不推荐的元素，可能即将被删除。
+5.2 select元素——查询语句 在映射器中select元素代表SQL的select语句，用于查询。在SQL中，select语句是用得最多的语句，在MyBatis中select元素也是用得最多的元素，使用的多就意味着强大和复杂。
+   元素 说明 备注     id 它和Mapper的命名空间组合起来是唯一的，供MyBatis调用 如果命名空间和id结合起来不唯一，MyBatis将抛出异常   parameterType 可以给出类的全命名，也可以给出别名，但是别名必须是MyBatis内部定义或者自定义的 ——   parameterMap 即将废弃的元素，不讨论 ——   resultType 定义类的全路径，在允许自动匹配的情况下，结果集将通过JavaBean的规范映射：或定义为int、double、float、map等参数；也可以使用别名，但必须要符合别名的命名规范，且不能和resultMap同时使用 常用的参数之一，比如统计总条数数时可以把它的值设置为int   resultMap 它是映射集的引用，将执行强大的映射功能，我们可以使用resultType和resultMap其中的一个，resultMap能提供自定义映射规则的机会。 是MyBatis最复杂的元素，可以配置映射规则、级联、typeHandler   flushCache 它的作用是在调用SQL后，是否要求MyBatis清空之前查询本地缓存和二级缓存 取值为布尔值，true/false.默认值为false   useCache 启动二级缓存的开关，是否要求MyBatsi将此次结果缓存 取值为布尔值，true/false.默认值为true   timeout 设置超时参数，超时将抛出异常，单位为秒 默认值是数据库厂商提供的JDBC驱动所设置的秒数   fetchSize 获取记录的总条数设定 默认值是数据库厂商提供的JDBC驱动所设置的条数   statementType 告诉Mybatis使用哪个JDBC的Statement工作，取值为STATEMENT、PREPARED、CALLABLE 默认值为PREPARED   resultSetType 这是对JDBC的resultSet接口而言，它的值包括FORWARD_ONLY（游标允许向前访问）、SCROLL_SENSITIVE（双向滚动，但不及时更新，就是如果数据库里的数据修改过，并不再resultSet中反映出来）、SCROLL_INSENSITIVE（双向滚动，并及时跟踪数据库的更新，以便更改resultSet中的数据） 默认值是数据库厂商提供的JDBC驱动所设置的   databaseId 配置使用 提供多种数据库的支持   resultOrdered 这个设置仅适用于嵌套结果select语句，如果为true，就是假设包含了嵌套结果集或是分组了，当返回一个主结果行是，就不能引用前面结果集了。这就确保了在获取嵌套的结果集时不至于导致内存不够用。 取值为布尔值，true/false。默认值为false   resultSets 适用于多个结果集的情况，它将列出执行SQL后每个结果集的名称，每个名称之间用逗号分隔 很少使用    在实际工作中用得最多的是id、parameterType、resultType、resultMap，如果要设置缓存，还会使用到flushCache、useCache，其他的都是不常用的功能。这里主要讨论id、parameterType、resultType、resultMap及它们的映射规则。"/>
 
     <meta property="og:title" content="SSM第五章-映射器" />
-<meta property="og:description" content="" />
+<meta property="og:description" content="映射器是MyBatis最复杂且最重要的组件。它由一个接口加上XML文件（或者注解）组成。在映射器中可以配置参数、各类的SQL语句、存储过程、缓存、级联等复杂的内容，并且通过简易的映射规则映射到指定的POJO或者其他对象上，映射器能有效消除JDBC底层的代码。
+在MyBatis应用程序开发中，映射器的开发工作量占全部工作量的80%。在MyBatis中映射器的配置顶级元素不多，但是里面的一些细节，比如缓存、级联、#和￥字符的替换参数、存储过程需要我们进一步学习。
+MyBatis的映射器也可以使用注解完成，但是它在企业应用不广，原因主要来自3个方面：其一，面对复杂性，SQL会显得无力，尤其是长SQL。其二，注解的可读性比较差。其三，在功能上，注解丢失了XML上下文相互引用的功能。
+5.1 概述 ![2021-04-0654_4 (Copy)](C:/Users/Zereal/Desktop/2021-04-0654_4 (Copy).jpg)
+parameterMap是MyBatis官方不推荐的元素，可能即将被删除。
+5.2 select元素——查询语句 在映射器中select元素代表SQL的select语句，用于查询。在SQL中，select语句是用得最多的语句，在MyBatis中select元素也是用得最多的元素，使用的多就意味着强大和复杂。
+   元素 说明 备注     id 它和Mapper的命名空间组合起来是唯一的，供MyBatis调用 如果命名空间和id结合起来不唯一，MyBatis将抛出异常   parameterType 可以给出类的全命名，也可以给出别名，但是别名必须是MyBatis内部定义或者自定义的 ——   parameterMap 即将废弃的元素，不讨论 ——   resultType 定义类的全路径，在允许自动匹配的情况下，结果集将通过JavaBean的规范映射：或定义为int、double、float、map等参数；也可以使用别名，但必须要符合别名的命名规范，且不能和resultMap同时使用 常用的参数之一，比如统计总条数数时可以把它的值设置为int   resultMap 它是映射集的引用，将执行强大的映射功能，我们可以使用resultType和resultMap其中的一个，resultMap能提供自定义映射规则的机会。 是MyBatis最复杂的元素，可以配置映射规则、级联、typeHandler   flushCache 它的作用是在调用SQL后，是否要求MyBatis清空之前查询本地缓存和二级缓存 取值为布尔值，true/false.默认值为false   useCache 启动二级缓存的开关，是否要求MyBatsi将此次结果缓存 取值为布尔值，true/false.默认值为true   timeout 设置超时参数，超时将抛出异常，单位为秒 默认值是数据库厂商提供的JDBC驱动所设置的秒数   fetchSize 获取记录的总条数设定 默认值是数据库厂商提供的JDBC驱动所设置的条数   statementType 告诉Mybatis使用哪个JDBC的Statement工作，取值为STATEMENT、PREPARED、CALLABLE 默认值为PREPARED   resultSetType 这是对JDBC的resultSet接口而言，它的值包括FORWARD_ONLY（游标允许向前访问）、SCROLL_SENSITIVE（双向滚动，但不及时更新，就是如果数据库里的数据修改过，并不再resultSet中反映出来）、SCROLL_INSENSITIVE（双向滚动，并及时跟踪数据库的更新，以便更改resultSet中的数据） 默认值是数据库厂商提供的JDBC驱动所设置的   databaseId 配置使用 提供多种数据库的支持   resultOrdered 这个设置仅适用于嵌套结果select语句，如果为true，就是假设包含了嵌套结果集或是分组了，当返回一个主结果行是，就不能引用前面结果集了。这就确保了在获取嵌套的结果集时不至于导致内存不够用。 取值为布尔值，true/false。默认值为false   resultSets 适用于多个结果集的情况，它将列出执行SQL后每个结果集的名称，每个名称之间用逗号分隔 很少使用    在实际工作中用得最多的是id、parameterType、resultType、resultMap，如果要设置缓存，还会使用到flushCache、useCache，其他的都是不常用的功能。这里主要讨论id、parameterType、resultType、resultMap及它们的映射规则。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://zereals7.github.io/post/ssm%E7%AC%AC%E4%BA%94%E7%AB%A0-%E6%98%A0%E5%B0%84%E5%99%A8/" />
-<meta property="article:published_time" content="2021-04-20T01:45:34+08:00" />
-<meta property="article:modified_time" content="2021-04-20T01:45:34+08:00" />
+<meta property="article:published_time" content="2021-04-22T18:36:47+08:00" />
+<meta property="article:modified_time" content="2021-04-22T18:36:47+08:00" />
 
 
   </head>
@@ -49,18 +61,113 @@
   <title>calendar</title>
   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
 </svg>
-          Apr 20, 2021
+          Apr 22, 2021
         </div>
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
   <title>clock</title>
   <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
 </svg>
-          0 min read
+          1 min read
         </div></div>
     </header>
     <div class="post-content">
-      
+      <p>映射器是MyBatis最复杂且最重要的组件。它由一个接口加上XML文件（或者注解）组成。在映射器中可以配置参数、各类的SQL语句、存储过程、缓存、级联等复杂的内容，并且通过简易的映射规则映射到指定的POJO或者其他对象上，映射器能有效消除JDBC底层的代码。</p>
+<p>在MyBatis应用程序开发中，映射器的开发工作量占全部工作量的80%。在MyBatis中映射器的配置顶级元素不多，但是里面的一些细节，比如缓存、级联、#和￥字符的替换参数、存储过程需要我们进一步学习。</p>
+<p>MyBatis的映射器也可以使用注解完成，但是它在企业应用不广，原因主要来自3个方面：其一，面对复杂性，SQL会显得无力，尤其是长SQL。其二，注解的可读性比较差。其三，在功能上，注解丢失了XML上下文相互引用的功能。</p>
+<h1 id="51-概述">5.1 概述</h1>
+<p>![2021-04-0654_4 (Copy)](C:/Users/Zereal/Desktop/2021-04-0654_4 (Copy).jpg)</p>
+<p>parameterMap是MyBatis官方不推荐的元素，可能即将被删除。</p>
+<h1 id="52-select元素查询语句">5.2 select元素——查询语句</h1>
+<p>在映射器中select元素代表SQL的select语句，用于查询。在SQL中，select语句是用得最多的语句，在MyBatis中select元素也是用得最多的元素，使用的多就意味着强大和复杂。</p>
+<table>
+<thead>
+<tr>
+<th align="center">元素</th>
+<th align="center">说明</th>
+<th align="center">备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">id</td>
+<td align="center">它和Mapper的命名空间组合起来是唯一的，供MyBatis调用</td>
+<td align="center">如果命名空间和id结合起来不唯一，MyBatis将抛出异常</td>
+</tr>
+<tr>
+<td align="center">parameterType</td>
+<td align="center">可以给出类的全命名，也可以给出别名，但是别名必须是MyBatis内部定义或者自定义的</td>
+<td align="center">——</td>
+</tr>
+<tr>
+<td align="center">parameterMap</td>
+<td align="center">即将废弃的元素，不讨论</td>
+<td align="center">——</td>
+</tr>
+<tr>
+<td align="center">resultType</td>
+<td align="center">定义类的全路径，在允许自动匹配的情况下，结果集将通过JavaBean的规范映射：或定义为int、double、float、map等参数；也可以使用别名，但必须要符合别名的命名规范，且不能和resultMap同时使用</td>
+<td align="center">常用的参数之一，比如统计总条数数时可以把它的值设置为int</td>
+</tr>
+<tr>
+<td align="center">resultMap</td>
+<td align="center">它是映射集的引用，将执行强大的映射功能，我们可以使用resultType和resultMap其中的一个，resultMap能提供自定义映射规则的机会。</td>
+<td align="center">是MyBatis最复杂的元素，可以配置映射规则、级联、typeHandler</td>
+</tr>
+<tr>
+<td align="center">flushCache</td>
+<td align="center">它的作用是在调用SQL后，是否要求MyBatis清空之前查询本地缓存和二级缓存</td>
+<td align="center">取值为布尔值，true/false.默认值为false</td>
+</tr>
+<tr>
+<td align="center">useCache</td>
+<td align="center">启动二级缓存的开关，是否要求MyBatsi将此次结果缓存</td>
+<td align="center">取值为布尔值，true/false.默认值为true</td>
+</tr>
+<tr>
+<td align="center">timeout</td>
+<td align="center">设置超时参数，超时将抛出异常，单位为秒</td>
+<td align="center">默认值是数据库厂商提供的JDBC驱动所设置的秒数</td>
+</tr>
+<tr>
+<td align="center">fetchSize</td>
+<td align="center">获取记录的总条数设定</td>
+<td align="center">默认值是数据库厂商提供的JDBC驱动所设置的条数</td>
+</tr>
+<tr>
+<td align="center">statementType</td>
+<td align="center">告诉Mybatis使用哪个JDBC的Statement工作，取值为STATEMENT、PREPARED、CALLABLE</td>
+<td align="center">默认值为PREPARED</td>
+</tr>
+<tr>
+<td align="center">resultSetType</td>
+<td align="center">这是对JDBC的resultSet接口而言，它的值包括FORWARD_ONLY（游标允许向前访问）、SCROLL_SENSITIVE（双向滚动，但不及时更新，就是如果数据库里的数据修改过，并不再resultSet中反映出来）、SCROLL_INSENSITIVE（双向滚动，并及时跟踪数据库的更新，以便更改resultSet中的数据）</td>
+<td align="center">默认值是数据库厂商提供的JDBC驱动所设置的</td>
+</tr>
+<tr>
+<td align="center">databaseId</td>
+<td align="center">配置使用</td>
+<td align="center">提供多种数据库的支持</td>
+</tr>
+<tr>
+<td align="center">resultOrdered</td>
+<td align="center">这个设置仅适用于嵌套结果select语句，如果为true，就是假设包含了嵌套结果集或是分组了，当返回一个主结果行是，就不能引用前面结果集了。这就确保了在获取嵌套的结果集时不至于导致内存不够用。</td>
+<td align="center">取值为布尔值，true/false。默认值为false</td>
+</tr>
+<tr>
+<td align="center">resultSets</td>
+<td align="center">适用于多个结果集的情况，它将列出执行SQL后每个结果集的名称，每个名称之间用逗号分隔</td>
+<td align="center">很少使用</td>
+</tr>
+</tbody>
+</table>
+<p>在实际工作中用得最多的是id、parameterType、resultType、resultMap，如果要设置缓存，还会使用到flushCache、useCache，其他的都是不常用的功能。这里主要讨论id、parameterType、resultType、resultMap及它们的映射规则。</p>
+<h2 id="521-简单的select元素的应用">5.2.1 简单的select元素的应用</h2>
+<pre><code>&lt;select id=&quot;countUserByFirstName&quot; parameterType=&quot;string&quot; resultType=&quot;int&quot;&gt;
+select count(*) total from t_user
+where user_name like concat(#(firstName),‘%’)
+&lt;/select&gt;
+</code></pre>
     </div>
     <div class="post-footer">
       
