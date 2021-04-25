@@ -66,7 +66,7 @@ MyBatis的映射器也可以使用注解完成，但是它在企业应用不广�
   <title>clock</title>
   <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
 </svg>
-          3 min read
+          6 min read
         </div></div>
     </header>
     <div class="post-content">
@@ -481,7 +481,331 @@ from t_role r where id<span style="color:#f92672">=</span><span style="color:#96
 <h1 id="56-参数">5.6 参数</h1>
 <h2 id="561-概述">5.6.1 概述</h2>
 <p>一些数据库字段返回为null,而MyBatis系统又检测不到使用何种jdbcType进行处理时，会发生异常的情况，这个时候执行对应的typeHandler进行处理，MyBatis就知道采取哪个typeHandler进行处理了。</p>
-<p>MyBatis会更具javaType和jdbcType去检测使用哪个typeHandler。如果roleName是一个没有注册的类型，那么就会发生异常。因为MyBatis无法找到对应的typeHandler来转换数据类型。此时可以</p>
+<p>MyBatis会更具javaType和jdbcType去检测使用哪个typeHandler。如果roleName是一个没有注册的类型，那么就会发生异常。因为MyBatis无法找到对应的typeHandler来转换数据类型。此时可以 自定义typeHandler,通过类似的办法指定，就不会抛出异常了。在一些因为数据库返回为null，存在可能抛出异常的情况下，也可以指定对应的jdbcType,从而让MyBatis能够探测到使用哪个typeHandler进行转换眼空指针异常，比如代码：</p>
+<pre><code>#{age,javaType=int,jdbcType=NUMERIC,typeHandler=MyTypeHandler}
+</code></pre><p>MyBatis也提供了游戏额对控制数值的精度支持，类似于以下代码：</p>
+<p>#{width,javaType=double,jdbcType=NUMERIC,numericScale=2}</p>
+<p>这样MyBatis就会控制这个精度，只保留数字的两位有效位。</p>
+<h2 id="562-存储过程参数支持">5.6.2 存储过程参数支持</h2>
+<p>MyBatis对存储过程也进行了支持，在存储过程中存在：输入（IN）参数、输出 （OUT）参数和输入输出（INOUT）参数3种类型。输入参数是外界需要传递给存储过程的；输出参数是存储过程经过处理后返回的；输入输出参数一方面外界需要课传递的给它，另一方面在最后存储过程中也会将它返回给调用者。</p>
+<p>在MyBatis中提供对存储过程的良好支持，对于简单的输出参数（比如INT\VARCHAR\DECIMAL）可以使用POJO提供映射来完成。有时候存储过程会返回一些游标，而MyBatis也提供idbcType为CURSOR对此进行支持，不过先关注参数的定义。存储过程的参数类型有3种。</p>
+<pre><code>#{id，mode=IN}
+#{roleName,mode=OUT}
+#{note,mode=INOUT}
+</code></pre><p>其中，mode属性的3个配置选项对应3种存储过程的参数类型。</p>
+<ul>
+<li>IN:输入参数</li>
+<li>OUT：输出参数</li>
+<li>INOUT：输入输出参数</li>
+</ul>
+<h2 id="563--特殊字符串的替换和处理和">5.6.3  特殊字符串的替换和处理（#和$）</h2>
+<p>​	在现实中，由于一些因素会造成构成SQL查询的列名发生变化，比如产品类型为大米，查询的列名是重量，而产品类型为灯具，查询的列名是数量，这时候需要构建动态列名。而对于表格也是这样的，比如为了减缓数据库表的压力，有些企业会将一张很大的数据库表按年份拆分，比如购买记录表。现实中由于记录比较多，可能为了方便等，这时往往需要构建动态表名。在MyBatis中，构建动态列名常常要传递类似于字符串的columns=“cool1,col2,col3&hellip;&ldquo;给SQL，让其组装成为SQL语句。如果不想被MyBatis像处理普通参数一样把它设为”col1,col2,col3&hellip;&quot;，那么可以写成select${columns} from t_tablename,这样MyBatis就不会转译columns，而不是作为SQL的参数进行设置了，而变为直出，这句SQL就会变为select col1,col2,col3&hellip;from t_tablename。</p>
+<p>只是这样是对SQL而言是不安全的，MyBatis提供灵活性的同时，也需要自己去控制参数，以保证SQL运转的正确性和安全性。</p>
+<h1 id="57-resultmap元素">5.7 resultMap元素</h1>
+<p>resultMap的作用是定义映射规则、级联的更新、定制类型转化器等。resultMap定义的主要是一个结果集的映射关系，也就是SQL到JavaBean的映射关系定义，它也支持级联等特性。只是MyBatis现有的版本只支持resultMap查询，不支持更新或者保存，更不必说级联的更新、删除和修改了。</p>
+<h2 id="571-resultmap元素的构成">5.7.1 resultMap元素的构成</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>resultMap<span style="color:#f92672">&gt;</span>
+	<span style="color:#f92672">&lt;</span>constructor<span style="color:#f92672">&gt;</span>
+	<span style="color:#f92672">&lt;</span>idArg<span style="color:#f92672">/&gt;</span>
+	<span style="color:#f92672">&lt;</span>arg<span style="color:#f92672">/&gt;</span>
+	<span style="color:#f92672">&lt;/</span>constructor<span style="color:#f92672">&gt;</span>
+	<span style="color:#f92672">&lt;</span>id<span style="color:#f92672">/&gt;</span>
+	<span style="color:#f92672">&lt;</span>result<span style="color:#f92672">/&gt;</span>
+	<span style="color:#f92672">&lt;</span>association<span style="color:#f92672">/&gt;</span>
+	<span style="color:#f92672">&lt;</span>collection<span style="color:#f92672">/&gt;</span>
+	<span style="color:#f92672">&lt;</span>discriminator<span style="color:#f92672">/&gt;</span>
+	<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">case</span><span style="color:#f92672">/&gt;</span>
+	<span style="color:#f92672">&lt;/</span>discriminator<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>resultMap<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>其中constructor元素用于配置构造方法。一个POJO可能不存在没有参数的构造方法，可以使用constructor进行配置。假设角色类RoleBean不存在没有参数的构造方法，它的构造方法声明为public RoleBean（Integer id ,String roleName),那么需要配置结果集。</p>
+<pre><code>&lt;resultMap ......&gt;
+&lt;constructor&gt;
+&lt;idArg column=&quot;id&quot; javaType=&quot;int&quot;/&gt;
+&lt;arg column=&quot;role_name&quot; javaType=&quot;string&quot;/&gt;
+&lt;/constructor&gt;
+......
+&lt;/resultMap&gt;
+</code></pre><p>这样MyBatis就会使用对应的构造方法来构造POJO了</p>
+<p>id元素表示哪个列是主键，允许多个主键，多个主键则称为联合主键。result是配置POJO到SQL列名的映射关系。result元素和idArg元素的属性。如下表所示</p>
+<table>
+<thead>
+<tr>
+<th>元素名称</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>property</td>
+<td>映射到列结果的字段和属性。如果POJO的属性匹配的是存在的且与给定SQL列名（column元素）相同的，那么MyBatis就会映射到POJO上</td>
+<td>可以使用导航式的字段，比如访问一个学生对象需要访问学生证(selfcard)的发证日期(issueDate)，那么可以写成selfcard.issueDate</td>
+</tr>
+<tr>
+<td>column</td>
+<td>对应的是SQL的列</td>
+<td>——</td>
+</tr>
+<tr>
+<td>javaType</td>
+<td>配置Java的类型</td>
+<td>可以是特定的类完全限定名或者MyBatis上下文的别名</td>
+</tr>
+<tr>
+<td>jdbcType</td>
+<td>配置数据库类型</td>
+<td>这是一个JDBC的类型，MyBatis已经做了限定，支持大部分常用的数据库类型</td>
+</tr>
+<tr>
+<td>typeHandler</td>
+<td>类型处理器</td>
+<td>允许用特定的处理器来覆盖MyBatis默认的处理器。这就要指定jdbcType和javaType相互转化的规则</td>
+</tr>
+</tbody>
+</table>
+<p>此外还要association、collection和discriminator这些元素，关于级联的问题比较复杂。一条查询SQL执行后，就会返回结果，而结果可以使用map存储，也可以使用POJO存储。</p>
+<h2 id="572-使用map存储结果集">5.7.2 使用map存储结果集</h2>
+<p>一般而言，任何select语句都可以使用map存储。</p>
+<pre><code>&lt;select id=&quot;findColorByNote&quot; parameterType=&quot;string&quot; resultType=&quot;map&quot;&gt;
+	select id,color,note from t_color where note like concat('%',#{note},'%')
+&lt;/select&gt;
+</code></pre><p>使用map原则上是可以匹配所有结果集的，但是使用map接口就意味着可读性的下降，因为使用map时需要进一步了解map键值的构成和数据类型，所以这不是一种推荐的方式，更多时候会推荐使用POJO方式。</p>
+<h2 id="573-使用pojo存储结果集">5.7.3 使用POJO存储结果集</h2>
+<p>使用map方式就意味着可读性的丢失，POJO是最常用的方式。一方面可以使用自动映射，正如使用resultType属性一样，但是有时候需要更为复杂的映射或者级联，这个时候还可以使用select语句的 resultMap属性配置映射集合，只是使用前要配置类似的resultMap。</p>
+<pre><code>&lt;resultMap id=&quot;roleResultMap&quot; type=&quot;com.learn.chapter4.pojo.Role&quot;&gt;
+&lt;id property=&quot;id&quot; column=&quot;id&quot;/&gt;
+&lt;result property=&quot;roleName&quot; column=&quot;role_name&quot;/&gt;
+&lt;result peoperty=&quot;note&quot; column=&quot;note&quot;/&gt;
+&lt;/resultMap&gt;
+</code></pre><p>resultMap元素的属性id代表这个resultMap的标识，type代表着需要映射的POJO，这里可以使用MyBatis定义好的类的别名，也可以使用自定义的类的全限定名。</p>
+<p>在映射关系中，id元素表示这个对象的主键，property代表着POJO的属性名称，column表示数据库SQL的列名，于是POJO就和数据库SQL的结果一一对应起来了。然后在映射文件中的select元素里做以下的配置，便可以使用resultMap了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>select parameterType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;long&#34;</span> id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;getRole&#34;</span> resultMap<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">&#34;</span>roleResultMap<span style="color:#f92672">&gt;</span>
+select id<span style="color:#f92672">,</span>role_name<span style="color:#f92672">,</span>note from t_role where id<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>id<span style="color:#f92672">}</span>
+<span style="color:#f92672">&lt;/</span>select<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>由此可见，SQL语句的列名和roleResultMap的column是一一对应的，使用XML配置的结果集，还可以配置typeHandler、javaType、jdbcType等更多内容，但是这条语句配置了resultMap就不能再配置resultType了。</p>
+<h1 id="58-级联">5.8 级联</h1>
+<p>级联是resultMap中的配置，它比较复杂，需要讨论的内容很多。</p>
+<p>级联是一个数据库实体的概念。比如角色需要存在用户与之对应，这样就有角色用户表，一个角色可能有多个用户没这就是一对多的级联；除此之外，还有一对一的级联，比如身份证和公民是一对一的关系。再MYBatis中还有一种被称为鉴别器的级联，它是一种可以选择具体实现类的级联，比如要查找雇员及其体检表的信息，但是雇员有性别之分，而根据性别的不同，其体检表的项目也会不一样，比如男性体检表可能有前列腺的项目，而女性体检表可能有子宫的项目，那么体检表就应该分为男性和女性两种，从而根据性别区分关联。</p>
+<p>级联不是必须的，级联的好处是获取关联数据十分便捷，但是级联过多会增加系统的复杂度，同时降低系统的性能，此增彼减，所以当级联的层级超过3层时，就不要考虑使用级联了，因为这样会造成多个对象的关联，导致系统的耦合、复杂和难以维护。再现实的使用过程中，要根据实际情况判断是否需要使用级联。</p>
+<h2 id="581-mybatis中的级联">5.8.1 MyBatis中的级联</h2>
+<p>MyBatis中的级联分为3种：</p>
+<ul>
+<li>鉴别器（discriminator）：它是一个根据某些条件决定采用具体实现类级联的方案，比如体检表要根据性别去区分。</li>
+<li>一对一（association）：比如学生证和学生就是一种一对一的级联，雇员和工牌表也是一种一对一的级联。</li>
+<li>一对多（collection）:比如班主任和学生就是一种一对多的级联。</li>
+</ul>
+<p>值得注意的是，MyBatis没有多对多的级联，因为多对多级联比较复杂，使用困难，而且可以通过两个一对多级联进行替换，所以MyBatis不支持多对多级联了。</p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/20210425204725.jpg" alt="扫描全能王 2021-04-25 20.44_4 (Copy)"></p>
+<p>分析雇员级联模型：</p>
+<ul>
+<li>该模型是以雇员为中心的</li>
+<li>雇员表和工牌表是一对一的级联关系</li>
+<li>雇员表和员工任务表是一对多的级联关系</li>
+<li>员工任务表和任务表是一对一的级联关系</li>
+<li>每个雇员都会有一个体检表，随着雇员表字段性别取值的不同，会有不同的关联表。</li>
+</ul>
+<h2 id="582-建立pojo">5.8.2 建立POJO</h2>
+<p>根据设计模型建立对应的POJO。首先看体检表，由于男性和女性体检表有多个字段重复，于是可以先设计一个父类，然后通过继承的方式来完成POJO</p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/20210425205255.jpg" alt="扫描全能王 2021-04-25 20.44_5 (Copy)"></p>
+<p>其中MaleHealthForm和FemaleHealthForm是HealthForm的子类，由此可以得到3个关于体检表的POJO</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/************体检表父类**************/</span>
+<span style="color:#f92672">package</span> com.ssm.chapter5.pojo<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HealthForm</span><span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">private</span> Long id<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> Long empId<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String heart<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String liver<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String spleen<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String lung<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String kidney<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String note<span style="color:#f92672">;</span>
+
+	<span style="color:#75715e">/********setter and getter************/</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">/************女性体检表**************/</span>
+<span style="color:#f92672">package</span> com.ssm.chapter5.pojo<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FemaleHealthForm</span> <span style="color:#66d9ef">extends</span> HealthForm<span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">private</span> String uterus<span style="color:#f92672">;</span>
+	<span style="color:#75715e">/********setter and getter************/</span>
+<span style="color:#f92672">}</span>
+
+
+<span style="color:#75715e">/************男性体检表**************/</span>
+<span style="color:#f92672">package</span> com.ssm.chapter5.pojo<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MaleHealthForm</span> <span style="color:#66d9ef">extends</span> HealthForm<span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">private</span> String prostate<span style="color:#f92672">;</span>
+	<span style="color:#75715e">/********setter and getter************/</span>
+<span style="color:#f92672">}</span>
+
+</code></pre></div><p>显然这个关联关系是通过MyBatis的鉴别器（discriminator）去完成的。</p>
+<p>接下来设计员工表、工牌表和任务表的POJO，它们是以员工表作为核心的，先完成工牌表和任务表的POJO</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/************工牌**************/</span>
+<span style="color:#f92672">package</span> com.ssm.chapter5.pojo<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WorkCard</span><span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">private</span> Long id<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> Long empId<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String realName<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String department<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String mobile<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String position<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String note<span style="color:#f92672">;</span>
+	<span style="color:#75715e">/********setter and getter************/</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">/************任务**************/</span>
+<span style="color:#f92672">package</span> com.ssm.chapter5.pojo<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Task</span><span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">private</span> Long id<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String title<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String context<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String note<span style="color:#f92672">;</span>
+	<span style="color:#75715e">/********setter and getter************/</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>还剩雇员表和雇员仍无表，它们有一定的关联，先从雇员任务表入手，雇员任务表是通过任务编号和任务进行一对一关联的，这里只考虑其自身和任务编号的关联，而雇员对它的关联则由雇员去维护，这样就可以得到雇员任务POJO</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/************雇员仍无POJO**************/</span>
+<span style="color:#f92672">package</span> com.ssm.chapter5.pojo<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">EmployeeTask</span><span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">private</span> Long id<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> Long empId<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> Task task<span style="color:#f92672">=</span><span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String taskName<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String note<span style="color:#f92672">;</span>
+
+	<span style="color:#75715e">/********setter and getter************/</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>属性task是一个Task类对象，由它进行关联任务信息。设置雇员表是关键。雇员根据性别分为男雇员和女雇员，它们会有不同的体检表记录 ，但是无论男、女都是雇员，所以先建立一个雇员类（Employee）。它由男雇员（MaleEmployee）和女雇员（FemaleEmployee）两个子类。在MyBatis中，这就是一个鉴别器，通过雇员类的字段性别（sex）来决定使用哪个具体的子类(MaleEmployee或者FemaleEmployee)初始化对象（Employee）。它与工牌表是一对一的关联关系，对于雇员仍无表是一对多的关系，这样就可以得到3个类。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/************雇员父类**************/</span>
+<span style="color:#f92672">package</span> com.ssm.chapter5.pojo<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Employee</span><span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">private</span> Long id<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String realName<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> SexEnum sex<span style="color:#f92672">=</span><span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> Date birthday<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String mobile<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String email<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String position<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">private</span> String note<span style="color:#f92672">;</span>
+
+	<span style="color:#75715e">/********setter and getter************/</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">/************男雇员类**************/</span>
+<span style="color:#f92672">package</span> com.ssm.chapter5.pojo<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MaleEmpoyee</span> <span style="color:#66d9ef">extends</span> Employee<span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">private</span> MaleHealthForm maleHealthForm<span style="color:#f92672">=</span><span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+	<span style="color:#75715e">/********setter and getter************/</span>
+<span style="color:#f92672">}</span>
+
+
+<span style="color:#75715e">/************女雇员类**************/</span>
+<span style="color:#f92672">package</span> com.ssm.chapter5.pojo<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FemaleEmpoyee</span> <span style="color:#66d9ef">extends</span> Employee
+	<span style="color:#66d9ef">private</span> FemaleHealthForm femaleHealthForm<span style="color:#f92672">=</span><span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+	<span style="color:#75715e">/********setter and getter************/</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>MaleEmployee和FemaleEmployee都继承了Employee类，有着不同的体检表，Employee类是通过employeeTaskList属性和多个雇员任务进行一对多关联的，而工牌表是通过WorkCard进行一对一关联的，这样就完成了所有POJO的设计。</p>
+<h2 id="583-配置映射文件">5.8.3 配置映射文件</h2>
+<p>配置映射文件是级联的核心内容。这里对于Mapper的接口就不指出了，因为更具映射文件编写接口十分简单。从最简单的内容入手，最简单的内容无非是那些关联最少的POJO。4个 POJO中Task和WorkCard是相对独立的，所以它们的映射文件相对简单，它们和普通的Mapper并没有什么不同。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;**********</span>TaskMapper<span style="color:#f92672">.</span><span style="color:#a6e22e">xml</span><span style="color:#f92672">*******&gt;</span>
+<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">？</span>xml version<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1.0&#34;</span> encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;UTF-8&#34;</span> <span style="color:#f92672">?&gt;</span>
+<span style="color:#f92672">&lt;!</span>DOCTYPE mapper PUBLIC <span style="color:#e6db74">&#34;-//mybatis.org//DTD Mapper 3.0//EN&#34;</span>
+<span style="color:#e6db74">&#34;http://mybatis.org/dtd/mybatis-3-mapper.dtd&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>mapper namespace<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper.TaskMapper&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>select id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;getTask&#34;</span> parameterType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;long&#34;</span> resultTYpe<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">”</span>com<span style="color:#f92672">.</span><span style="color:#a6e22e">ssm</span><span style="color:#f92672">.</span><span style="color:#a6e22e">chapter5</span><span style="color:#f92672">.</span><span style="color:#a6e22e">pojo</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Task</span><span style="color:#f92672">&gt;</span>
+select id<span style="color:#f92672">,</span>title<span style="color:#f92672">,</span>context<span style="color:#f92672">,</span>niote from t_task where id<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>id<span style="color:#f92672">}</span>
+<span style="color:#f92672">&lt;/</span>select<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>mapper<span style="color:#f92672">&gt;</span>
+
+<span style="color:#f92672">&lt;**********</span>WorkCardMapper<span style="color:#f92672">.</span><span style="color:#a6e22e">xml</span><span style="color:#f92672">*******&gt;</span>
+<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">？</span>xml version<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1.0&#34;</span> encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;UTF-8&#34;</span> <span style="color:#f92672">?&gt;</span>
+<span style="color:#f92672">&lt;!</span>DOCTYPE mapper PUBLIC <span style="color:#e6db74">&#34;-//mybatis.org//DTD Mapper 3.0//EN&#34;</span>
+<span style="color:#e6db74">&#34;http://mybatis.org/dtd/mybatis-3-mapper.dtd&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>mapper namespace<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper.TaskMapper&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>select id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;getWorkCardByEmpId&#34;</span> parameterType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;long&#34;</span> resultTYpe<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">”</span>com<span style="color:#f92672">.</span><span style="color:#a6e22e">ssm</span><span style="color:#f92672">.</span><span style="color:#a6e22e">chapter5</span><span style="color:#f92672">.</span><span style="color:#a6e22e">pojo</span><span style="color:#f92672">.</span><span style="color:#a6e22e">WorkCard</span><span style="color:#f92672">&gt;</span>
+select id<span style="color:#f92672">,</span>emp_id as empId<span style="color:#f92672">,</span>real_name as realName<span style="color:#f92672">,</span>department<span style="color:#f92672">,</span>mobile<span style="color:#f92672">,</span>position<span style="color:#f92672">,</span>note FROM t_work_card
+where emp_id<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>empId<span style="color:#f92672">}</span>
+<span style="color:#f92672">&lt;/</span>select<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>mapper<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>这样就完成了两张表的映射文件。雇员表通过任务编号（task_id）和任务表示关联，这是一个一对一的级联关系，使用association元素，雇员任务表一对一级联如下方代码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">？</span>xml version<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1.0&#34;</span> encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;UTF-8&#34;</span> <span style="color:#f92672">?&gt;</span>
+<span style="color:#f92672">&lt;!</span>DOCTYPE mapper PUBLIC <span style="color:#e6db74">&#34;-//mybatis.org//DTD Mapper 3.0//EN&#34;</span>
+<span style="color:#e6db74">&#34;http://mybatis.org/dtd/mybatis-3-mapper.dtd&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>mapper namespace<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper.EmployeeTaskMapper&#34;</span><span style="color:#f92672">&gt;</span>
+
+<span style="color:#f92672">&lt;</span>resultMap type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper.TaskMapper&#34;</span> id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;EmployeeTaskMapper&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>id column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;id&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;id&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>result column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;emp_id&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;empId&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>result column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;task_name&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;taskName&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>result column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;note&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;note&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>association property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;task&#34;</span> column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;task_id&#34;</span>
+select<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper.TaskMapper.getTask&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/</span>resultMap<span style="color:#f92672">&gt;</span>
+
+
+
+<span style="color:#f92672">&lt;</span>select id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;getTaskByEmpId&#34;</span> resultMap<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">”</span>com<span style="color:#f92672">.</span><span style="color:#a6e22e">ssm</span><span style="color:#f92672">.</span><span style="color:#a6e22e">chapter5</span><span style="color:#f92672">.</span><span style="color:#a6e22e">pojo</span><span style="color:#f92672">.</span><span style="color:#a6e22e">EmployeeTaskMapper</span><span style="color:#f92672">&gt;</span>
+select id<span style="color:#f92672">,</span>emp_id <span style="color:#f92672">,</span>task_name<span style="color:#f92672">,</span>task_id<span style="color:#f92672">,</span>note from  t_employee_task
+where emp_id<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>empId<span style="color:#f92672">}</span>
+<span style="color:#f92672">&lt;/</span>select<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>mapper<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>注意加粗的代码，association元素代表一对一级联的开始。property属性代表映射到POJO属性上。select配置是命名可见+SQLid的形式，这样便可以指向对于Mapper的SQL，MyBatis就会通过对应的SQL将数据查询回来。column代表SQL的列，用作参数传递给select属性指定的SQL，如果是多个参数，则需要用逗号隔开。</p>
+<p>再研究体检表，它能拆分成男性雇员和女性雇员，所以就有两个简单的映射器</p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/20210425234620.jpg" alt="2021-04-2545 (Copy)"></p>
+<p>这连个映射器都主要是通过雇员编号找到对应体检表的记录，为雇员查询时提供的体检表SQL。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">？</span>xml version<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1.0&#34;</span> encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;UTF-8&#34;</span> <span style="color:#f92672">?&gt;</span>
+<span style="color:#f92672">&lt;!</span>DOCTYPE mapper PUBLIC <span style="color:#e6db74">&#34;-//mybatis.org//DTD Mapper 3.0//EN&#34;</span>
+<span style="color:#e6db74">&#34;http://mybatis.org/dtd/mybatis-3-mapper.dtd&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>mapper namespace<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper.EmployeeMapper&#34;</span><span style="color:#f92672">&gt;</span>
+
+<span style="color:#f92672">&lt;</span>resultMap type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper.Emplyee&#34;</span> id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;employee&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>id column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;id&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;id&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>result column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;real_name&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;realName&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>result column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;sex&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;sex&#34;</span> typeHandler<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.typeHandler.SexTypeHandler&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>result column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;birthday&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;birthday&#34;</span><span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;</span>result column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mobile&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mobile&#34;</span><span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;</span>result column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;email&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;email&#34;</span><span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;</span>result column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;position&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;position&#34;</span><span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;</span>result column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;note&#34;</span> property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;note&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>association property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;workCard&#34;</span> column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;id&#34;</span> select<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper.WorkCardMapper.getWorkCardByEmpId&#34;</span><span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;</span>collection property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;employeeTaskList&#34;</span> column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;id&#34;</span> select<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper.EmployeeTaskMapper.getEmplyeeTaskByEmpId&#34;</span><span style="color:#f92672">/&gt;</span>
+    
+    <span style="color:#f92672">&lt;</span>discriminator javaType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;long&#34;</span> column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;sex&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">case</span> value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1&#34;</span>resultMap<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;maleHealthFormMapper&#34;</span><span style="color:#f92672">/&gt;</span>
+        <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">case</span> value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;2&#34;</span>resultMap<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;femaleHealthFormMapper&#34;</span><span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/</span>discriminator<span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;/</span>resultMap<span style="color:#f92672">&gt;</span>
+    
+    <span style="color:#f92672">&lt;</span>resultMap type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper.FemaleEmplyee&#34;</span> id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;femaleHealthFormMapper&#34;</span> <span style="color:#66d9ef">extends</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;employee&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;</span>association property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;femaleHealthForm&#34;</span> column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;id&#34;</span> select<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.smm.chapter5.mapper.FemaleHealthFormMapper.getFemaleHealthForm&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;/</span>resultMap<span style="color:#f92672">&gt;</span>
+    
+       <span style="color:#f92672">&lt;</span>resultMap type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper.MaleEmplyee&#34;</span> id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;maleHealthFormMapper&#34;</span> <span style="color:#66d9ef">extends</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;employee&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;</span>association property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;maleHealthForm&#34;</span> column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;id&#34;</span> select<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.smm.chapter5.mapper.FemaleHealthFormMapper.getMaleHealthForm&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;/</span>resultMap<span style="color:#f92672">&gt;</span>
+    
+    <span style="color:#f92672">&lt;</span>select id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;getEmployee&#34;</span> parameterType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;long&#34;</span> resultMap<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;employee&#34;</span><span style="color:#f92672">&gt;</span>
+select id<span style="color:#f92672">,</span>real_name as realName <span style="color:#f92672">,</span>sex<span style="color:#f92672">,</span>birthday<span style="color:#f92672">,</span>mobile<span style="color:#f92672">,</span>email<span style="color:#f92672">,</span>position<span style="color:#f92672">,</span>note from  t_employee
+where id<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>id<span style="color:#f92672">}</span>
+<span style="color:#f92672">&lt;/</span>select<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>mapper<span style="color:#f92672">&gt;</span>
+    
+</code></pre></div><p>association元素，对工牌进行一对一级联，这个再雇员任务表中已经分析过。</p>
+<p>collection元素，一对多级联，其select元素指向SQL，将通过column制定的SQL字段作为参数进行传递，然后将结果返回给雇员POJO的属性employeeTaskList。</p>
+<p>discriminator元素，鉴别器，它的属性column代表使用哪个字段进行鉴别，这里的是sex，而它的子元素case，则进行区分，类似于Java的switch&hellip;case语句。而resultMap属性表示采用哪个ResultMap去映射，比如sex=1，则使用maleHealthFormMapper进行映射。</p>
+<p>而对于雇员体检表而言,id为employee的resultMap，被maleHealthFormMapper和femaleHealthFormMapper通过association元素去执行对应关联的字段和SQL。这样所有的POJO都有了关联，可以测试级联。</p>
+<h2 id="584-n1问题">5.8.4 N+1问题</h2>
+<p>雇员的管理者，它指向看到员工信息和员工任务信息，那么体检表和工牌的信息就是多余的。如果像上面那样取出所有属性，就会使数据库多执行几条毫无意义的SQL。如果需要再雇员信息系统里面加入一个关联信息，那么它再默认的情况下会指向SQL取出数据，而真实的需求往往只要完成雇员和雇员任务表 的级联就可以了，不需要把所有信息都加载进来，因为有些信息并不常用，加载它们会执行几条毫无用处的SQL，导致数据库资源的损耗和系统性能的下降。</p>
+<p>假设限制有N个关联关系完成了级联，那么只要再加入一个关联关系，就编程了N+1个级联，所有的级联SQL都会被执行，显然会有很多并不是我们关心的数据被取出，这样会造成很大的资源浪费，这就是N+1问题，尤其是再那些需要高性能的互联网系统中，这往往是不被允许的。</p>
+<p>为了应对N+!问题，MyBatis提供了延迟加载功能，即再一开始取雇员信息时，并不需要将工牌表、体检表、任务表的记录取出，而是将雇员信息和雇员任务表的信息取出。当我们提供雇员POJO访问工牌表时，体检表和任务表的记录才通过对应的SQL取出。</p>
+<h2 id="585-延迟加载">5.8.5 延迟加载</h2>
 
     </div>
     <div class="post-footer">
