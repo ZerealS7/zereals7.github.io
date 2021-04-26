@@ -6,28 +6,10 @@
     <description>Recent content in Posts on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 26 Apr 2021 00:21:44 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 22 Apr 2021 18:36:47 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Java日志的使用</title>
-      <link>https://zereals7.github.io/post/java%E6%97%A5%E5%BF%97%E7%9A%84%E4%BD%BF%E7%94%A8/</link>
-      <pubDate>Mon, 26 Apr 2021 00:21:44 +0800</pubDate>
-      
-      <guid>https://zereals7.github.io/post/java%E6%97%A5%E5%BF%97%E7%9A%84%E4%BD%BF%E7%94%A8/</guid>
-      <description>ava日志：日志就是记录程序的运行轨迹，方便查找关键信息，也方便快速定位解决问题。
-常用的日志框架：Log4j 、Slf4j 、Logback 。
-在JDK 1.3及以前，Java打日志依赖System.out.println(), System.err.println()或者e.printStackTrace()，Debug日志被写到STDOUT流，错误日志被写到STDERR流。这样打日志有一个非常大的缺陷，即无法定制化，且日志粒度不够细。于是， Gülcü 于2001年发布了Log4j，后来成为Apache 基金会的顶级项目。Log4j 在设计上非常优秀，对后续的 Java Log 框架有长久而深远的影响，它定义的Logger、Appender、Level等概念如今已经被广泛使用。Log4j 的短板在于性能，在Logback 和 Log4j2 出来之后，Log4j的使用也减少了。
-Slf4j 也是现在主流的日志门面框架，使用 Slf4j 可以很灵活的使用占位符进行参数占位，简化代码，拥有更好的可读性。
-Logback 是 Slf4j 的原生实现框架，同样也是出自 Log4j 一个人之手，但拥有比 log4j 更多的优点、特性和更做强的性能，现在基本都用来代替 log4j 成为主流。
-日志级别
-日志级别详解 日志级别	描述 OFF	关闭：最高级别，不输出日志。 FATAL	致命：输出非常严重的可能会导致应用程序终止的错误。 ERROR	错误：输出错误，但应用还能继续运行。 WARN	警告：输出可能潜在的危险状况。 INFO	信息：输出应用运行过程的详细信息。 DEBUG	调试：输出更细致的对调试应用有用的信息。 TRACE	跟踪：输出更细致的程序运行轨迹。 ALL	所有：输出所有级别信息。
-日志优先级别标准顺序为：ALL &amp;lt; TRACE &amp;lt; DEBUG &amp;lt; INFO &amp;lt; WARN &amp;lt; ERROR &amp;lt; FATAL &amp;lt; OFF
-什么时候打日志：
-当你遇到问题的时候，只能通过debug功能来确定问题，你应该考虑打日志，良好的系统，是可以通过日志进行问题定为的。 当你碰到if…else 或者 switch这样的分支时，要在分支的首行打印日志，用来确定进入了哪个分支 经常以功能为核心进行开发，你应该在提交代码前，可以确定通过日志可以看到整个流程 项目开发中打日志的基本格式：</description>
-    </item>
     
     <item>
       <title>SSM第五章-映射器</title>
