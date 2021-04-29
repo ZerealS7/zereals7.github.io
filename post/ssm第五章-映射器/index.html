@@ -66,7 +66,7 @@ MyBatis的映射器也可以使用注解完成，但是它在企业应用不广�
   <title>clock</title>
   <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
 </svg>
-          6 min read
+          7 min read
         </div></div>
     </header>
     <div class="post-content">
@@ -855,11 +855,135 @@ select<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.s
 &lt;association property=&quot;maleHealthForm&quot; column=&quot;id&quot; javaType=&quot;com.ssm.chapter5.pojo.MaleHealthForm&quot;&gt;
 &lt;assocaiation property=&quot;femaleHealthForm&quot; column=&quot;id&quot; javaType=&quot;com.ssm.chapter5.pojo.FemaleHealthForm&quot;&gt;
 </code></pre><ul>
-<li>每一个级联元素中的属性id的配置和POJO实体配置的id一一对应，形成级联，比如上述的SQL的列et_task_id和Task实体的id是对应的，这是级联的关键所在。</li>
-<li>在级联元素中，association是通过javaType的定义去声明实体映射的，而collection则是使用ofType进行声明的。</li>
-<li>discriminator元素定义使用何种具体的resultMap进行级联，这里通过sex列进行判定。</li>
+<li>
+<p>每一个级联元素中的属性id的配置和POJO实体配置的id一一对应，形成级联，比如上述的SQL的列et_task_id和Task实体的id是对应的，这是级联的关键所在。</p>
+</li>
+<li>
+<p>在级联元素中，association是通过javaType的定义去声明实体映射的，而collection则是使用ofType进行声明的。</p>
+</li>
+<li>
+<p>discriminator元素定义使用何种具体的resultMap进行级联，这里通过sex列进行判定。</p>
+<p>这样完全可以消除 N+1问题，但是也会引发其他问题：首先，SQL会比较复杂；其次，所需要的配置比之前复杂得多 ；再次一次性将所有的数据取出会造成内存的浪费。这样的复杂SQL，同时也会给日后的维护工作带来一定的困难。这样的级联，一般用于那些比较简单且关联不多的场景下</p>
+</li>
 </ul>
-<p>这样完全可以消除 N+1问题，但是也会引发其他问题：首先，SQL会比较复杂；其次，所需要的配置比之前复杂得多 ；再次一次性将</p>
+<h2 id="587-多对多级联">5.8.7 多对多级联</h2>
+<p>在现实中，有一种多对多的级联，而在程序中多对多的寄来你往往会被拆分为两个一对多级联来处理。现实中有许多用户，用户又归属于一些角色，这样一个用户可以对应多个角色又可以由多个用户担当，这个时候用户和角色是以一张用户角色表建立关联关系，这样用户和角色就是多对多的关系。</p>
+<p>而现实中多对多的级联是相当复杂的，更多的都是拆分为两个一对多的关系，也就是一个角色对应多个用户和一个用户对应多个角色。</p>
+<p>List类型的属性是专门做一对多的级联用的，使用collection元素去完成，得到两个mapper.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>collection property<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;userList&#34;</span> column<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;id&#34;</span>
+
+fetchType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;lazy&#34;</span> select<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.mapper2.UserMapper2.findUserByRoleId&#34;</span><span style="color:#f92672">/&gt;</span>
+</code></pre></div><p>这里使用collection去关联，但是把fetchType都设置为了Lazy，这样就能够进行延迟加载。</p>
+<p>一共有3条SQL被执行，因为调用了getUserList来获取用户信息，所以才有第二条SQL。在映射器中设置fetchTYpe为lazy，这样就不会立即加载数据进来，避免一些用不到的SQL被执行，只有调用了对应的方法它才会加载数据进来。</p>
+<h1 id="59-缓存">5.9 缓存</h1>
+<p>在MyBatis中允许使用缓存，缓存一般都放置在可高速读/写的存储器上，比如服务器的内存，它能够有效提高系统的性能。因为数据库在大部分场景下是把存储在磁盘上的数据索引出来。从硬件的角度分析，索引磁盘一个较为缓慢的过程，读取内存或者高速缓存处理器的速度要比读取磁盘快很多，其速度是读取硬盘的几十倍到上百倍，但是内存和高速缓存处理器的空间有限，所以一般只会把那些常用且命中率高的数据缓存起来，以便将来使用，而不缓存那些不常用且命中率低的数据缓存。因为命中率低，最后还是要磁盘内查找，并不能有效提高性能。</p>
+<p>MyBatis分为一级缓存和二级缓存，同时也可以配置关于缓存的设置。</p>
+<h2 id="591-一级缓存和二级缓存">5.9.1 一级缓存和二级缓存</h2>
+<p>一级缓存是在SqlSession上的缓存，二级缓存是在SqlSessionFactory上的缓存，默认情况下，也就是没有任何配置的情况下，MyBatis系统会开启一级缓存，也就是对SqlSession层面的缓存，这个缓存不需要POJO对象可序列化（实现java.io.Serializable接口）。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Role role <span style="color:#f92672">=</span>roleMapper<span style="color:#f92672">.</span><span style="color:#a6e22e">getRole</span><span style="color:#f92672">(</span>1L<span style="color:#f92672">);</span>
+Role role2 <span style="color:#f92672">=</span>roleMapper<span style="color:#f92672">.</span><span style="color:#a6e22e">getRole</span><span style="color:#f92672">(</span>1L<span style="color:#f92672">);</span>
+</code></pre></div><p>虽然代码对同一对象进行了两次获取，但是实际只有一条SQL被执行，其原因是代码使用了同一个SqlSession对象获取数据。当一个SqlSession第一次通过SQL和参数获取对象后，它就会将其缓存起来 ，如果下次的SQL和参数都没有发生变化，并且缓存没有超时或者声明需要刷新时，那么它就会从缓存中获取数据，而不是通过SQL获取了。</p>
+<p>注意commit（）方法的使用，必须提交，MyBatis才缓存对象到SqlsessionFactory,这样才有一级缓存存在。</p>
+<p>如果SQL被执行了两次，这说明一级缓存是在SqlSession层面的，对于不同的SqlSession对象是不能共享的。为了使Sqlsession对象之间&lt;共享相同的缓存，有时候需要开启二级缓存，开启二级缓存简单，只要在映射文件上加入代码：</p>
+<pre><code>&lt;cache/&gt;
+</code></pre><p>这个时候MyBatis会序列化和反序列化对应的POJO，也就要求POJO是一个可序列化的对象，那么它就必须实现java.io.Serializable接口。对角色类对象进行缓存，那么就需要它实现Serializable接口。</p>
+<p>如果Role类没有实现java.io.Serializable接口，那么MyBatis将会抛出异常，导致程序运行错误。在映射文件中配置了<!-- raw HTML omitted -->后，从日志中可以看到，不同的SqlSession在获取同一条记录，都只是发送过一次SQL获取数据。因为这个时候MyBatis将其保存在SqlSessionFactory层面，可以提供给各个SqlSession使用，只是它需要一个序列化和反序列化的过程而已，因此它需要实现Serializable接口。</p>
+<h2 id="592-缓存配置项自定义和引用">5.9.2 缓存配置项、自定义和引用</h2>
+<p>加入cache元素后，Mybatis就会将对应的命名空间内所有select元素SQL查询结果进行缓存，而其中的insert、delete和update语句在操作时会刷新缓存。</p>
+<p>缓存要明确cache元素的配置项。可以使用自定义的缓存，只是实现类需要实现MyBatis的接口org.apache.ibatis.cache.Cache。</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+<th>取值</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>blocking</td>
+<td>是否使用阻塞性缓存，在读写时它会加入JNI的锁进行操作</td>
+<td>true|false，默认值false</td>
+<td>可保证读写安全性，但加锁后性能不佳</td>
+</tr>
+<tr>
+<td>readOnly</td>
+<td>缓存内容是否只读</td>
+<td>true|false，默认值false</td>
+<td>如果为只读，则不会因为多个线程读写造成不一致性</td>
+</tr>
+<tr>
+<td>eviction</td>
+<td>缓存策略，分为：LRU最近最少使用的，移除最长时间不被使用的对象。FIFO先进先出：按对象进入缓存的顺序来移除它们 。 SOFT软引用：移除基于垃圾回收器状态和软引用规则的对象。WEAK弱引用：更积极移除基于垃圾收集器和弱引用规则的对象。</td>
+<td>默认值是LRU</td>
+<td>——</td>
+</tr>
+<tr>
+<td>flushInterval</td>
+<td>这是一个整数，它以毫秒为单位，比如1分钟刷新一次，则配置60000，默认值为60000.默认为null,也就是没有刷新时间，只有当执行update时，insert和delete语句才会刷新。</td>
+<td>正整数</td>
+<td>超过整数后缓存失效，不再读取缓存，而是执行SQL取回数据</td>
+</tr>
+<tr>
+<td>type</td>
+<td>自定义缓存类，要求实现接口org.apache.ibatis.cache.Cache</td>
+<td>用于自定义缓存类</td>
+<td>——</td>
+</tr>
+<tr>
+<td>size</td>
+<td>缓存对象个数</td>
+<td>正整数，默认值1024</td>
+<td>——</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> org.apache.ibatis.cache
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Cache</span><span style="color:#f92672">{</span>
+<span style="color:#75715e">//获取缓存ID
+</span><span style="color:#75715e"></span>String <span style="color:#a6e22e">getId</span><span style="color:#f92672">();</span>
+<span style="color:#75715e">//保存对象，key为键，value为值
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">putObject</span><span style="color:#f92672">(</span>Object key<span style="color:#f92672">,</span>Object value<span style="color:#f92672">);</span>
+<span style="color:#75715e">//获取缓存数据，key为键
+</span><span style="color:#75715e"></span>Object <span style="color:#a6e22e">getObject</span><span style="color:#f92672">(</span>Object key<span style="color:#f92672">);</span>
+<span style="color:#75715e">//删除缓存，key为键
+</span><span style="color:#75715e"></span>Object <span style="color:#a6e22e">removeObject</span><span style="color:#f92672">(</span>Object key<span style="color:#f92672">)</span>
+<span style="color:#75715e">//清除缓存
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">clear</span><span style="color:#f92672">();</span>
+<span style="color:#75715e">//获得缓存大小
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getSize</span><span style="color:#f92672">();</span>
+<span style="color:#75715e">//获取读写锁，需要考虑多线程的场景
+</span><span style="color:#75715e"></span>ReadWriteLock <span style="color:#a6e22e">getReadWriteLock</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>在现实中，我们可以使用Redis,MongoDB或者其他常用的缓存，假设存在一个Redis的缓存实现类com.ssm.chapter5.cache.RedisCache，那么可以这样配置它：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>cache type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.ssm.chapter5.cache.RedisCache&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>property name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;host&#34;</span> value<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;localhost&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/</span>cache<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>这样配置后，MyBatis会启用缓存，同时调用setHost 方法，去设置配置的内容。</p>
+<p>上面的配置是通用的，对于一些语句也需要自定义。比如对于一些查询并不需要它进行任何缓存，这个时候可以通过配置改变它们：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>select <span style="color:#f92672">...</span> flushCache<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;false&#34;</span> useCache<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>insert<span style="color:#f92672">...</span><span style="color:#a6e22e">flushCache</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>update<span style="color:#f92672">...</span><span style="color:#a6e22e">flushCache</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;</span>delete<span style="color:#f92672">...</span><span style="color:#a6e22e">flushCache</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">/&gt;</span>
+</code></pre></div><p>以上是默认的配置，我们可以更具需要去修改它们。flushCache代表是否刷新缓存，flushCache属性对于select、insert、update和delete都是有效的，而useCache属性则是select特有的，代表是否需要使用缓存。</p>
+<p>这里都是在一个映射器内配置，比如RoleMapper.xml，那么其他的映射器是不能使用的，如果其他的映射器需要使用同样的配置，则可以引用缓存的配置：</p>
+<pre><code>&lt;cache-ref namespace=&quot;com.ssm.chapter5.mapper.RoleMapper&quot;/&gt;
+</code></pre><p>通过这样就可以引入对应映射器的cache元素的配置了。</p>
+<h1 id="510-存储过程">5.10 存储过程</h1>
+<p>Mybatis还能对存储过程进行完全支持。</p>
+<p>首先存储过程是数据库的一个概念，它是数据库预先编译好，放在数据库内存中的一个程序片段，所以具备性能高，可重复使用的特性。它定义了3种类型的参数：输入参数、输出参数、输入输出参数。</p>
+<ul>
+<li>输入参数，是外界给的存储过程参数，在Java互联网中，也就是互联网系统给它的参数。</li>
+<li>输出参数，是存储过程经过计算返回给程序的参数结果参数。</li>
+<li>输入输出参数，是一开始作为参数传递给存储过程，而存储过程修改后将其返回的参数，比如那些商品的库存就是这样的。</li>
+</ul>
+<p>对于返回结果而言，一些常用的简易类型，比如整形、字符串OUT或者INOUT参数是Java程序比较好处理的，而存储过程还可能返回游标类型的参数，这需要我们处理，不过在MyBatis中，这些都可以轻松完成。</p>
+<h2 id="5102-游标的使用">5.10.2 游标的使用</h2>
+<p>在实际应用中，除了使用建议的输入输出参数，有时候也可能使用游标，MyBatis也对存储过程的游标提供了支持。如果把jdbcType声明为CURSOR，那么它就会使用ResultSet对象处理对应的结果，只要设置映射关系，MyBatis也对存储过程的游标提供了支持。如果把jdbcType声明为CURSOR，那么它就会使用ResultSet对象处理对应的结果，只要设置映射关系，MyBatis就会把结果集映射出来。</p>
+<p>参数是和存储过程一一对应的，而游标是由roleList去存储的，只是这里需要为其提供映射关系，游标映射器。</p>
+<pre><code>#{roleList ,mode=OUT,jdbcType=CURSOR,javaType=ResultSet,resultMap=roleMap}
+</code></pre><p>先定义了resultMap元素，它定义了映射规则。而在存储过程的调用中，对于roleList,定义了jdbcType为CURSOR，这样就会把结果使用ResultSet对应能够映射为POJO，设置了resultMap，这样MyBatis就会采用配置的映射规则将其映射为POJO了。</p>
 
     </div>
     <div class="post-footer">
