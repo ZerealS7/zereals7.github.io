@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>SSM第六章-动态SQL // Zereal-宋致远技术博客</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75，minimum-scale=0.75, maximum-scale=0.75, user-scalable=no" />
+    <meta name="author" content="Zereal" />
+    <meta name="description" content="" />
+    <meta name="referrer" content="never"/>
+    <link rel="stylesheet" href="https://zereals7.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="SSM第六章-动态SQL"/>
+<meta name="twitter:description" content="if元素 if元素是最常用的判断语句，相当于Java中的if语句，常常与test属性联合使用。
+&lt;select id=&#34;findRoles&#34; parameterType=&#34;String&#34; resultMap=”roleResultMap&#34;&gt; select role_no,role_name,note from t_role where 1=1 &lt;if test=&#34;roleName !=null and roleName !=&#39;&#39;&#34;&gt; and role_name like concat(&#39;%&#39;,#{roleName},&#39;%&#39;)\ &lt;/if&gt; &lt;/select&gt; 当参数roleName传递进映射器时，如果参数不为空，则采取构造对roleName的模糊查询，否则就不要去构造这个条件。显然这样的场景在实际工作中十分常见，通过MyBatis的if元素节省了许多拼接SQL的工作，集中在XML里面维护。
+choose ,when,otherwise元素 上面的if语句，不是这个就是哪个。有时候还需要第三种选择，甚至更多选择，也就是需要类似switch&hellip;case&hellip;default&hellip;功能的语句。在映射器的动态语句中choose\when\otherwise这三个元素承担了这个给功能。假设这样一个场景
+ 如果角色编号不为空，则只用角色编号作为条件查询 当角色编号为空，而角色名称不为空，则用角色名称作为条件进行模糊查询 当角色编号和角色名称都为空，则要求角色备注不为空  这个场景也许有点不切实际，但是没关系，这里主要集中于如何使用动态元素来实现它。使用这3个元素，这样MyBatis就会更具参数的设置进行判断来组装SQL，以满足不同的业务要求。远比Hibernate和JDBC等需要大量判断Java代码，要清晰和明确得多，进而提高程序的可读性和可维护性。
+&lt;select id=&#34;findRoles&#34; parameterType=&#34;role&#34; resultMap=”roleResultMap&#34;&gt; select role_no,role_name,note from t_role where 1=1 &lt;choose&gt; &lt;when test=&#34;roleNo!=null and roleNo !=&#39;&#39;&#34;&#34;&gt; AND role_no =#{roleNo} &lt;/when&gt; &lt;when test=&#34;roleName !=null and roleName !=&#39;&#39;&#34;&gt; AND role_name like concat(&#39;%&#39;,#{roleName},&#39;%&#39;)\ &lt;/when&gt; &lt;otherwise&gt; AND note is not null &lt;/otherwise&gt; &lt;/select&gt; trim、where、set元素 上面代码SQL语句上的动态元素的SQL中都加入了一个条件“1=1”，如果没有加入这个条件，就可能如下面的错误"/>
+
+    <meta property="og:title" content="SSM第六章-动态SQL" />
+<meta property="og:description" content="if元素 if元素是最常用的判断语句，相当于Java中的if语句，常常与test属性联合使用。
+&lt;select id=&#34;findRoles&#34; parameterType=&#34;String&#34; resultMap=”roleResultMap&#34;&gt; select role_no,role_name,note from t_role where 1=1 &lt;if test=&#34;roleName !=null and roleName !=&#39;&#39;&#34;&gt; and role_name like concat(&#39;%&#39;,#{roleName},&#39;%&#39;)\ &lt;/if&gt; &lt;/select&gt; 当参数roleName传递进映射器时，如果参数不为空，则采取构造对roleName的模糊查询，否则就不要去构造这个条件。显然这样的场景在实际工作中十分常见，通过MyBatis的if元素节省了许多拼接SQL的工作，集中在XML里面维护。
+choose ,when,otherwise元素 上面的if语句，不是这个就是哪个。有时候还需要第三种选择，甚至更多选择，也就是需要类似switch&hellip;case&hellip;default&hellip;功能的语句。在映射器的动态语句中choose\when\otherwise这三个元素承担了这个给功能。假设这样一个场景
+ 如果角色编号不为空，则只用角色编号作为条件查询 当角色编号为空，而角色名称不为空，则用角色名称作为条件进行模糊查询 当角色编号和角色名称都为空，则要求角色备注不为空  这个场景也许有点不切实际，但是没关系，这里主要集中于如何使用动态元素来实现它。使用这3个元素，这样MyBatis就会更具参数的设置进行判断来组装SQL，以满足不同的业务要求。远比Hibernate和JDBC等需要大量判断Java代码，要清晰和明确得多，进而提高程序的可读性和可维护性。
+&lt;select id=&#34;findRoles&#34; parameterType=&#34;role&#34; resultMap=”roleResultMap&#34;&gt; select role_no,role_name,note from t_role where 1=1 &lt;choose&gt; &lt;when test=&#34;roleNo!=null and roleNo !=&#39;&#39;&#34;&#34;&gt; AND role_no =#{roleNo} &lt;/when&gt; &lt;when test=&#34;roleName !=null and roleName !=&#39;&#39;&#34;&gt; AND role_name like concat(&#39;%&#39;,#{roleName},&#39;%&#39;)\ &lt;/when&gt; &lt;otherwise&gt; AND note is not null &lt;/otherwise&gt; &lt;/select&gt; trim、where、set元素 上面代码SQL语句上的动态元素的SQL中都加入了一个条件“1=1”，如果没有加入这个条件，就可能如下面的错误" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zereals7.github.io/post/ssm%E7%AC%AC%E5%85%AD%E7%AB%A0-%E5%8A%A8%E6%80%81sql/" />
+<meta property="article:published_time" content="2021-04-29T15:06:05+08:00" />
+<meta property="article:modified_time" content="2021-04-29T15:06:05+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://zereals7.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Zereal" /></a>
+      <h1>Zereal</h1>
+      <p>Java coder</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ZerealS7" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">SSM第六章-动态SQL</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Apr 29, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          2 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      <h1 id="if元素"><strong>if元素</strong></h1>
+<p>if元素是最常用的判断语句，相当于Java中的if语句，常常与test属性联合使用。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>select id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;findRoles&#34;</span> parameterType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;String&#34;</span> resultMap<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">”</span>roleResultMap<span style="color:#e6db74">&#34;&gt;
+</span><span style="color:#e6db74">select role_no,role_name,note from t_role where 1=1
+</span><span style="color:#e6db74">&lt;if test=&#34;</span>roleName <span style="color:#f92672">!=</span><span style="color:#66d9ef">null</span> and roleName <span style="color:#f92672">!=</span><span style="color:#960050;background-color:#1e0010">&#39;&#39;&#34;</span><span style="color:#f92672">&gt;</span>
+and role_name like <span style="color:#a6e22e">concat</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#39;%&#39;</span><span style="color:#f92672">,</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>roleName<span style="color:#f92672">},</span><span style="color:#e6db74">&#39;%&#39;</span><span style="color:#f92672">)</span><span style="color:#960050;background-color:#1e0010">\</span>
+<span style="color:#f92672">&lt;/</span><span style="color:#66d9ef">if</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>select<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>当参数roleName传递进映射器时，如果参数不为空，则采取构造对roleName的模糊查询，否则就不要去构造这个条件。显然这样的场景在实际工作中十分常见，通过MyBatis的if元素节省了许多拼接SQL的工作，集中在XML里面维护。</p>
+<h1 id="choose-whenotherwise元素">choose ,when,otherwise元素</h1>
+<p>上面的if语句，不是这个就是哪个。有时候还需要第三种选择，甚至更多选择，也就是需要类似switch&hellip;case&hellip;default&hellip;功能的语句。在映射器的动态语句中choose\when\otherwise这三个元素承担了这个给功能。假设这样一个场景</p>
+<ul>
+<li>如果角色编号不为空，则只用角色编号作为条件查询</li>
+<li>当角色编号为空，而角色名称不为空，则用角色名称作为条件进行模糊查询</li>
+<li>当角色编号和角色名称都为空，则要求角色备注不为空</li>
+</ul>
+<p>这个场景也许有点不切实际，但是没关系，这里主要集中于如何使用动态元素来实现它。使用这3个元素，这样MyBatis就会更具参数的设置进行判断来组装SQL，以满足不同的业务要求。远比Hibernate和JDBC等需要大量判断Java代码，要清晰和明确得多，进而提高程序的可读性和可维护性。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>select id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;findRoles&#34;</span> parameterType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;role&#34;</span> resultMap<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">”</span>roleResultMap<span style="color:#e6db74">&#34;&gt;
+</span><span style="color:#e6db74">select role_no,role_name,note from t_role
+</span><span style="color:#e6db74">where 1=1
+</span><span style="color:#e6db74">&lt;choose&gt;
+</span><span style="color:#e6db74">&lt;when test=&#34;</span>roleNo<span style="color:#f92672">!=</span><span style="color:#66d9ef">null</span> and roleNo <span style="color:#f92672">!=</span><span style="color:#960050;background-color:#1e0010">&#39;&#39;</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">&gt;</span>
+AND role_no <span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>roleNo<span style="color:#f92672">}</span>
+<span style="color:#f92672">&lt;/</span>when<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>when test<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;roleName !=null and roleName !=&#39;&#39;&#34;</span><span style="color:#f92672">&gt;</span>
+AND role_name like  <span style="color:#a6e22e">concat</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#39;%&#39;</span><span style="color:#f92672">,</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>roleName<span style="color:#f92672">},</span><span style="color:#e6db74">&#39;%&#39;</span><span style="color:#f92672">)</span><span style="color:#960050;background-color:#1e0010">\</span>
+<span style="color:#f92672">&lt;/</span>when<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>otherwise<span style="color:#f92672">&gt;</span>
+AND note is not <span style="color:#66d9ef">null</span>
+<span style="color:#f92672">&lt;/</span>otherwise<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>select<span style="color:#f92672">&gt;</span>
+</code></pre></div><h1 id="trimwhereset元素">trim、where、set元素</h1>
+<p>上面代码SQL语句上的动态元素的SQL中都加入了一个条件“1=1”，如果没有加入这个条件，就可能如下面的错误</p>
+<pre><code>select role_no,role_name,note from t_role where and role_name like concat('%',#{roleName},'%')
+</code></pre><p>显然就会报出SQL的语法异常。而加入了条件“1=1”又显得相当奇怪，我们可以用where元素去处理SQL以达到预期效果。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>select id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;findRoles&#34;</span> parameterType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;role&#34;</span> resultMap<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">”</span>roleResultMap<span style="color:#e6db74">&#34;&gt;
+</span><span style="color:#e6db74">select role_no,role_name,note from t_role
+</span><span style="color:#e6db74">&lt;where&gt;
+</span><span style="color:#e6db74">&lt;if test=&#34;</span>roleName<span style="color:#f92672">!=</span><span style="color:#66d9ef">null</span> and roleName<span style="color:#f92672">!=</span><span style="color:#960050;background-color:#1e0010">‘’</span><span style="color:#e6db74">&#34;&gt;
+</span><span style="color:#e6db74">and role_name like concat(&#39;%&#39;,#{roleName},&#39;%&#39;)
+</span><span style="color:#e6db74">&lt;/if&gt;
+</span><span style="color:#e6db74">&lt;if test=&#34;</span>note<span style="color:#f92672">!=</span><span style="color:#66d9ef">null</span> and note<span style="color:#f92672">!=</span><span style="color:#960050;background-color:#1e0010">&#39;&#39;&#34;</span><span style="color:#f92672">&gt;</span>
+and  note like <span style="color:#a6e22e">concat</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#39;%&#39;</span><span style="color:#f92672">,</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>note<span style="color:#f92672">}</span><span style="color:#960050;background-color:#1e0010">，</span><span style="color:#e6db74">&#39;%&#39;</span><span style="color:#f92672">)</span>
+<span style="color:#f92672">&lt;/</span><span style="color:#66d9ef">if</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>where<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>select<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>当where元素里面的条件成立时，才会加入where这个SQL关键字到组装的SQL里面，否则就不加入。</p>
+<p>有时候要去掉的是一些特殊的SQL语法，比如常见的and、or。而使用trim元素也可以达到预期效果。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>select id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;findRoles&#34;</span> parameterType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;string&#34;</span> resultMap<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;roleResultMap&#34;</span><span style="color:#f92672">&gt;</span>
+select role_no<span style="color:#f92672">,</span>role_name<span style="color:#f92672">,</span>note from t_role
+<span style="color:#f92672">&lt;</span>trim prefix<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;where&#34;</span> prefixOverrides<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;and&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">if</span> test<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;roleName !=null and roleName!=&#39;&#39;&#34;</span><span style="color:#f92672">&gt;</span>
+and role_name like <span style="color:#a6e22e">concat</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#39;%&#39;</span><span style="color:#f92672">,</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>roleName<span style="color:#f92672">},</span><span style="color:#e6db74">&#39;%&#39;</span><span style="color:#f92672">)</span>
+<span style="color:#f92672">&lt;/</span><span style="color:#66d9ef">if</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>trim<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>select<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>trim元素意味着要去掉一些特殊的字符串，当时prefix代表的是语句的前缀，而prefixOverrides代表的是需要去掉哪种字符串。上面的写法与where是等效的。</p>
+<p>在Hibernate中常常因为要更新某一对象，而发送所有的字段给持久对象，而现实中的场景是，指向更新某一个字段。如果发送所有的属性去更新，对网络带宽的消耗较大。性能最佳的办法是把主键和更新字段的值传递给SQL去更新。</p>
+<p>例如角色表有一个主键两个字段，如果一个个字段去更新，那么需要写两条SQL语句，如果有多个字段呢？显然不算很方便。在Hibernate中做更新都是全部字段发送给SQL，来避免发多条SQL的问腿，这也会使不需要更新的字段也发送给SQL，显然这样比较冗余。</p>
+<p>在MyBatis中，常常可以用set元素来避免这样的问题，比如要更新一个角色的数据</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>update id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;updateRole&#34;</span> parameterType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;role&#34;</span><span style="color:#f92672">&gt;</span>
+update t_role
+<span style="color:#f92672">&lt;</span>set<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">if</span> test<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;roleName !=null and roleName!=&#39;&#39;&#34;</span><span style="color:#f92672">&gt;</span>
+role_name <span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>roleName<span style="color:#f92672">},</span>
+<span style="color:#f92672">&lt;/</span><span style="color:#66d9ef">if</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">if</span> test<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;note!=null and note!=&#39;&#39;&#34;</span><span style="color:#f92672">&gt;</span>
+note<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>note<span style="color:#f92672">}</span>
+<span style="color:#f92672">&lt;/</span><span style="color:#66d9ef">if</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>set<span style="color:#f92672">&gt;</span>
+where role_no<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>roleNo<span style="color:#f92672">}</span>
+<span style="color:#f92672">&lt;/</span>update<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>set元素遇到了逗号，它会把对应的逗号去掉。这样当我们指向更新备注时，我们只需要传递备注信息和角色编号即可，而不再需要传递角色名称。MyBatis就会根据参数的规则进行动态SQL组装，这样便能满足要求，从而避免全部字段更新的问题。</p>
+<p>也可以把它转变为对应的trim 元素</p>
+<pre><code>&lt;trim prefix=&quot;SET&quot; suffixOverrides=&quot;,&quot;&gt;...&lt;/trim&gt;
+</code></pre><h1 id="foreach元素">foreach元素</h1>
+<p>foreach元素是以一个循环语句，它的作用是遍历集合，它能够很好的支持数组和List、Set接口的集合，对此提供便利的功能。它往往用于SQL中的in关键字。</p>
+<p>在数据库中，经常需要根据编号找到对应的数据，比如角色。有一个LIst<!-- raw HTML omitted -->的角色编号的集合roleNoList,可以使用foreach元素找到这个集合中的角色的详细信息。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>select id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;findUserBySex&#34;</span> resultType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;user&#34;</span><span style="color:#f92672">&gt;</span>
+
+select <span style="color:#f92672">*</span> from t_role where role_no in
+<span style="color:#f92672">&lt;</span>foreach item<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;roleNo&#34;</span> index<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;index&#34;</span> collection<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;roleNoList&#34;</span>
+open<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;(&#34;</span>seperator<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;,&#34;</span>close<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;)&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>roleNo<span style="color:#f92672">}</span>
+<span style="color:#f92672">&lt;/</span>foreach<span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;/</span>select<span style="color:#f92672">&gt;</span>
+</code></pre></div><ul>
+<li>collection配置的roleNoList是传递进来的参数名称，它可以是一个数组、LIst、Set等集合。</li>
+<li>item配置的是循环中当前的元素</li>
+<li>index配置的是当前元素在集合的位置下表</li>
+<li>open和close配置的是以什么符号将这些集合元素包装起来</li>
+<li>seperator是各个元素的间隔符</li>
+</ul>
+<p>在SQL中常常用到in语句，但是对于大量数据的in语句要特别注意，因为它会消耗大量的性能。此外，还有游戏额数据库的SQL对指向的SQL长度有限制，所以使用它要预估以下collection对象的长度，以避免出现类似问题。</p>
+<h1 id="用test属性判断字符串">用test属性判断字符串</h1>
+<p>test用于条件判断语句，他在MyBatis中使用广泛。test的作用相当于判断真假，在大部分场景中，他都是用于判断空和非空的。有时候需要判断字符串、数字和枚举等。</p>
+<h1 id="bind元素">bind元素</h1>
+<p>bind 元素的作用是通过OGNL表达式去自定义一个上下文变量，这样更方便使用。在进行模糊查询时，如果是MySQL数据库，常常用到的是一个concat，它用“%”和参数相连。然而在Oracle数据库则没有，Oracle数据库用连接符号“||“这样SQL就需要提供两种形式去实现。但是有了bind元素。就不必使用数据库语言，而是使用MyBatis的动态SQL即可完成。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">&lt;</span>select id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;findRole&#34;</span> parameterType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;string&#34;</span> resultType<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.learn.chapter5.mybatis.bean.RoleBean&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span>bind name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;pattern&#34;</span> value<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">“</span><span style="color:#e6db74">&#39;%&#39;</span><span style="color:#f92672">+</span>_parameter<span style="color:#f92672">+</span><span style="color:#960050;background-color:#1e0010">‘</span><span style="color:#f92672">%</span><span style="color:#960050;background-color:#1e0010">’”</span><span style="color:#f92672">/&gt;</span>
+SELECT id<span style="color:#f92672">,</span>role_name as roleName<span style="color:#f92672">,</span>create_date as createDate<span style="color:#f92672">,</span>end_date as endFlag<span style="color:#f92672">,</span>
+end_flag as endFlag <span style="color:#f92672">,</span>note FROM t_role
+where role_name like <span style="color:#960050;background-color:#1e0010">#</span><span style="color:#f92672">{</span>pattern<span style="color:#f92672">}</span>
+<span style="color:#f92672">&lt;/</span>selectjava<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>这里的_parameter代表的是传递进来的参数，它和通配符（%）连接后赋给了pattern,然后就可以在select语句中使用这个变量进行模糊查询了。无论使MySQL还是Oracle都可以使用这样的语句，提高了代码的可移植性。</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+    <div class="post-comment">
+      
+      
+
+
+<span id="/post/ssm%E7%AC%AC%E5%85%AD%E7%AB%A0-%E5%8A%A8%E6%80%81sql/" class="leancloud_visitors" data-flag-title="SSM第六章-动态SQL">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+  new Valine({
+    el: '#vcomments' ,
+    appId: 'cScQmclMsD4OOWCclCP1pNsz-gzGzoHsz',
+    appKey: 'dtSaHLmdH3J4ICVVInYg9YFM',
+    notify:  false ,
+  verify:  false ,
+  avatar:'mm',
+    placeholder: '说点什么吧...',
+    visitor:  true 
+  });
+</script>
+
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

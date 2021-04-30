@@ -6,10 +6,32 @@
     <description>Recent content in Posts on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 22 Apr 2021 18:36:47 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 30 Apr 2021 17:12:32 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>SSM第七章-MyBatis的解析和运行原理</title>
+      <link>https://zereals7.github.io/post/ssm%E7%AC%AC%E4%B8%83%E7%AB%A0-mybatis%E7%9A%84%E8%A7%A3%E6%9E%90%E5%92%8C%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Fri, 30 Apr 2021 17:12:32 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/ssm%E7%AC%AC%E4%B8%83%E7%AB%A0-mybatis%E7%9A%84%E8%A7%A3%E6%9E%90%E5%92%8C%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>SSM第六章-动态SQL</title>
+      <link>https://zereals7.github.io/post/ssm%E7%AC%AC%E5%85%AD%E7%AB%A0-%E5%8A%A8%E6%80%81sql/</link>
+      <pubDate>Thu, 29 Apr 2021 15:06:05 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/ssm%E7%AC%AC%E5%85%AD%E7%AB%A0-%E5%8A%A8%E6%80%81sql/</guid>
+      <description>if元素 if元素是最常用的判断语句，相当于Java中的if语句，常常与test属性联合使用。
+&amp;lt;select id=&amp;#34;findRoles&amp;#34; parameterType=&amp;#34;String&amp;#34; resultMap=”roleResultMap&amp;#34;&amp;gt; select role_no,role_name,note from t_role where 1=1 &amp;lt;if test=&amp;#34;roleName !=null and roleName !=&amp;#39;&amp;#39;&amp;#34;&amp;gt; and role_name like concat(&amp;#39;%&amp;#39;,#{roleName},&amp;#39;%&amp;#39;)\ &amp;lt;/if&amp;gt; &amp;lt;/select&amp;gt; 当参数roleName传递进映射器时，如果参数不为空，则采取构造对roleName的模糊查询，否则就不要去构造这个条件。显然这样的场景在实际工作中十分常见，通过MyBatis的if元素节省了许多拼接SQL的工作，集中在XML里面维护。
+choose ,when,otherwise元素 上面的if语句，不是这个就是哪个。有时候还需要第三种选择，甚至更多选择，也就是需要类似switch&amp;hellip;case&amp;hellip;default&amp;hellip;功能的语句。在映射器的动态语句中choose\when\otherwise这三个元素承担了这个给功能。假设这样一个场景
+ 如果角色编号不为空，则只用角色编号作为条件查询 当角色编号为空，而角色名称不为空，则用角色名称作为条件进行模糊查询 当角色编号和角色名称都为空，则要求角色备注不为空  这个场景也许有点不切实际，但是没关系，这里主要集中于如何使用动态元素来实现它。使用这3个元素，这样MyBatis就会更具参数的设置进行判断来组装SQL，以满足不同的业务要求。远比Hibernate和JDBC等需要大量判断Java代码，要清晰和明确得多，进而提高程序的可读性和可维护性。
+&amp;lt;select id=&amp;#34;findRoles&amp;#34; parameterType=&amp;#34;role&amp;#34; resultMap=”roleResultMap&amp;#34;&amp;gt; select role_no,role_name,note from t_role where 1=1 &amp;lt;choose&amp;gt; &amp;lt;when test=&amp;#34;roleNo!=null and roleNo !=&amp;#39;&amp;#39;&amp;#34;&amp;#34;&amp;gt; AND role_no =#{roleNo} &amp;lt;/when&amp;gt; &amp;lt;when test=&amp;#34;roleName !=null and roleName !=&amp;#39;&amp;#39;&amp;#34;&amp;gt; AND role_name like concat(&amp;#39;%&amp;#39;,#{roleName},&amp;#39;%&amp;#39;)\ &amp;lt;/when&amp;gt; &amp;lt;otherwise&amp;gt; AND note is not null &amp;lt;/otherwise&amp;gt; &amp;lt;/select&amp;gt; trim、where、set元素 上面代码SQL语句上的动态元素的SQL中都加入了一个条件“1=1”，如果没有加入这个条件，就可能如下面的错误</description>
+    </item>
     
     <item>
       <title>SSM第五章-映射器</title>
