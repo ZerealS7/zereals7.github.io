@@ -52,7 +52,27 @@ strictfp关键字标记的方法或者类，则其内的计算必须使用严格
 Size s =Size.MEDIUM
 字符串
 Java字符串其实就是Unicode字符序列。Java没有内置的字符串类型，而是在标准Java类库中提供了一个预定义类，很自然地叫做String。
-每个用双引号括起来的字符串都是String类的一个实例。"/>
+每个用双引号括起来的字符串都是String类的一个实例。
+字串
+String类的subString方法可以从一个较大的字符串提取出一个字串
+subString方法的第二个参数是不想复制的第一个位置。它的工作方式有一个优点：容易计算字串的长度。
+拼接
+Java允许使用&#43;号连接两个字符串 。当将一个字符串与一个非字符串进行拼接时，后者被转换为字符串，任何一个Java对象都可以转换成字符串。
+如果需要把多个字符串放在一起，用一个定界符分隔，可以使用join方法。
+String all=String.join(&quot;/&quot;,&quot;S&quot;,&quot;M&quot;,&quot;L&quot;,&quot;XL&quot;);// 相当于字符串&quot;S/M/L/XL&quot;不可变字符
+String类没有提供用于修改字符串的方法。由于不能修改Java中的字符，所以Java文档中将String类对象称为不可变字符串，当然可以修改字符串变量，让它引用另外一个字符串。
+不可变字符串有一个优点：编译器可以让字符串共享。
+可以将各种字符串存放在公共的存储池中。字符串变量指向存储池中相应的位置。如果复制一个字符串变量，原始字符串与复制的字符串共享相同的字符。
+总而言之，Java设计者认为共享带来的高效率远远胜过提取、拼接字符串所带来的低效率
+检测字符串是否相等
+可以使用equals方法检测两个字符串是否相等。对于表达式：
+s.equals(t)
+如果字符串s和字符串t相等，则返回true，否则返回false。需要注意，s和t可以是字符串变量，也可以是字符串字面量。例如，下面的表达式是合法的：
+&ldquo;hello&rdquo;.equals（greeting)
+要想检测两个字符串是否相等，而不区分大小写，可以使用equalsIgnoreCase方法.
+&ldquo;Hello&rdquo;.equalsIgnoreCase（&ldquo;hello&rdquo;）
+一定不要使用==运算符检测两个字符串是否相等。这个运算符只能够确定两个字符串是否放置在同一个位置上。当然，如果字符串放置在同一个位置上，它们必然相等。但是完全有可能将内容相同的多个字符串拷贝放置在不同的位置上。
+空串与Null串"/>
 
     <meta property="og:title" content="Java核心技术第三章笔记-Java的基本程序设计结构" />
 <meta property="og:description" content="关键字class后面紧跟类名。Java中定义类名的规则很宽松。名字必须以字母开头，后面可以跟字母和数字的任意组合。长度基本上没有限制。但是不能使用Java保留字，例如（public和class）
@@ -94,7 +114,27 @@ strictfp关键字标记的方法或者类，则其内的计算必须使用严格
 Size s =Size.MEDIUM
 字符串
 Java字符串其实就是Unicode字符序列。Java没有内置的字符串类型，而是在标准Java类库中提供了一个预定义类，很自然地叫做String。
-每个用双引号括起来的字符串都是String类的一个实例。" />
+每个用双引号括起来的字符串都是String类的一个实例。
+字串
+String类的subString方法可以从一个较大的字符串提取出一个字串
+subString方法的第二个参数是不想复制的第一个位置。它的工作方式有一个优点：容易计算字串的长度。
+拼接
+Java允许使用&#43;号连接两个字符串 。当将一个字符串与一个非字符串进行拼接时，后者被转换为字符串，任何一个Java对象都可以转换成字符串。
+如果需要把多个字符串放在一起，用一个定界符分隔，可以使用join方法。
+String all=String.join(&quot;/&quot;,&quot;S&quot;,&quot;M&quot;,&quot;L&quot;,&quot;XL&quot;);// 相当于字符串&quot;S/M/L/XL&quot;不可变字符
+String类没有提供用于修改字符串的方法。由于不能修改Java中的字符，所以Java文档中将String类对象称为不可变字符串，当然可以修改字符串变量，让它引用另外一个字符串。
+不可变字符串有一个优点：编译器可以让字符串共享。
+可以将各种字符串存放在公共的存储池中。字符串变量指向存储池中相应的位置。如果复制一个字符串变量，原始字符串与复制的字符串共享相同的字符。
+总而言之，Java设计者认为共享带来的高效率远远胜过提取、拼接字符串所带来的低效率
+检测字符串是否相等
+可以使用equals方法检测两个字符串是否相等。对于表达式：
+s.equals(t)
+如果字符串s和字符串t相等，则返回true，否则返回false。需要注意，s和t可以是字符串变量，也可以是字符串字面量。例如，下面的表达式是合法的：
+&ldquo;hello&rdquo;.equals（greeting)
+要想检测两个字符串是否相等，而不区分大小写，可以使用equalsIgnoreCase方法.
+&ldquo;Hello&rdquo;.equalsIgnoreCase（&ldquo;hello&rdquo;）
+一定不要使用==运算符检测两个字符串是否相等。这个运算符只能够确定两个字符串是否放置在同一个位置上。当然，如果字符串放置在同一个位置上，它们必然相等。但是完全有可能将内容相同的多个字符串拷贝放置在不同的位置上。
+空串与Null串" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://zereals7.github.io/post/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E7%AC%AC%E4%B8%89%E7%AB%A0%E7%AC%94%E8%AE%B0-java%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E7%BB%93%E6%9E%84/" />
 <meta property="article:published_time" content="2021-04-30T22:08:43+08:00" />
@@ -134,7 +174,7 @@ Java字符串其实就是Unicode字符序列。Java没有内置的字符串类�
   <title>clock</title>
   <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
 </svg>
-          1 min read
+          2 min read
         </div></div>
     </header>
     <div class="post-content">
@@ -178,6 +218,152 @@ Java字符串其实就是Unicode字符序列。Java没有内置的字符串类�
 <p><strong>字符串</strong></p>
 <p>Java字符串其实就是Unicode字符序列。Java没有内置的字符串类型，而是在标准Java类库中提供了一个预定义类，很自然地叫做String。</p>
 <p>每个用双引号括起来的字符串都是String类的一个实例。</p>
+<p>字串</p>
+<p>String类的subString方法可以从一个较大的字符串提取出一个字串</p>
+<p>subString方法的第二个参数是不想复制的第一个位置。它的工作方式有一个优点：容易计算字串的长度。</p>
+<p><strong>拼接</strong></p>
+<p>Java允许使用+号连接两个字符串 。当将一个字符串与一个非字符串进行拼接时，后者被转换为字符串，任何一个Java对象都可以转换成字符串。</p>
+<p>如果需要把多个字符串放在一起，用一个定界符分隔，可以使用join方法。</p>
+<pre><code>String all=String.join(&quot;/&quot;,&quot;S&quot;,&quot;M&quot;,&quot;L&quot;,&quot;XL&quot;);
+
+// 相当于字符串&quot;S/M/L/XL&quot;
+</code></pre><p><strong>不可变字符</strong></p>
+<p>String类没有提供用于修改字符串的方法。由于不能修改Java中的字符，所以Java文档中将String类对象称为不可变字符串，当然可以修改字符串变量，让它引用另外一个字符串。</p>
+<p>不可变字符串有一个优点：编译器可以让字符串共享。</p>
+<p>可以将各种字符串存放在公共的存储池中。字符串变量指向存储池中相应的位置。如果复制一个字符串变量，原始字符串与复制的字符串共享相同的字符。</p>
+<p>总而言之，Java设计者认为共享带来的高效率远远胜过提取、拼接字符串所带来的低效率</p>
+<p><strong>检测字符串是否相等</strong></p>
+<p>可以使用equals方法检测两个字符串是否相等。对于表达式：</p>
+<p>s.equals(t)</p>
+<p>如果字符串s和字符串t相等，则返回true，否则返回false。需要注意，s和t可以是字符串变量，也可以是字符串字面量。例如，下面的表达式是合法的：</p>
+<p>&ldquo;hello&rdquo;.equals（greeting)</p>
+<p>要想检测两个字符串是否相等，而不区分大小写，可以使用equalsIgnoreCase方法.</p>
+<p>&ldquo;Hello&rdquo;.equalsIgnoreCase（&ldquo;hello&rdquo;）</p>
+<p>一定不要使用==运算符检测两个字符串是否相等。这个运算符只能够确定两个字符串是否放置在同一个位置上。当然，如果字符串放置在同一个位置上，它们必然相等。但是完全有可能将内容相同的多个字符串拷贝放置在不同的位置上。</p>
+<p><strong>空串与Null串</strong></p>
+<p>空串是长度为0的字符串。可以调用以下代码检查一个字符串是否为空</p>
+<pre><code>if（str.length()==0）
+或
+if(str.equals（”“）)
+</code></pre><p>空串是一个Java对象，有自己的串长度0和内容空。不过，String变量还可与放一个特殊的值，名为null，这表示目前没有任何对象与 该变量相关联。要检查一个字符串是否为null，要使用以下条件</p>
+<p>if（str==null）</p>
+<p>有时要检查一个字符串既不是null也不是空串，需要：</p>
+<pre><code>if(str!=null&amp;&amp;str.length()!=0)
+</code></pre><p>首先要检查str不为null，如果在一个Null值上调用方法，会出现错误。</p>
+<p><strong>构建字符串</strong></p>
+<p>有些适合，需要由较短的字符串构建字符串，例如，按键或者来自文件中的单词。采用字符串连接的方式达到此目的的效率比较低。每次连接字符串，都会构建一个新的String对象。既耗时，又浪费空间。使用StringBuilder类就可以避免这个问题的发生。</p>
+<p>如果需要用许多小段的字符串构建一个字符串，按以下步骤进行。首先，构建一个空的字符串构建器：</p>
+<p>StringBuilder  builder=new StringBuilder();</p>
+<p>当每次需要添加一部分内容时，就调用append方法。r如：</p>
+<p>builder.append(ch);</p>
+<p>在需要构建字符串时就调用toString方法，就可以得到一个String对象，其中包含了构建器中的字符序列。</p>
+<p>StringBuilder的前身是StringBuffer，其效率稍有些低，但允许采用多线程的方式执行添加或删除字符的操作。如果所有字符串在一个单线程中八年级，则应该采用StringBuilder替代。这两个类的API都是相同的。</p>
+<p>打印输出到标准输出流是一件非常容易的事情，只要调用System.out.println即可。然而，读取标准输入流System.in就没有那么简单了。要想通过控制台进行输入，首先需要构造一个Scanner对象，并与标准输入流System.in关联。</p>
+<p>Scanner in=new Scanner(System.in)</p>
+<p>例如，nextLine方法将输入一行</p>
+<p>String name=in.nextLine();</p>
+<p>在这里使用nextLine方法是因为在输入行中有可能包含空格。要想读取一个单词（以空白符作为分隔符），就调用</p>
+<p>String name =in.next();</p>
+<p>与此类似，要想读取一个整数，就调用nextInt方法，要想读取下一个浮点数，就调用nextDouble方法。</p>
+<p>Scanner类定义在java.util包中。当使用的类不是定义在基本java.lang包中时，一定要使用import将相应的包加载进来。</p>
+<p>因为输入是可见的，所以Scanner类不适用于从控制台读取密码。Java6特别引入了Console类实现这个目的。要想读取一个密码，可以采用下列代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Console cons <span style="color:#f92672">=</span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">console</span><span style="color:#f92672">();</span>
+String username<span style="color:#f92672">=</span>cons<span style="color:#f92672">.</span><span style="color:#a6e22e">readLine</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;User name:&#34;</span><span style="color:#f92672">);</span>
+<span style="color:#66d9ef">char</span><span style="color:#f92672">[]</span> passwd <span style="color:#f92672">=</span>cons<span style="color:#f92672">.</span><span style="color:#a6e22e">readPassword</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Password:&#34;</span><span style="color:#f92672">);</span>
+</code></pre></div><p>为了安全起见，返回的密码存放在一维字符数组中，而不是字符串中。在对密码进行处理之后，应该马上用一个填充值覆盖数组元素。</p>
+<p>采用Console对象处理输入不如采用Scanner方便。每次只能读取一行输入，而没有能够读取一个单词或一个数值的方法。</p>
+<p>在Java中。每一个%字符开始的格式说明符都用相应的参数替换。格式说明符尾部的转换符将指示被格式化的数值类型：f代表浮点数，s代表字符串，d代表十进制整数。</p>
+<p>可以使用s转换符格式化任意的对象。对于任意实现了Formattable接口的对象都将调用formatTo方法；否则将调用toString方法，它可以将对象转换为字符串。</p>
+<p>可以使用静态的String。format方法创建一个格式化的字符串，而不打印输出</p>
+<p>String message =String.format(&ldquo;Hello&rdquo;,%s,Next year,you&rsquo;ll be &ldquo;%d&rdquo;,name,age)</p>
+<p>Date类相关的格式化选项。格式包括两个字母，以t开始。加上一个转换符字母。</p>
+<p>某些格式只给出了指定日期的部分信息。例如，只有日期或月份。如果需要多次对日期操作才能实现对每一部分进行格式化的目的就态笨拙了。为此，可以采用一个格式化的字符串指出要被格式化的参数索引。索引必须紧跟在%后面，并以$终止。</p>
+<p>还可与选择使用&lt;标志。它指示前面格式说明中的参数将被再次使用。</p>
+<p>参数索引值从1开始，而不是从0开始，这样就避免了混淆。</p>
+<p><strong>文件的输入与输出</strong></p>
+<p>要想对文件进行读取，就需要一个用File对象构造一个Scanner对象，如下所示：</p>
+<pre><code>Scanner in =new Scanner(Paths.get(&quot;myfile.txt&quot;),&quot;UTF-8&quot;);
+</code></pre><p>如果文件名中包含反斜杠符号，就要记住在每个反斜杠之前再加一个额外的反斜杠                                                                                    &ldquo;c:\\mydirectory\myfile.txt&rdquo;</p>
+<p>读取一个文本文件时，要知道它的字符编码。</p>
+<p>可以使用Scanner方法对文件进行读取。要想写入文件，就需要构造一个PrintWrite对象。再构造器中只需要提供文件名：</p>
+<pre><code>PrintWriter out =new PrintWriter(&quot;myfile.txt&quot;,&quot;UTF-8&quot;);
+</code></pre><p>如果文件不存在，创建该文件。可以像输出到System.out一样使用print、println以及printf命令。</p>
+<p>可以构造一个带有字符串参数的Scanner，但这个Scanner将字符串解释为数据，而不是文件名。</p>
+<p>要记住一点：如果用一个不存在的文件构造一个Scanner,或者用一个不能被创建的文件名构造一个PrintWriter，那么就会发生异常</p>
+<p>不能在嵌套的两个块中声明同名的变量。</p>
+<p>Java提供了一种带标签的break语句，用于跳出多重嵌套的循环语句。</p>
+<p>对于任何使用break语句的代码都需要检测循环是否正常结束，还是由break跳出</p>
+<p>continue语句将跳过当前循环体的剩余部分，跳到最内层循环的首部，</p>
+<p><strong>大数值</strong></p>
+<p>如果基本的整数和浮点数精度不能够满足需求，那么可以使用java.math包中的两个很有用的类：BigInterger和BigDecimal。这两个类可以处理包含任意长度数字序列的数值。前者实现类任意精度的整数运算，后者实现了任意精度的浮点数运算。</p>
+<p>使用静态的valueOf方法可以将普通的数值转换为大数值</p>
+<p><strong>数组</strong></p>
+<p>数组是一种数据结构，用来存储同一类型值得到集合。</p>
+<p>可以使用下面两种形式声明数组</p>
+<p>int[] a;</p>
+<p>或者int a[]</p>
+<p>大多数Java应用程序员喜欢使用第一章，因为它将类型int[]和变量名分开了</p>
+<p>创建一个数字数组时，所有元素都初始化为0。boolean数组的元素会初始化为false。对象数组的元素则初始化为一个特殊值null，这表示这些元素还未存放任何对象。</p>
+<p>如果创建了一个100个元素的数组，并且试图访问元素a[100]（或任何在0~99之外的下标），程序就会引发数组越界异常而终止执行。</p>
+<p>要想获得数组中的元素个数，可以使用array.length。</p>
+<p>一旦创建了数组就不能再改变它的大小。如果经常需要再运行过程中扩展数组的大小，就应该使用另一种数据结构——数组列表。</p>
+<p><strong>for each循环</strong></p>
+<p>Java有一种功能很强的循环结构，可以依次处理数组中的每个元素而不必为指定下标值而分心。</p>
+<pre><code>for(variable:collection)statement
+</code></pre><p>定义一个变量用于暂存集合中的每一个元素，并执行相应的语句或者语句块。</p>
+<p><strong>数组初始化以及匿名数组</strong></p>
+<p>在Java中，提供了一种创建数组对象并同时赋予初始值的简化书写形式。</p>
+<p>int[] smallPrimes={2，3，4，7，11，13}；</p>
+<p>在使用这种语句时，不需要调用new。</p>
+<p>甚至还可以初始化一个匿名的数组；</p>
+<p>new int[]{17,19,23,29,31,37}</p>
+<p>这种表示法将创建一个新数组并利用括号中提供的值进行初始化，数组的大小就是初始值的个数。使用这种语法形式可以在不创建新变量的情况下重新初始化一个数组。例如：</p>
+<p>smallPrimes=new int[]{17,19,23,29,31,37};</p>
+<p>在Java中允许数组长度为0。在编写一个结果为数组的方法时，如果碰巧结果为空，则这种语法形式就显得非常有用。此时可以创建一个长度为0的数组：new elementType[0]</p>
+<p>注意数组长度为0与null不同。</p>
+<p><strong>数组拷贝</strong></p>
+<p>在Java中，允许一一个数组变量拷贝给另一个数组变量。这是，两个变量引用同一个数组。</p>
+<p>如果希望将一个数组的所有值拷贝到一个新的数组中去，就要使用Arrays类的copyOf方法：</p>
+<p>int[] copiedLuckyNumbers=Arrays.copyOf(luckyNumbers,luckyNumbers.length);</p>
+<p>如果数组元素是数值型，那么多余的元素将被赋值为0；如果数组元素是布尔型，则将赋值为false。相反，如果长度小于原始数组的长度，则只拷贝最前面的数据元素。</p>
+<p><strong>命令行参数</strong></p>
+<p>每一个Java应用程序都有一个带String arg[]参数的main方法。这个参数表面main方法将接收一个字符串数组，也就是命令行参数。</p>
+<p>在Java应用程序的main方法中，程序名并没有存储在args数组中</p>
+<p><strong>数组排序</strong></p>
+<p>要想对数值型数组进行排序，可以使用Arrays类中的sort方法：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">int</span><span style="color:#f92672">[]</span> a<span style="color:#f92672">=</span><span style="color:#66d9ef">int</span><span style="color:#f92672">[</span>10000<span style="color:#f92672">];</span>
+
+<span style="color:#f92672">...</span>
+
+Arrays<span style="color:#f92672">.</span><span style="color:#a6e22e">sort</span><span style="color:#f92672">(</span>a<span style="color:#f92672">);</span>
+
+</code></pre></div><p>这个方法使用了优化的快速排序算法，快速排序算法对于大多数数据集合来说都是效率笔记高的。</p>
+<p>Math.random方法将返回一个0到1之间的随机浮点数。用n乘以这个浮点数，就可以得到从0到n-1之间的一个随机数。</p>
+<p><strong>多维数组</strong></p>
+<p>多维数组将使用多个下标访问数组元素</p>
+<p>在Java中声明一个二维数组相当简单，例如</p>
+<pre><code>double[][]   balances;
+
+</code></pre><p>与一维数组一样，在调用new对多维数组进行初始化之前不能使用它。可以这样初始化</p>
+<p>[][]</p>
+<pre><code>balance=new double[][];
+</code></pre><p>另外，如果知道数组元素，就可以不调用new，而直接使用简化的书写形式对多维数组进行初始化。</p>
+<p>例如：</p>
+<pre><code>int[][] magicSquare=
+{[1,2],
+[3,4]
+}
+</code></pre><p>一旦数组被初始化，就可以利用两个方括号访问每个元素。</p>
+<p>for each 循环语句不能自动处理二维数组的每个元素，它是按照行，也就是一维数组处理的。要想访问二维数组a的所有元素，需要两个嵌套的循环，</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">for</span><span style="color:#960050;background-color:#1e0010">（</span><span style="color:#66d9ef">double</span><span style="color:#f92672">[]</span> row <span style="color:#f92672">:</span>a<span style="color:#960050;background-color:#1e0010">）</span>
+
+<span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">double</span> value<span style="color:#f92672">:</span>row<span style="color:#f92672">)</span>
+
+<span style="color:#66d9ef">do</span> something
+</code></pre></div><p>要想快速打印一个二维数组的数据元素列表，可以调用</p>
+<p>System.out.println(Arrays.deepToString(a));</p>
+<p><strong>不规则数组</strong></p>
+<p>Java实际没有多维数组。只有一维数组。多维数组被解释为数组的数组。</p>
 
     </div>
     <div class="post-footer">
