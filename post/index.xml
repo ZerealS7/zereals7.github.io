@@ -12,12 +12,22 @@
     
     
     <item>
-      <title>084270300</title>
+      <title>Java核心技术第六章笔记-接口、lambda表达式和内部类</title>
       <link>https://zereals7.github.io/post/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E7%AC%AC%E5%85%AD%E7%AB%A0%E7%AC%94%E8%AE%B0-%E6%8E%A5%E5%8F%A3lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%92%8C%E5%86%85%E9%83%A8%E7%B1%BB/</link>
       <pubDate>Sun, 16 May 2021 23:10:42 +0800</pubDate>
       
       <guid>https://zereals7.github.io/post/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E7%AC%AC%E5%85%AD%E7%AB%A0%E7%AC%94%E8%AE%B0-%E6%8E%A5%E5%8F%A3lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%92%8C%E5%86%85%E9%83%A8%E7%B1%BB/</guid>
-      <description></description>
+      <description>接口主要用来描述类具有什么功能，而并不给出每个功能的具体实现。一个类可以实现一个或多个接口，并在需要接口的地方，随时使用实现了相应接口的对象。
+lambda表达式是一种表示可以在将来某个时间点执行代码块的简洁方法。使用lambda表达式，可以用一种精巧而简洁的方式表示使用回调或变量行为的代码。
+内部类定义在另一个类的内部，其中的方法可以访问到包含它们外部类的域。内部类技术主要用于设计具有相互协作关系的类集合。
+代理，这是一种实现任意接口的对象。代理是一种非常专业的构造工具，它用来构建系统级的工具。
+**接口 **
+接口不是类，而是对类的一组需求描述，这些类要遵从接口描述的同一格式进行定义。
+如果类遵从某个特定的接口，那么就履行这项服务。
+Array类的sort方法承诺可以对对象数组进行排序，但要求类必须实现Comparable接口。
+任何实现Comparable接口的类都需要包含compareTo方法。
+接口中的所有方法自动地属于public。因此，在接口中声明方法时，不必提供关键字public。
+有些接口可能包含多个方法。在接口</description>
     </item>
     
     <item>
