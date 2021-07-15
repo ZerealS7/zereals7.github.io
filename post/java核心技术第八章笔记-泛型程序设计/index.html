@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Java核心技术第八章笔记-泛型程序设计 // Zereal-宋致远技术博客</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75，minimum-scale=0.75, maximum-scale=0.75, user-scalable=no" />
+    <meta name="author" content="Zereal" />
+    <meta name="description" content="" />
+    <meta name="referrer" content="never"/>
+    <link rel="stylesheet" href="https://zereals7.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java核心技术第八章笔记-泛型程序设计"/>
+<meta name="twitter:description" content="泛型机制编写的程序代码要比那些杂乱地使用Object变量，然后再进行强制类型转换的代码具有更好的安全性和可读性。泛型对于集合类尤其有用，例如，ArrayList就是一个无处不在的集合类。
+泛型很像C&#43;&#43;中的模板。与Java一样，在C&#43;&#43;中，模板也是最先被添加到语言中支持强类型集合的。但是，多年以后人们发现模板那还有其他的用武之地。
+泛型程序设计意味着编写的代码可以被很多不同的类型的对象所重用。例如，我们并不希望为聚集String和File对象分别设计不同的类。实际上，也不需要这样做，因为一个ArrayList类可以聚集任何类型的对象。
+实际上，在Java增加泛型类之前已经有一个ArrayList类。
+数组列表比数组好在可以进行自动扩展。
+实现一个泛型类没有那么容易，一个泛型程序员的任务就是预测出所用类的未来可能有的所有用途。
+定义简单泛型类
+一个泛型类就是具有一个或多个类型变量的类。泛型类可以有多个类型变量。例如，可以定义Pair类，其中第一个域和第二个域使用不同的类型。
+类型变量使用大写形式，且比较短，这是很常见的。在Java库中，使用变量E表示集合的元素类型。K和V 分别表示表的关键字和值的类型。T表示任意类型。
+泛型方法
+泛型方法可以定义在普通类中，也可以定义在泛型类中。
+当调用一个泛型方法时，在方法名前的尖括号中放入具体的类型。 ·
+类型变量的限定
+有时，类或方法需要对类型变量加以约束。变量smallest类型从为T。这意味着它可以是任何一个类的对象。怎么才能确信T所属的类有compareTo方法呢？
+解决这个问题的方案是将T限制为实现了Comparable接口的类。可与通过对类型变量T设置限定实现这一点：
+实际上Comparable接口本身就是一个泛型类型。目前，我们忽略其复杂性以及编译器产生的警告。
+&lt;T extends BoundingType&gt;表示T一个是绑定类型的子类型。T和绑定类型可以是类，也可以是接口。选择关键字extends的原因是更接近子类的概念，并且Java的设计者也不打算在语言中再添加一个新的关键字。 （如sub）
+一个类型变量或通配符可以有多个限定，例如：
+T extends Comparable &amp; Serializable限定类型用”&amp;“分隔，而逗号用来分隔类型变量。
+泛型代码和虚拟机
+虚拟机没有泛型类型对象——所有对象都属于普通类。再泛型实现的早期版本中，甚至能够将使用泛型的程序编译为在1.0虚拟机上运行的类文件。这个向后兼容性在Java泛型开发的后期被放弃了。
+类型擦除
+无论何时定义一个泛型类型，都自动提供了一个相应的原始类型。原始类型的名字就是删去类型参数后的泛型类型名。擦除类型变量，并替换为限定类型（无限定的变量用Object）
+对于Pair因为T是一个无限定的变量，所以直接用Object替换。
+结果是一个普通的类，就好像泛型引入Java语言之前已经实现的那样。
+在程序中可以包含不同类型的Pair，例如Pair或Pair,而擦除类型后就变成原始的Pair类型了。
+Java泛型与C&#43;&#43;模板有很大区别。C&#43;&#43;每个模板的实例化产生不同的类型，这一现象称为模板代码膨胀。Java不存在这个问题的困扰。
+原始类型用第一个限定的类型变量来替换，如果没有给定限定就用Object替换。例如，类Pair中的类型变量没有显式的限定，因此，原始类型用Object替换T。假定声明了一个不同的类型。
+翻译泛型表达式
+当程序调用泛型方法时，如果擦除返回类型，编译器插入强制类型转换。例如下面这个语句序列
+Pair&lt;Employee&gt; buddies=...;Employee buddy =buddies.getFirst();擦除getFirst的返回类型后将返回Object类型。编译器自动插入Employee的强制类型转换。也就是说，编译器把这个方法调用翻译为两条虚拟机指令：
+对原始方法Pair.getFirst的调用
+对返回的Object类型强制转换为Employee类型。
+当存取一个泛型域时也要插入强制类型转换。假设Pair类的first域和second域都是公有的。表达式
+Employee buddy =buddies.first;会在结果字节码中插入强制类型转换。
+翻译泛型方法
+类型擦除也会出现在泛型方法中。通常认为下述的泛型方法是一个完整的方法族
+public static &lt;T extends Copmparable&gt;T min(T[] a)而擦除类型之后，只剩下一个方法:
+public static Comparable min(Comparable[] a)注意，类型参数T已经被擦除了，只留下了限定类型Comparable"/>
+
+    <meta property="og:title" content="Java核心技术第八章笔记-泛型程序设计" />
+<meta property="og:description" content="泛型机制编写的程序代码要比那些杂乱地使用Object变量，然后再进行强制类型转换的代码具有更好的安全性和可读性。泛型对于集合类尤其有用，例如，ArrayList就是一个无处不在的集合类。
+泛型很像C&#43;&#43;中的模板。与Java一样，在C&#43;&#43;中，模板也是最先被添加到语言中支持强类型集合的。但是，多年以后人们发现模板那还有其他的用武之地。
+泛型程序设计意味着编写的代码可以被很多不同的类型的对象所重用。例如，我们并不希望为聚集String和File对象分别设计不同的类。实际上，也不需要这样做，因为一个ArrayList类可以聚集任何类型的对象。
+实际上，在Java增加泛型类之前已经有一个ArrayList类。
+数组列表比数组好在可以进行自动扩展。
+实现一个泛型类没有那么容易，一个泛型程序员的任务就是预测出所用类的未来可能有的所有用途。
+定义简单泛型类
+一个泛型类就是具有一个或多个类型变量的类。泛型类可以有多个类型变量。例如，可以定义Pair类，其中第一个域和第二个域使用不同的类型。
+类型变量使用大写形式，且比较短，这是很常见的。在Java库中，使用变量E表示集合的元素类型。K和V 分别表示表的关键字和值的类型。T表示任意类型。
+泛型方法
+泛型方法可以定义在普通类中，也可以定义在泛型类中。
+当调用一个泛型方法时，在方法名前的尖括号中放入具体的类型。 ·
+类型变量的限定
+有时，类或方法需要对类型变量加以约束。变量smallest类型从为T。这意味着它可以是任何一个类的对象。怎么才能确信T所属的类有compareTo方法呢？
+解决这个问题的方案是将T限制为实现了Comparable接口的类。可与通过对类型变量T设置限定实现这一点：
+实际上Comparable接口本身就是一个泛型类型。目前，我们忽略其复杂性以及编译器产生的警告。
+&lt;T extends BoundingType&gt;表示T一个是绑定类型的子类型。T和绑定类型可以是类，也可以是接口。选择关键字extends的原因是更接近子类的概念，并且Java的设计者也不打算在语言中再添加一个新的关键字。 （如sub）
+一个类型变量或通配符可以有多个限定，例如：
+T extends Comparable &amp; Serializable限定类型用”&amp;“分隔，而逗号用来分隔类型变量。
+泛型代码和虚拟机
+虚拟机没有泛型类型对象——所有对象都属于普通类。再泛型实现的早期版本中，甚至能够将使用泛型的程序编译为在1.0虚拟机上运行的类文件。这个向后兼容性在Java泛型开发的后期被放弃了。
+类型擦除
+无论何时定义一个泛型类型，都自动提供了一个相应的原始类型。原始类型的名字就是删去类型参数后的泛型类型名。擦除类型变量，并替换为限定类型（无限定的变量用Object）
+对于Pair因为T是一个无限定的变量，所以直接用Object替换。
+结果是一个普通的类，就好像泛型引入Java语言之前已经实现的那样。
+在程序中可以包含不同类型的Pair，例如Pair或Pair,而擦除类型后就变成原始的Pair类型了。
+Java泛型与C&#43;&#43;模板有很大区别。C&#43;&#43;每个模板的实例化产生不同的类型，这一现象称为模板代码膨胀。Java不存在这个问题的困扰。
+原始类型用第一个限定的类型变量来替换，如果没有给定限定就用Object替换。例如，类Pair中的类型变量没有显式的限定，因此，原始类型用Object替换T。假定声明了一个不同的类型。
+翻译泛型表达式
+当程序调用泛型方法时，如果擦除返回类型，编译器插入强制类型转换。例如下面这个语句序列
+Pair&lt;Employee&gt; buddies=...;Employee buddy =buddies.getFirst();擦除getFirst的返回类型后将返回Object类型。编译器自动插入Employee的强制类型转换。也就是说，编译器把这个方法调用翻译为两条虚拟机指令：
+对原始方法Pair.getFirst的调用
+对返回的Object类型强制转换为Employee类型。
+当存取一个泛型域时也要插入强制类型转换。假设Pair类的first域和second域都是公有的。表达式
+Employee buddy =buddies.first;会在结果字节码中插入强制类型转换。
+翻译泛型方法
+类型擦除也会出现在泛型方法中。通常认为下述的泛型方法是一个完整的方法族
+public static &lt;T extends Copmparable&gt;T min(T[] a)而擦除类型之后，只剩下一个方法:
+public static Comparable min(Comparable[] a)注意，类型参数T已经被擦除了，只留下了限定类型Comparable" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zereals7.github.io/post/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E7%AC%AC%E5%85%AB%E7%AB%A0%E7%AC%94%E8%AE%B0-%E6%B3%9B%E5%9E%8B%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/" />
+<meta property="article:published_time" content="2021-07-02T19:24:20+08:00" />
+<meta property="article:modified_time" content="2021-07-02T19:24:20+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://zereals7.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Zereal" /></a>
+      <h1>Zereal</h1>
+      <p>Java coder</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ZerealS7" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Java核心技术第八章笔记-泛型程序设计</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jul 2, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          1 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      <p>泛型机制编写的程序代码要比那些杂乱地使用Object变量，然后再进行强制类型转换的代码具有更好的安全性和可读性。泛型对于集合类尤其有用，例如，ArrayList就是一个无处不在的集合类。</p>
+<p>泛型很像C++中的模板。与Java一样，在C++中，模板也是最先被添加到语言中支持强类型集合的。但是，多年以后人们发现模板那还有其他的用武之地。</p>
+<p>泛型程序设计意味着编写的代码可以被很多不同的类型的对象所重用。例如，我们并不希望为聚集String和File对象分别设计不同的类。实际上，也不需要这样做，因为一个ArrayList类可以聚集任何类型的对象。</p>
+<p>实际上，在Java增加泛型类之前已经有一个ArrayList类。</p>
+<p>数组列表比数组好在可以进行自动扩展。</p>
+<p>实现一个泛型类没有那么容易，一个泛型程序员的任务就是预测出所用类的未来可能有的所有用途。</p>
+<p>定义简单泛型类</p>
+<p>一个泛型类就是具有一个或多个类型变量的类。泛型类可以有多个类型变量。例如，可以定义Pair类，其中第一个域和第二个域使用不同的类型。</p>
+<p>类型变量使用大写形式，且比较短，这是很常见的。在Java库中，使用变量E表示集合的元素类型。K和V 分别表示表的关键字和值的类型。T表示任意类型。</p>
+<p><strong>泛型方法</strong></p>
+<p>泛型方法可以定义在普通类中，也可以定义在泛型类中。</p>
+<p>当调用一个泛型方法时，在方法名前的尖括号中放入具体的类型。                                                                                                                         	·</p>
+<p><strong>类型变量的限定</strong></p>
+<p>有时，类或方法需要对类型变量加以约束。变量smallest类型从为T。这意味着它可以是任何一个类的对象。怎么才能确信T所属的类有compareTo方法呢？</p>
+<p>解决这个问题的方案是将T限制为实现了Comparable接口的类。可与通过对类型变量T设置限定实现这一点：</p>
+<p>实际上Comparable接口本身就是一个泛型类型。目前，我们忽略其复杂性以及编译器产生的警告。</p>
+<pre><code>&lt;T extends BoundingType&gt;
+</code></pre><p>表示T一个是绑定类型的子类型。T和绑定类型可以是类，也可以是接口。选择关键字extends的原因是更接近子类的概念，并且Java的设计者也不打算在语言中再添加一个新的关键字。  （如sub）</p>
+<p>一个类型变量或通配符可以有多个限定，例如：</p>
+<pre><code>T extends Comparable &amp; Serializable
+</code></pre><p>限定类型用”&amp;“分隔，而逗号用来分隔类型变量。</p>
+<p><strong>泛型代码和虚拟机</strong></p>
+<p>虚拟机没有泛型类型对象——所有对象都属于普通类。再泛型实现的早期版本中，甚至能够将使用泛型的程序编译为在1.0虚拟机上运行的类文件。这个向后兼容性在Java泛型开发的后期被放弃了。</p>
+<p><strong>类型擦除</strong></p>
+<p>无论何时定义一个泛型类型，都自动提供了一个相应的原始类型。原始类型的名字就是删去类型参数后的泛型类型名。擦除类型变量，并替换为限定类型（无限定的变量用Object）</p>
+<p>对于Pair<!-- raw HTML omitted --></p>
+<p>因为T是一个无限定的变量，所以直接用Object替换。</p>
+<p>结果是一个普通的类，就好像泛型引入Java语言之前已经实现的那样。</p>
+<p>在程序中可以包含不同类型的Pair，例如Pair<!-- raw HTML omitted -->或Pair<!-- raw HTML omitted -->,而擦除类型后就变成原始的Pair类型了。</p>
+<p>Java泛型与C++模板有很大区别。C++每个模板的实例化产生不同的类型，这一现象称为模板代码膨胀。Java不存在这个问题的困扰。</p>
+<p>原始类型用第一个限定的类型变量来替换，如果没有给定限定就用Object替换。例如，类Pair<!-- raw HTML omitted -->中的类型变量没有显式的限定，因此，原始类型用Object替换T。假定声明了一个不同的类型。</p>
+<p><strong>翻译泛型表达式</strong></p>
+<p>当程序调用泛型方法时，如果擦除返回类型，编译器插入强制类型转换。例如下面这个语句序列</p>
+<pre><code>Pair&lt;Employee&gt; buddies=...;
+Employee buddy =buddies.getFirst();
+</code></pre><p>擦除getFirst的返回类型后将返回Object类型。编译器自动插入Employee的强制类型转换。也就是说，编译器把这个方法调用翻译为两条虚拟机指令：</p>
+<p>对原始方法Pair.getFirst的调用</p>
+<p>对返回的Object类型强制转换为Employee类型。</p>
+<p>当存取一个泛型域时也要插入强制类型转换。假设Pair类的first域和second域都是公有的。表达式</p>
+<pre><code>Employee buddy =buddies.first;
+</code></pre><p>会在结果字节码中插入强制类型转换。</p>
+<p><strong>翻译泛型方法</strong></p>
+<p>类型擦除也会出现在泛型方法中。通常认为下述的泛型方法是一个完整的方法族</p>
+<pre><code>public static &lt;T extends Copmparable&gt;T min(T[] a)
+</code></pre><p>而擦除类型之后，只剩下一个方法:</p>
+<pre><code>public static Comparable  min(Comparable[] a)
+</code></pre><p>注意，类型参数T已经被擦除了，只留下了限定类型Comparable</p>
+<p>在虚拟机中，用参数类型和返回类型确定一个方法。</p>
+<p>需要记住有关Java泛型转换的以下事实：</p>
+<ul>
+<li>虚拟机中没有泛型，只有普通的类和方法</li>
+<li>所以的类型参数都用它们的限定类型替换</li>
+<li>桥方法被合成来保持多态</li>
+<li>为保持类型安全性，必要时插入强制类型转换</li>
+</ul>
+<p><strong>调用遗留代码</strong></p>
+<p>设计Java泛型类型时，主要目标时允许泛型代码和遗留代码之间能够互操作。在查看了警告之后，可以利用注解使之小时。注释必须放在生成这个歌警告的代码所在的方法之前。</p>
+<pre><code>@SuppressWarnings(&quot;unchecked&quot;)
+</code></pre><p>这个注解会关闭对方法中所有代码的检查。</p>
+<p><strong>约束与局限性</strong></p>
+<p>Java泛型大多数限制都是由类型擦除引起的。</p>
+<p>首先，不能用类型参数替代基本类型。因此，没有Pair<!-- raw HTML omitted -->，只有Pair<!-- raw HTML omitted -->。当然，其原因时类型擦除。擦除之后，Pair类含有Object类型的域，而Object不能存储double值。</p>
+<p>这并不是一个致命的缺陷，只有8种基本类型，当包装器类型不能接受替换时，可以使用独立的类和方法处理它们。</p>
+<p>运行时类型查询只适用于原始类型。</p>
+<p>虚拟机对象总有一个特定的非泛型类型。因此，所有的类型查询只产生原始类型</p>
+<p>例如</p>
+<pre><code>if(a instanceof Pair&lt;String&gt;)
+</code></pre><p>实际上仅仅测试a是否是任意类型的一个Pair    。</p>
+<p>试图查询一个对象是否属于某个泛型类型时，倘若使用instanceof会得到一个编译器错误，如果使用泛型类型进行强制类型转换会得到一个警告。</p>
+<p>如下</p>
+<pre><code>Pair&lt;String&gt; p =(Pair&lt;String&gt;) a;
+</code></pre><p>泛型使用getClass方法总是返回原始类型。</p>
+<p><strong>不能创建参数化类型的数组</strong></p>
+<p>不能实例化参数化类型的数组 。泛型数组不能实例化，如：</p>
+<pre><code>Pair&lt;String&gt;[] table=new Pair&lt;String&gt;[10];
+</code></pre><p>擦除之后，table的类型是Pair[],可以把它转换成Object[].</p>
+<p>数组会记住它的元素类型，如果试图存储其他类型的元素，就会抛出数组存储异常。</p>
+<p>不过对于泛型类型，擦除会使这种机制无效。也不能去构造一个泛型数组。</p>
+<p><strong>泛型类的静态上下文中类型变量无效</strong></p>
+<p>不能在静态域或方法中引用类型变量</p>
+<p>禁止使用带有类型变量的静态域和方法。</p>
+<p>不能抛出或捕获泛型类的实例</p>
+<p>既不能抛出也不能捕获泛型类对象。</p>
+<p><strong>可以消除对受查异常的检查</strong></p>
+<p>Java异常处理的一个基本原则是，必须为所有受查异常提供一个处理器。可以利用泛型消除这个限制。正常情况下，你必须捕获线程run方法中的所有受查异常，把它们包装到非受查异常中，因为run方法声明为不跑出任何受查异常。、</p>
+<p>要想支持擦除的转换，就需要强行限制一个类或类型变量不能同时称为两个接口类型的子类，而这两个接口是同一接口的不同参数化。</p>
+<p><strong>泛型类型的继承规则</strong></p>
+<p>永远可以将参数化类型转换成一个原始类型。例如Pair<!-- raw HTML omitted -->是原始类型Pair的一个子类型。泛型类可以继承或实现其他泛型类例如ArrayList<!-- raw HTML omitted -->实现List<!-- raw HTML omitted -->接口，一个ArrayList<!-- raw HTML omitted -->可以被转换为一个List<!-- raw HTML omitted -->。</p>
+<p><strong>通配符类型</strong></p>
+<p>通配符类型中，允许类型参数变化。例如，通配符类型</p>
+<pre><code>Pair&lt;? extends Employee&gt;
+</code></pre><p>表示任何泛型Pair类型，它的类型参数是Employee的子类，如Pair<!-- raw HTML omitted -->是Pair&lt;? extends Employee&gt;的子类型</p>
+<p><strong>通配符的超类型限定</strong></p>
+<p>通配符限定与类型变量的限定十分类似，但是，还有一个附加的能力，即可以指定一个超类型限定</p>
+<p>这个通配符限制为Manager的所有超类型。例如Pair&lt;? super Manager&gt;</p>
+<p>带有超类型限定的通配符可以向泛型对象写入，带有子类型限定的通配符可以从泛型对象读取。</p>
+<p><strong>无限定通配符</strong></p>
+<p>可以使用无限定的通配符，例如，Pair&lt;?&gt;。初看起来，这好像与原始的Pair类型一样。实际上有很大的不同。</p>
+<p>Pair&lt;?&gt;和Pair本质的不同在于：可以用任意Object对象调用原始Pair类的setObject方法。</p>
+<p><strong>反射和泛型</strong></p>
+<p>反射允许你在运行时分析任意的对象。如果对象是泛型类的实例，关于泛型类型参数得不到多少信息，因为会被擦除。</p>
+<p>泛型Class类</p>
+<p>Class类是泛型的，String.class实际上是Class<!-- raw HTML omitted -->类的对象。事实上是唯一的对象。类型参数十分有用。这是因为它允许Class<!-- raw HTML omitted -->方法返回类型更加具有针对性。</p>
+<p>对于T newInstance()</p>
+<p>newInstance方法返回一个实例，这个实例所属的类由默认的构造器获得。它的返回类型目前被声明为T，其类型与Class<!-- raw HTML omitted -->描述的类相同，这样就免除了类型转换。</p>
+<p>如果给定的类型确实是T的一个子类型，cast方法就会返回一个限制声明为类型T的对象，否则，抛出一个BadCastException异常。</p>
+<p>使用Class<!-- raw HTML omitted -->参数进行类型匹配</p>
+<p>Employee.class是类型Class<!-- raw HTML omitted -->的一个对象。makePair方法的类型参数T同Employee匹配，并且编译器可以推断出这个方法将返回一个Pair<!-- raw HTML omitted --></p>
+<p>​      <strong>虚拟机的泛型类型信息</strong></p>
+<p>可以用反射API来确定</p>
+<p>这个泛型方法有一个叫做T的类型参数</p>
+<p>这个类型参数有一个子类型限定，其自身又是一个泛型类型。</p>
+<p>这个限定类型有一个通配符参数</p>
+<p>这个通配符参数有一个超类型限定</p>
+<p>这个泛型方法有一个泛型数组参数</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+    <div class="post-comment">
+      
+      
+
+
+<span id="/post/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E7%AC%AC%E5%85%AB%E7%AB%A0%E7%AC%94%E8%AE%B0-%E6%B3%9B%E5%9E%8B%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/" class="leancloud_visitors" data-flag-title="Java核心技术第八章笔记-泛型程序设计">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+  new Valine({
+    el: '#vcomments' ,
+    appId: 'cScQmclMsD4OOWCclCP1pNsz-gzGzoHsz',
+    appKey: 'dtSaHLmdH3J4ICVVInYg9YFM',
+    notify:  false ,
+  verify:  false ,
+  avatar:'mm',
+    placeholder: '说点什么吧...',
+    visitor:  true 
+  });
+</script>
+
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Java核心技术第十三章笔记-事件处理部署Java应用程序 // Zereal-宋致远技术博客</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75，minimum-scale=0.75, maximum-scale=0.75, user-scalable=no" />
+    <meta name="author" content="Zereal" />
+    <meta name="description" content="" />
+    <meta name="referrer" content="never"/>
+    <link rel="stylesheet" href="https://zereals7.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java核心技术第十三章笔记-事件处理部署Java应用程序"/>
+<meta name="twitter:description" content="JAR文件
+将应用程序进行打包时吗，使用者希望仅提供其一个单独的文件，而不是一个含有大量类文件的目录。JAR文件就是为此目的而设计的 。一个JAR文件既可以包含类文件，也可以包含诸如图像换个声音这些其他类型的文件。此外，JAR文件是压缩的，它使用了大家熟悉的ZIP压缩格式。
+创建JAR文件
+可以使用jar工具制作JAR文件。创建一个新的JAR文件常见的命令格式为jar。
+可以将应用程序，程序组件以及代码库打包在JAR文件中。例如，JDK的运行时库包含在一个非常庞大的文件rt.jar中。
+清单文件
+除了类文件、图像和其他资源外i，每个JAR文件还包含一个用于描述归档特征的清单文件。
+清单文件被命名为 MANIFEST.MF，它位于JAR文件的一个特殊META-INF子目录中。最小的符合标准的清单文件是简单的：
+Manifest-Version:1.0
+复杂的清单文件可能包含更多条目。这些清单条目被分为多个节。第一节被称为主节。它作用于整个JAR文件。随后的条目用来指定已经命名条目的属性。这些已命名的条目可以是某个文件、包或者URL。它们都必须起始于名为Name的条目。节与节之间用空格分开
+无论怎样，人们对JAR文件中的Java程序和本地文件有不同的感觉。在Windows平台中，可以使用第三方的包装器工具将JAR文件转换成Windows可执行文件。包装器是一个大家熟知的扩展名为.exe的Windows程序，它可以查找和加载Java的虚拟机，或者在没有找到JVM时，告诉用户应该做些什么。
+应用首选项的存储
+属性映射时一种存储键值对的数据结构。属性映射通常用来存储配置信息，它有3个特性：键和值是字符串。映射可以很容易地存入文件以及从文件加载。有一个二级表保存默认值。
+实现属性映射的Java类名为Properties。
+利用Properties类可与很容易地加载和保存配置文件。不过，使用属性文件有以下缺点：有些操作系统没有主目录的概念，所以和南宁找到一个统一的配置文件位置。
+关于配置文件的命名没有标准阅读，用户安装多个Java应用时，就更容易发生命名冲突。"/>
+
+    <meta property="og:title" content="Java核心技术第十三章笔记-事件处理部署Java应用程序" />
+<meta property="og:description" content="JAR文件
+将应用程序进行打包时吗，使用者希望仅提供其一个单独的文件，而不是一个含有大量类文件的目录。JAR文件就是为此目的而设计的 。一个JAR文件既可以包含类文件，也可以包含诸如图像换个声音这些其他类型的文件。此外，JAR文件是压缩的，它使用了大家熟悉的ZIP压缩格式。
+创建JAR文件
+可以使用jar工具制作JAR文件。创建一个新的JAR文件常见的命令格式为jar。
+可以将应用程序，程序组件以及代码库打包在JAR文件中。例如，JDK的运行时库包含在一个非常庞大的文件rt.jar中。
+清单文件
+除了类文件、图像和其他资源外i，每个JAR文件还包含一个用于描述归档特征的清单文件。
+清单文件被命名为 MANIFEST.MF，它位于JAR文件的一个特殊META-INF子目录中。最小的符合标准的清单文件是简单的：
+Manifest-Version:1.0
+复杂的清单文件可能包含更多条目。这些清单条目被分为多个节。第一节被称为主节。它作用于整个JAR文件。随后的条目用来指定已经命名条目的属性。这些已命名的条目可以是某个文件、包或者URL。它们都必须起始于名为Name的条目。节与节之间用空格分开
+无论怎样，人们对JAR文件中的Java程序和本地文件有不同的感觉。在Windows平台中，可以使用第三方的包装器工具将JAR文件转换成Windows可执行文件。包装器是一个大家熟知的扩展名为.exe的Windows程序，它可以查找和加载Java的虚拟机，或者在没有找到JVM时，告诉用户应该做些什么。
+应用首选项的存储
+属性映射时一种存储键值对的数据结构。属性映射通常用来存储配置信息，它有3个特性：键和值是字符串。映射可以很容易地存入文件以及从文件加载。有一个二级表保存默认值。
+实现属性映射的Java类名为Properties。
+利用Properties类可与很容易地加载和保存配置文件。不过，使用属性文件有以下缺点：有些操作系统没有主目录的概念，所以和南宁找到一个统一的配置文件位置。
+关于配置文件的命名没有标准阅读，用户安装多个Java应用时，就更容易发生命名冲突。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zereals7.github.io/post/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E7%AC%AC%E5%8D%81%E4%B8%89%E7%AB%A0%E7%AC%94%E8%AE%B0-%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E9%83%A8%E7%BD%B2java%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/" />
+<meta property="article:published_time" content="2021-07-15T15:27:03+08:00" />
+<meta property="article:modified_time" content="2021-07-15T15:27:03+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://zereals7.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Zereal" /></a>
+      <h1>Zereal</h1>
+      <p>Java coder</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ZerealS7" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Java核心技术第十三章笔记-事件处理部署Java应用程序</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jul 15, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          1 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      <p>JAR<strong>文件</strong></p>
+<p>将应用程序进行打包时吗，使用者希望仅提供其一个单独的文件，而不是一个含有大量类文件的目录。JAR文件就是为此目的而设计的 。一个JAR文件既可以包含类文件，也可以包含诸如图像换个声音这些其他类型的文件。此外，JAR文件是压缩的，它使用了大家熟悉的ZIP压缩格式。</p>
+<p>创建JAR<strong>文件</strong></p>
+<p>可以使用jar工具制作JAR文件。创建一个新的JAR文件常见的命令格式为jar。</p>
+<p>可以将应用程序，程序组件以及代码库打包在JAR文件中。例如，JDK的运行时库包含在一个非常庞大的文件rt.jar中。</p>
+<p><strong>清单文件</strong></p>
+<p>除了类文件、图像和其他资源外i，每个JAR文件还包含一个用于描述归档特征的清单文件。</p>
+<p>清单文件被命名为 MANIFEST.MF，它位于JAR文件的一个特殊META-INF子目录中。最小的符合标准的清单文件是简单的：</p>
+<p>Manifest-Version:1.0</p>
+<p>复杂的清单文件可能包含更多条目。这些清单条目被分为多个节。第一节被称为主节。它作用于整个JAR文件。随后的条目用来指定已经命名条目的属性。这些已命名的条目可以是某个文件、包或者URL。它们都必须起始于名为Name的条目。节与节之间用空格分开</p>
+<p>无论怎样，人们对JAR文件中的Java程序和本地文件有不同的感觉。在Windows平台中，可以使用第三方的包装器工具将JAR文件转换成Windows可执行文件。包装器是一个大家熟知的扩展名为.exe的Windows程序，它可以查找和加载Java的虚拟机，或者在没有找到JVM时，告诉用户应该做些什么。</p>
+<p><strong>应用首选项的存储</strong></p>
+<p>属性映射时一种存储键值对的数据结构。属性映射通常用来存储配置信息，它有3个特性：键和值是字符串。映射可以很容易地存入文件以及从文件加载。有一个二级表保存默认值。</p>
+<p>实现属性映射的Java类名为Properties。</p>
+<p>利用Properties类可与很容易地加载和保存配置文件。不过，使用属性文件有以下缺点：有些操作系统没有主目录的概念，所以和南宁找到一个统一的配置文件位置。</p>
+<p>关于配置文件的命名没有标准阅读，用户安装多个Java应用时，就更容易发生命名冲突。</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+    <div class="post-comment">
+      
+      
+
+
+<span id="/post/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E7%AC%AC%E5%8D%81%E4%B8%89%E7%AB%A0%E7%AC%94%E8%AE%B0-%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E9%83%A8%E7%BD%B2java%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F/" class="leancloud_visitors" data-flag-title="Java核心技术第十三章笔记-事件处理部署Java应用程序">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+  new Valine({
+    el: '#vcomments' ,
+    appId: 'cScQmclMsD4OOWCclCP1pNsz-gzGzoHsz',
+    appKey: 'dtSaHLmdH3J4ICVVInYg9YFM',
+    notify:  false ,
+  verify:  false ,
+  avatar:'mm',
+    placeholder: '说点什么吧...',
+    visitor:  true 
+  });
+</script>
+
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

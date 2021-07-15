@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>异常、断言和日志 // Zereal-宋致远技术博客</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75，minimum-scale=0.75, maximum-scale=0.75, user-scalable=no" />
+    <meta name="author" content="Zereal" />
+    <meta name="description" content="" />
+    <meta name="referrer" content="never"/>
+    <link rel="stylesheet" href="https://zereals7.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="异常、断言和日志"/>
+<meta name="twitter:description" content="对于异常情况，Java使用一种称为异常处理的错误捕获机制。
+在测试期间，需要进行大量的检测以验证程序操作的正确性。然而，这些检测可能非常耗时，在测试完成后也不必保留它们，因此，可以将这些检测删掉，并在其他测试需要时将它们粘贴回来，这是一件很乏味的事。可以使用断言来有选择地启用检测。
+当程序出现错误时，并不总是能够与用户或终端进行沟通，此时，可能希望记录下出现的问题，以备日后进行分析。
+处理错误
+如果由于出现错误而使得某些操作没有完成，程序应该：
+ 返回到一种安全状态，并能够让用户执行一些其他的命令 或者允许用户保存所有操作的结果，并以妥善的方式终止程序。  异常处理的任务就是将控制权从错误产生的地方转移给能够处理这种情况的错误处理器。
+以下为常见的错误：
+1.用户输入错误假设有一个用户请求连接一个URL，而语法却不正确。在程序代码中应该对此进行检测，如果没有检查，网络层就会给出警告。2.设备错误例如，打印机在打印过程中可能没有纸了3.物理限制磁盘满了，可用存储空间已被用完。4.代码错误异常结构
+所有的异常都由Throwable继承而来，但在下一层立即分解为两个分支：Error和Exception。
+Error类层次结构描述了Java运行时系统的内部错误和资源耗尽错误。应用程序不应该抛出这种类型的对象。如果出现了这样的内部错误，除了通告给用户，并尽力使程序安全终止之外，再也无能为力了。这种情况很少出现 。
+而Exception又分为运行时RuntimeException异常，另一个分支IOException包含其他异常。划分两个分支的规则是：由出现错误导致的异常属于RuntimeException;而程序本身没有问题，但由于像IO错误这类问题导致的异常属于其他异常。
+派生于RuntimeException的异常下面几种情况：
+错误的类型转换 数组访问越界 访问null指针
+不派生于RuntimeException的异常包括：
+ 试图在文件尾部读取数据 试图打开一个不存在的文件 试图根据给定的字符串查找Class对象，而这个字符串表示的类并不存在。  如果出现运行时异常一般是程序员本身的问题。这些都一个在运行之前通过检测避免。如何处理不存在的文件呢？难道不能先检测文件是否存在再打开它吗？这个文件可能在你检查它是否存在之前就已经被删除了。是否存在取决于环境，而不只是取决于你的代码。
+Java语言规范件将派生于Error类或RuntimeException类的所有异常称为非受查异常（unchecked），所有其他的异常称为受查异常。编译器将核查是否为所有的受查异常提供了异常处理器。
+RuntimeException很容易混淆。实际上所有的错误都发生在运行时。
+声明受查异常
+如果遇到了无法处理的情况，那么Java的方法可以抛出一个异常。一个方法不M仅需要告知编译器将要返回什么值，还要告诉编译器有可能发生什么错误。
+方法应该在首部声明所有可能抛出的异常。这样可以从首部反映出这个方法可能抛出哪类受查异常。 如
+public FileInputStream(String name) throw FileNotFoundException 这个声明表示这个构造器将根据给定的String参数产生一个FileInputStream对象，但也可能抛出一个FileNotFoundException异常。如果发生了这种糟糕情况，构造器将不会初始化一个新的FileInputStream对象，而是抛出一个FileNotFoundException异常。如果发生了这种糟糕情况，构造器将不会初始化一个新的FileInputStream对象，而是抛出一个FileNotFoundException类对象。如果这个方法真的抛出来这样一个异常对象，运行时系统就会开始搜索异常处理器，以便知道如何处理FileNotFoundException类对象。
+在自己编写方法是，不必将所有可能抛出的异常都进行声明。至于什么时候需要在方法中用throw子句声明异常，什么异常必须使用throw子句声明，需要记住以下4种情况需要抛出异常。
+1.调用一个抛出受查异常的方法
+2.程序运行过程发现错误并且利用throw语句抛出下一个受查异常。
+3.程序出现错误
+4.Java虚拟机和运行时库出现的内部错误
+如果出现前两种情况之一，则必须告诉调用这个方法的程序员有可能抛出异常。为什么？因为任何一个抛出异常的方法都有可能是一个死亡陷阱。如果没有处理器捕获这个异常 ，当前执行的线程就会结束。
+对于哪些可能被他人使用的Java方法，应该更具异常规范，在方法的首部声明这个方法可能抛出的异常。
+如果一个方法有可能抛出多个受查异常类型，那么就必须在方法首部列出所有的异常类，每个异常类之间用逗号隔开。
+但是不需要声明Java的内部错误，即从Error继承的错误。任何程序代码都具有抛出那些异常的潜能，而我们对其没有任何控制能力。
+同时也不应该声明从RuntimeException继承的那些非受查异常。这些错误完全在我们的控制之下。如果特别关注数组下标引发的错误，就应该将更多的事件花费在修正程序的错误上，而不是说明这些错误发生的可能性上。
+总之，一个方法必须声明所有可能抛出的受查异常，而非受查异常要么不可控制，要么就一个避免发生。
+除了声明异常，还可以进行捕获。这样会使异常不被抛到方法之外，也不需要throw规范。
+如果在子类中覆盖了超类的一个方法，子类方法中声明的受查异常不能比超类方法中声明的异常更通用。也就是说子类方法可以抛出更特定具体的异常或根本不抛出任何异常。
+对于一个已经存在的异常类，将其抛出非常容易。
+1.找到一个合适的异常类2.创建这个类的一个对象3.将对象抛出一旦方法抛出了异常，这个方法就不可能返回调用者。也就是说，不必为返回的默认值或错误代码担忧。
+创建异常类
+在程序中，可能遇到标准异常类不能清楚描述问题。这种情况下，创建自己的异常类就是顺理成章的事情。我们需要做的只是定义一个派生于Exception的类，或者派生于EXception子类的类。
+例如，定义一个派生于IOException的类。习惯上，定义的类应该包含两个构造器，一个是默认的构造器；另一个是带有详细描述信息的构造器。
+捕获异常
+只要将异常抛出就不用理睬了。但是有些代码必须捕获异常。如果某个异常发生的时候没有在任何地方进行捕获， 那程序就会终止执行，并在控制台上打印出异常信息，其中包括异常的类型和堆栈的内容。"/>
+
+    <meta property="og:title" content="异常、断言和日志" />
+<meta property="og:description" content="对于异常情况，Java使用一种称为异常处理的错误捕获机制。
+在测试期间，需要进行大量的检测以验证程序操作的正确性。然而，这些检测可能非常耗时，在测试完成后也不必保留它们，因此，可以将这些检测删掉，并在其他测试需要时将它们粘贴回来，这是一件很乏味的事。可以使用断言来有选择地启用检测。
+当程序出现错误时，并不总是能够与用户或终端进行沟通，此时，可能希望记录下出现的问题，以备日后进行分析。
+处理错误
+如果由于出现错误而使得某些操作没有完成，程序应该：
+ 返回到一种安全状态，并能够让用户执行一些其他的命令 或者允许用户保存所有操作的结果，并以妥善的方式终止程序。  异常处理的任务就是将控制权从错误产生的地方转移给能够处理这种情况的错误处理器。
+以下为常见的错误：
+1.用户输入错误假设有一个用户请求连接一个URL，而语法却不正确。在程序代码中应该对此进行检测，如果没有检查，网络层就会给出警告。2.设备错误例如，打印机在打印过程中可能没有纸了3.物理限制磁盘满了，可用存储空间已被用完。4.代码错误异常结构
+所有的异常都由Throwable继承而来，但在下一层立即分解为两个分支：Error和Exception。
+Error类层次结构描述了Java运行时系统的内部错误和资源耗尽错误。应用程序不应该抛出这种类型的对象。如果出现了这样的内部错误，除了通告给用户，并尽力使程序安全终止之外，再也无能为力了。这种情况很少出现 。
+而Exception又分为运行时RuntimeException异常，另一个分支IOException包含其他异常。划分两个分支的规则是：由出现错误导致的异常属于RuntimeException;而程序本身没有问题，但由于像IO错误这类问题导致的异常属于其他异常。
+派生于RuntimeException的异常下面几种情况：
+错误的类型转换 数组访问越界 访问null指针
+不派生于RuntimeException的异常包括：
+ 试图在文件尾部读取数据 试图打开一个不存在的文件 试图根据给定的字符串查找Class对象，而这个字符串表示的类并不存在。  如果出现运行时异常一般是程序员本身的问题。这些都一个在运行之前通过检测避免。如何处理不存在的文件呢？难道不能先检测文件是否存在再打开它吗？这个文件可能在你检查它是否存在之前就已经被删除了。是否存在取决于环境，而不只是取决于你的代码。
+Java语言规范件将派生于Error类或RuntimeException类的所有异常称为非受查异常（unchecked），所有其他的异常称为受查异常。编译器将核查是否为所有的受查异常提供了异常处理器。
+RuntimeException很容易混淆。实际上所有的错误都发生在运行时。
+声明受查异常
+如果遇到了无法处理的情况，那么Java的方法可以抛出一个异常。一个方法不M仅需要告知编译器将要返回什么值，还要告诉编译器有可能发生什么错误。
+方法应该在首部声明所有可能抛出的异常。这样可以从首部反映出这个方法可能抛出哪类受查异常。 如
+public FileInputStream(String name) throw FileNotFoundException 这个声明表示这个构造器将根据给定的String参数产生一个FileInputStream对象，但也可能抛出一个FileNotFoundException异常。如果发生了这种糟糕情况，构造器将不会初始化一个新的FileInputStream对象，而是抛出一个FileNotFoundException异常。如果发生了这种糟糕情况，构造器将不会初始化一个新的FileInputStream对象，而是抛出一个FileNotFoundException类对象。如果这个方法真的抛出来这样一个异常对象，运行时系统就会开始搜索异常处理器，以便知道如何处理FileNotFoundException类对象。
+在自己编写方法是，不必将所有可能抛出的异常都进行声明。至于什么时候需要在方法中用throw子句声明异常，什么异常必须使用throw子句声明，需要记住以下4种情况需要抛出异常。
+1.调用一个抛出受查异常的方法
+2.程序运行过程发现错误并且利用throw语句抛出下一个受查异常。
+3.程序出现错误
+4.Java虚拟机和运行时库出现的内部错误
+如果出现前两种情况之一，则必须告诉调用这个方法的程序员有可能抛出异常。为什么？因为任何一个抛出异常的方法都有可能是一个死亡陷阱。如果没有处理器捕获这个异常 ，当前执行的线程就会结束。
+对于哪些可能被他人使用的Java方法，应该更具异常规范，在方法的首部声明这个方法可能抛出的异常。
+如果一个方法有可能抛出多个受查异常类型，那么就必须在方法首部列出所有的异常类，每个异常类之间用逗号隔开。
+但是不需要声明Java的内部错误，即从Error继承的错误。任何程序代码都具有抛出那些异常的潜能，而我们对其没有任何控制能力。
+同时也不应该声明从RuntimeException继承的那些非受查异常。这些错误完全在我们的控制之下。如果特别关注数组下标引发的错误，就应该将更多的事件花费在修正程序的错误上，而不是说明这些错误发生的可能性上。
+总之，一个方法必须声明所有可能抛出的受查异常，而非受查异常要么不可控制，要么就一个避免发生。
+除了声明异常，还可以进行捕获。这样会使异常不被抛到方法之外，也不需要throw规范。
+如果在子类中覆盖了超类的一个方法，子类方法中声明的受查异常不能比超类方法中声明的异常更通用。也就是说子类方法可以抛出更特定具体的异常或根本不抛出任何异常。
+对于一个已经存在的异常类，将其抛出非常容易。
+1.找到一个合适的异常类2.创建这个类的一个对象3.将对象抛出一旦方法抛出了异常，这个方法就不可能返回调用者。也就是说，不必为返回的默认值或错误代码担忧。
+创建异常类
+在程序中，可能遇到标准异常类不能清楚描述问题。这种情况下，创建自己的异常类就是顺理成章的事情。我们需要做的只是定义一个派生于Exception的类，或者派生于EXception子类的类。
+例如，定义一个派生于IOException的类。习惯上，定义的类应该包含两个构造器，一个是默认的构造器；另一个是带有详细描述信息的构造器。
+捕获异常
+只要将异常抛出就不用理睬了。但是有些代码必须捕获异常。如果某个异常发生的时候没有在任何地方进行捕获， 那程序就会终止执行，并在控制台上打印出异常信息，其中包括异常的类型和堆栈的内容。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zereals7.github.io/post/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E7%AC%AC%E4%B8%83%E7%AB%A0%E7%AC%94%E8%AE%B0-%E5%BC%82%E5%B8%B8%E6%96%AD%E8%A8%80%E5%92%8C%E6%97%A5%E5%BF%97-/" />
+<meta property="article:published_time" content="2021-06-19T20:04:09+08:00" />
+<meta property="article:modified_time" content="2021-06-19T20:04:09+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://zereals7.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Zereal" /></a>
+      <h1>Zereal</h1>
+      <p>Java coder</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ZerealS7" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">异常、断言和日志</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jun 19, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          2 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      <p>对于异常情况，Java使用一种称为异常处理的错误捕获机制。</p>
+<p>在测试期间，需要进行大量的检测以验证程序操作的正确性。然而，这些检测可能非常耗时，在测试完成后也不必保留它们，因此，可以将这些检测删掉，并在其他测试需要时将它们粘贴回来，这是一件很乏味的事。可以使用断言来有选择地启用检测。</p>
+<p>当程序出现错误时，并不总是能够与用户或终端进行沟通，此时，可能希望记录下出现的问题，以备日后进行分析。</p>
+<p><strong>处理错误</strong></p>
+<p>如果由于出现错误而使得某些操作没有完成，程序应该：</p>
+<ul>
+<li>返回到一种安全状态，并能够让用户执行一些其他的命令</li>
+<li>或者允许用户保存所有操作的结果，并以妥善的方式终止程序。</li>
+</ul>
+<p>异常处理的任务就是将控制权从错误产生的地方转移给能够处理这种情况的错误处理器。</p>
+<p>以下为常见的错误：</p>
+<pre><code>1.用户输入错误
+假设有一个用户请求连接一个URL，而语法却不正确。在程序代码中应该对此进行检测，如果没有检查，网络层就会给出警告。
+2.设备错误
+例如，打印机在打印过程中可能没有纸了
+3.物理限制
+磁盘满了，可用存储空间已被用完。
+4.代码错误
+
+</code></pre><p><strong>异常结构</strong></p>
+<p>所有的异常都由Throwable继承而来，但在下一层立即分解为两个分支：Error和Exception。</p>
+<p>Error类层次结构描述了Java运行时系统的内部错误和资源耗尽错误。应用程序不应该抛出这种类型的对象。如果出现了这样的内部错误，除了通告给用户，并尽力使程序安全终止之外，再也无能为力了。这种情况很少出现 。</p>
+<p>而Exception又分为运行时RuntimeException异常，另一个分支IOException包含其他异常。划分两个分支的规则是：由出现错误导致的异常属于RuntimeException;而程序本身没有问题，但由于像IO错误这类问题导致的异常属于其他异常。</p>
+<p>派生于RuntimeException的异常下面几种情况：</p>
+<p>错误的类型转换
+数组访问越界
+访问null指针</p>
+<p>不派生于RuntimeException的异常包括：</p>
+<ul>
+<li>试图在文件尾部读取数据</li>
+<li>试图打开一个不存在的文件</li>
+<li>试图根据给定的字符串查找Class对象，而这个字符串表示的类并不存在。</li>
+</ul>
+<p>如果出现运行时异常一般是程序员本身的问题。这些都一个在运行之前通过检测避免。如何处理不存在的文件呢？难道不能先检测文件是否存在再打开它吗？这个文件可能在你检查它是否存在之前就已经被删除了。是否存在取决于环境，而不只是取决于你的代码。</p>
+<p>Java语言规范件将派生于Error类或RuntimeException类的所有异常称为非受查异常（unchecked），所有其他的异常称为受查异常。编译器将核查是否为所有的受查异常提供了异常处理器。</p>
+<p>RuntimeException很容易混淆。实际上所有的错误都发生在运行时。</p>
+<p><strong>声明受查异常</strong></p>
+<p>如果遇到了无法处理的情况，那么Java的方法可以抛出一个异常。一个方法不M仅需要告知编译器将要返回什么值，还要告诉编译器有可能发生什么错误。</p>
+<p>方法应该在首部声明所有可能抛出的异常。这样可以从首部反映出这个方法可能抛出哪类受查异常。   如</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#a6e22e">FileInputStream</span><span style="color:#f92672">(</span>String name<span style="color:#f92672">)</span> <span style="color:#66d9ef">throw</span> FileNotFoundException
+</code></pre></div><p>这个声明表示这个构造器将根据给定的String参数产生一个FileInputStream对象，但也可能抛出一个FileNotFoundException异常。如果发生了这种糟糕情况，构造器将不会初始化一个新的FileInputStream对象，而是抛出一个FileNotFoundException异常。如果发生了这种糟糕情况，构造器将不会初始化一个新的FileInputStream对象，而是抛出一个FileNotFoundException类对象。如果这个方法真的抛出来这样一个异常对象，运行时系统就会开始搜索异常处理器，以便知道如何处理FileNotFoundException类对象。</p>
+<p>在自己编写方法是，不必将所有可能抛出的异常都进行声明。至于什么时候需要在方法中用throw子句声明异常，什么异常必须使用throw子句声明，需要记住以下4种情况需要抛出异常。</p>
+<p>1.调用一个抛出受查异常的方法</p>
+<p>2.程序运行过程发现错误并且利用throw语句抛出下一个受查异常。</p>
+<p>3.程序出现错误</p>
+<p>4.Java虚拟机和运行时库出现的内部错误</p>
+<p>如果出现前两种情况之一，则必须告诉调用这个方法的程序员有可能抛出异常。为什么？因为任何一个抛出异常的方法都有可能是一个死亡陷阱。如果没有处理器捕获这个异常 ，当前执行的线程就会结束。</p>
+<p>对于哪些可能被他人使用的Java方法，应该更具异常规范，在方法的首部声明这个方法可能抛出的异常。</p>
+<p>如果一个方法有可能抛出多个受查异常类型，那么就必须在方法首部列出所有的异常类，每个异常类之间用逗号隔开。</p>
+<p>但是不需要声明Java的内部错误，即从Error继承的错误。任何程序代码都具有抛出那些异常的潜能，而我们对其没有任何控制能力。</p>
+<p>同时也不应该声明从RuntimeException继承的那些非受查异常。这些错误完全在我们的控制之下。如果特别关注数组下标引发的错误，就应该将更多的事件花费在修正程序的错误上，而不是说明这些错误发生的可能性上。</p>
+<p>总之，一个方法必须声明所有可能抛出的受查异常，而非受查异常要么不可控制，要么就一个避免发生。</p>
+<p>除了声明异常，还可以进行捕获。这样会使异常不被抛到方法之外，也不需要throw规范。</p>
+<p>如果在子类中覆盖了超类的一个方法，子类方法中声明的受查异常不能比超类方法中声明的异常更通用。也就是说子类方法可以抛出更特定具体的异常或根本不抛出任何异常。</p>
+<p>对于一个已经存在的异常类，将其抛出非常容易。</p>
+<pre><code>1.找到一个合适的异常类
+2.创建这个类的一个对象
+3.将对象抛出
+</code></pre><p>一旦方法抛出了异常，这个方法就不可能返回调用者。也就是说，不必为返回的默认值或错误代码担忧。</p>
+<p><strong>创建异常类</strong></p>
+<p>在程序中，可能遇到标准异常类不能清楚描述问题。这种情况下，创建自己的异常类就是顺理成章的事情。我们需要做的只是定义一个派生于Exception的类，或者派生于EXception子类的类。</p>
+<p>例如，定义一个派生于IOException的类。习惯上，定义的类应该包含两个构造器，一个是默认的构造器；另一个是带有详细描述信息的构造器。</p>
+<p><strong>捕获异常</strong></p>
+<p>只要将异常抛出就不用理睬了。但是有些代码必须捕获异常。如果某个异常发生的时候没有在任何地方进行捕获， 那程序就会终止执行，并在控制台上打印出异常信息，其中包括异常的类型和堆栈的内容。</p>
+<p>要想捕获一个异常，必须设置try catch语句块。</p>
+<p>如果在try语句块中的任何代码抛出了一个在catch子句中说明的异常类，那么</p>
+<p>1.程序将跳过try语句块的其余代码</p>
+<p>2.程序将执行catch子句中的处理器代码</p>
+<p>如果在try语句块中的代码没有抛出任何异常，那么程序将跳过catch子句。</p>
+<p>如果方法中的任何代码抛出了一个在catch子句没有声明的异常类型，那么这个方法就会立刻退出。</p>
+<p>通常，应该捕获那些知道如何处理的异常，而将那些不知道怎样处理的异常继续进行传递。</p>
+<p>如果想传递一个异常，就必须在方法的首部添加一个throw说明符，以便告知调用者这个方法可能会抛出异常 。</p>
+<p>仔细阅读以下Java API文档，以便知道每个方法可能会抛出哪种异常，然后再决定是要自己处理，还是添加到throw列表中。对于后一种情况，也不必犹豫，将异常直接交给能够胜任的处理器进行处理要比压制对它的处理更好</p>
+<p>如果编写一个覆盖超类的方法,而这个方法又没有抛出异常,那么这个方法就必须捕获方法代码中出现的每一个受查异常.</p>
+<p>不允许在子类的throw说明符中出现超过超类方法所列出的异常类范围范围。</p>
+<p><strong>捕获多个异常</strong></p>
+<p>在一个try语句块中可以捕获多个异常类型,并对不同类型的异常做出不同的处理.可以按照下列方式为每一个异常类型使用一个单独的catch子句.</p>
+<p>异常对象可能包含与异常本身有关的信息.要想获得对象的更多信息,可以试着使用e.getMessage()得到详细的错误信息,或者使用</p>
+<p>e.getClass().getName()得到异常对象的实际类型.</p>
+<p>在同一个catch子句中可以捕获多个异常类型.</p>
+<p>​           假设对应缺少文件和未知主机异常的动作是一样的,就可以合并catch子句。但是要求捕获的异常之间不存在子类的关系。</p>
+<p>捕获多个异常会使代码看起来简单高效。生成的字节码只包含一个对应公共catch的代码块。</p>
+<p><strong>再次抛出异常与异常链</strong></p>
+<p>在catch子句中可以抛出一个异常，这样做的目的是改变异常的类型。如</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">try</span><span style="color:#f92672">{</span>
+
+<span style="color:#f92672">}</span>
+<span style="color:#66d9ef">catch</span><span style="color:#f92672">(</span>Exception e<span style="color:#f92672">){</span>
+Throwable se <span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> <span style="color:#f92672">...</span>
+se<span style="color:#f92672">.</span><span style="color:#a6e22e">initCause</span><span style="color:#f92672">(</span>e<span style="color:#f92672">);</span>
+<span style="color:#66d9ef">throw</span> se<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>当捕获到异常的时候，可以用下列的语句重新得到原始异常：</p>
+<pre><code>Throwable e=se.getCause();
+</code></pre><p>使用这种包装技术，可以让用户抛出子系统中的高级异常，而不丢失原始异常的细节。</p>
+<p>如果在一个方法中发生了一个受查异常，而不准抛出它，则包装技术就十分有用，我们可以捕获这个受查异常，并将它包装成一个运行时异常。</p>
+<p><strong>finally子句</strong></p>
+<p>当代码抛出一个异常时，就会终止方法中剩余代码的处理，并退出这个方法的执行   。不管是否有异常被捕获，final方法最终都会执行。</p>
+<p>下列3种情况会执行final</p>
+<p>1.代码没有抛出异常。这种情况下先执行完try代码块，然会直接执行final代码块</p>
+<p>2.抛出一个在catch子句中捕获的异常。先try，然后catch，最后final</p>
+<p>3.代码抛出一个异常，但异常不是由catch捕获的。将执行try语句直到有异常被抛出。此时将跳过try语句块的剩余代码然后执行finally子句中的语句。</p>
+<p>try语句可以只有finally语句，而没有catch语句 。</p>
+<p><strong>使用异常机制的技巧</strong></p>
+<p>1.异常处理不能代替简单的测试</p>
+<p>与执行简单的测试相比，捕获异常所花费的时间大大超过了前者，因此使用异常的基本原则：只在异常的情况下使用异常机制。</p>
+<p>2.不要过分的细化异常</p>
+<p>有必要将整个任务包装在一个try语句块中，这样当任何一个操作出现问题时，整个任务都可以取消。这样也满足了异常处理机制的其他一个目标，将正常处理与错误处理分开。</p>
+<p>3.利用异常层次结构</p>
+<p>不要只抛出RuntimeException异常。应该寻找更加适当的子类或创建自己的异常类。</p>
+<p>不要只捕获Throwable异常，否则，会使程序代码更难读、更难维护。</p>
+<p>考虑受查异常与非受查异常的区别。已检查异常本来就很庞大，不要为逻辑错误抛出这些异常。将一种异常转换成另一种更加合适的异常时不要犹豫。</p>
+<p>4.不要压制异常</p>
+<p>在Java中，往往强烈地倾向于异常。如果编写了一个调用另一个方法的方法，而这个方法有可能100年才抛出一个异常，那么，编译器会因为没有将这个异常列在throws表中产生抱怨。而没有将这个异常列在throws表中主要出于编译器将会对所有调用这个方法的方法进行异常处理的考虑。因此，应该将这个异常关闭。</p>
+<p>如果认为异常非常重要，就应该对它们进行处理。</p>
+<p>5.在检测错误时，苛刻要比放任更好</p>
+<p>在出错的地方抛出一个异常，是比较合适的。</p>
+<ol start="6">
+<li>不要羞于传递异常</li>
+</ol>
+<p>传递异常要比捕获异常更好。让高层次的方法通知用户发生了错误，或者放弃不成功的命令更加适宜。总之就是早抛出，晚捕获</p>
+<p>。</p>
+<p><strong>使用断言</strong></p>
+<p>断言机制允许在测试期间向代码中插入一些检查语句。当代码发布时，这些插入的检测语句将会被自动移走。</p>
+<p>Java语言引入了关键字assert。这个关键字有两种形式：</p>
+<p>assert 条件；和assert 条件：表达式</p>
+<p>这两种形式都会对条件进行检测，如果结果为false，则抛出一个AssertionError异常。在第二章形式中，表达式将被传入AssertionError的构造器，并转换成一个消息字符串。</p>
+<p>“表达式“部分的唯一目的是产生消息字符串。</p>
+<p>在默认情况下，断言被禁用。可以在允许程序时用-enableassertions来启用.</p>
+<p>需要注意，在启用或禁用断言时不必重新编译重新。启用或禁用断言是类加载器的功能。当断言被禁用时，类加载器将跳过断言代码，因此，不会降低程序运行的速度。</p>
+<p>也可以在某个类或整个包中使用断言</p>
+<p><strong>使用断言完成参数检查</strong></p>
+<p>什么时候使用断言呢？</p>
+<p>断言失败是致命的，不可恢复的错误。</p>
+<p>断言检查只用于开发和测试阶段。</p>
+<p>因此，不应该使用断言向程序的其他部分通告发生了可恢复性的阶段性错误。 断言不应该作为程序向用户通告问题的手段。断言只应该用于在测试阶段确定程序内部的错误位置。</p>
+<p><strong>记录日志</strong></p>
+<p>记录日志API有以下的优点：</p>
+<p>可以很容易取消全部日志记录，或者仅仅取消某个级别的日志，而且打开和关闭这个操作也很容易</p>
+<p>可以很简单地禁止日志记录的输出，因此，将这些日志代码留在程序中的开销很小。</p>
+<p>日志记录器和处理器都可以对记录进行过滤。过滤器可以根据过滤实现其指定的标准丢弃那些无用的记录项。</p>
+<p>日志记录可以采用不同的方式格式化，例如，纯文本或XML。</p>
+<p>应用程序可以使用多个日志记录器，它们使用类似包名的这种具有层次结构的名字。</p>
+<p>在默认情况下，日志系统的配置由配置文件控制。如果需要的话，应用程序可以替换这个配置。</p>
+<p><strong>基本日志</strong></p>
+<p>要生成简单的日志记录，可以使用全局日志记录器并调用其info方法：</p>
+<p>Logger.getGlobal.info(&ldquo;File→Open menu item selected&rdquo;)</p>
+<p>但是在适当的地方调用</p>
+<pre><code>Logger.getGlobal().setLevel(Level.OFF);
+</code></pre><p>将会取消所有的日志。</p>
+<p><strong>高级日志</strong></p>
+<p>之前已经看到虚拟日志，可以复看企业级日志。在一个专业的程序中，不要将所有的日志都记录到一个全局日志记录器中，而是可以自定义日志记录器。</p>
+<p>可  bbbb以调用getLogger方法创建或获取记录器</p>
+<pre><code>private static final Logger myLogger=Logger.getLogger()
+</code></pre><p>未被任何变量引用的日志记录器可能会被垃圾回收。为了防止这种情况发生，最好用一个静态变量存储日志记录器的一个引用。</p>
+<p>与包名类似，日志记录器名也具有层次结构。事实上，与包名相比，日志记录器的层次性更强。对于包来说，一个包的名字与其父包的名字之间没有语义关系，但是日志记录器的父与子之间将共享某些属性。</p>
+<p>如果某日志记录器设置了日志级别，则它的子记录器也会继承这个级别。</p>
+<ul>
+<li>SEVERE</li>
+<li>WARNING</li>
+<li>INFO</li>
+<li>CONFIG</li>
+<li>FINE</li>
+<li>FINER</li>
+<li>FINEST</li>
+</ul>
+<p>在默认情况下，只记录前三个级别</p>
+<p>也可以设置其他的级别，例如：</p>
+<pre><code>Logger.setLevel(Level.FINE);
+</code></pre><p>现在，FINE和更高级别的记录都可以记录下来。</p>
+<p>另外，还可以使用Level.ALL开启所有级别的记录，或者使用Level.OFF关闭所有几倍的记录。</p>
+<p>对于所有的级别有下面几种记录方法：</p>
+<p>logger.warning(message);</p>
+<p>logger.fine(message);</p>
+<p>同时，还可以使用log方法指定级别，例如：8888因此，一应该使用CONFIG、FINE、FINER和FINEST级别来记录那些有助于诊断，但对于程序员又没有太大意义的调试信息。</p>
+<p>如果将记录级别设计为INFO或者更低，则需要修改日志处理器的配置。默认的日志处理器不会处理低于INFO级别的信息。</p>
+<p>默认的日志记录将显示包含日志调用的类名和方法名，如同堆栈显示的那样。但是如果虚拟机对执行过程进行了优化，就得不到准确的调用信息。此时，可以调用logp方法获得调用类和方法的确切位置，这个方法的签名为：</p>
+<p>void logp(Level l，String className,String methodName,String message)</p>
+<p>记录日志的常见用途是记录那些不可预料的异常。</p>
+<p>调用throwing可以记录一条FINER级别的记录和一条以THROW开始的信息。</p>
+<p><strong>修改日志管理器配置</strong></p>
+<p>可以通过编辑配置文件来修改日志系统的各种属性。在默认情况下，配置文件存在于：</p>
+<p>jre/lib/logging.properties</p>
+<p>要想使用另一个配置文件，就要将java.util.logging.config.file特性设置为配置文件的存储位置并用下列命令启动应用程序。</p>
+<p>java -Djava.util.logging.config.file=configFile MainClass</p>
+<p>日志管理器在VM启动过程中初始化，这在main执行之前完成，如果在main中调用System.setProperty，也将会调用LogManager.readConfiguration()来重新初始化日志管理器。</p>
+<p>要想修改默认的日志记录级别，就需要编辑配置文件，并修改以下命令行</p>
+<p>.level=INFO</p>
+<p>可以通过添加以下内容来指定自己的日志记录级别</p>
+<pre><code>com.mycompany.myapp.level=FINE
+</code></pre><p>也就是说，在日志记录器名后面添加.level</p>
+<p>在稍后可以看到，日志记录并不将消息发送到控制台上，这是处理器的任务。另外，处理器也有级别，要想在控制台上看到FINE级别的消息，就需要进行下列设置</p>
+<pre><code>java.util.logging.ConsoleHandler.level=FINE
+</code></pre><p><strong>本地化</strong></p>
+<p>本地化的程序包含资源包中的本地特定信息。资源包由各个地区的映射集合组成。</p>
+<p>一个程序可以包含多个资源包，一个用于菜单；其他用于日志消息。每个资源包都有一个名字。要想将映射添加到一个资源包中，需要为每个地区创建一个文件。</p>
+<p>在请求日志记录器时，可以指定一个资源包。然后，为日志消息指定资源包的关键字，而不是实际的日志消息字符串。</p>
+<p>logger.info(&ldquo;readingFile&rdquo;)；</p>
+<p>通常在本地化的消息中增加一些参数，因此，消息应该包括占位符{0}、{1}等。</p>
+<p><strong>处理器</strong></p>
+<p>在默认情况下，日志记录器将记录发送到ConsoleHandler中,并由它输出到System.err流中。特别是，日志记录器还会将记录发送到父处理器中，而最终的处理器（命名为“”）有一个ConsoleHandler。</p>
+<p>与日志记录器一样，处理器也有日志记录级别。对于一个要被记录的日志记录，它的日志记录级别必须高于日志记录器和处理器的阈值。日志管理器配置文件设置的默认控制台处理器的日志记录级别为</p>
+<pre><code>java.util.logging.ConsoleHandler.level=INFO
+</code></pre><p>要想记录FINE级别的日志，就必须修改配置文件中的默认日志记录级别和处理器级别。另外，还可以绕过配置文件，安装自己的处理器。</p>
+<p>在默认情况下，日志记录器将记录发送到自己的处理器和父处理器。我们的日志记录器是原始日志记录器的子类，而原始日志记录器将会把所有等于或高于INFO级别的记录发送到控制台。然而，我们并不想两次看到这些记录。鉴于这个原因，应该将useParentHandlers属性设置为false。</p>
+<p>在默认情况下，过滤器根据日志记录级别进行过滤。每个日志记录器和处理器都可以有一个可选的过滤器来完成附加的过滤。另外，可以通过实现Filter接口并定义下列方来自定义过滤器。</p>
+<pre><code>boolean isLoggable(LogRecord record)
+</code></pre><p>可以利用自己喜欢的标准，对日志记录进行分析，返回true表示这些记录应该包含在日志中。例如，某个过滤器可能只对entering方法和exiting方法产生的消息感兴趣，这个过滤器可以调用record.getMessage（）方法，并查看这个消息是否用ENTRY或RETURN开头.</p>
+<p><strong>格式化器</strong></p>
+<p>ConsoleHandler类和FileHandler类可以生成文本和XML格式的日志记录。但是，也可以自定义格式。这需要扩展Formatter类并覆盖下面这个方法：</p>
+<p>String format(LogRecord record)</p>
+<p>这个方法对记录中的部分消息进行格式化、参数替换和本地化应用操作 。</p>
+<p>很多格式文件（如XML）需要在已格式化的记录的前后加上一个头部和尾部。在这个例子中，要覆盖下面两个方法：</p>
+<p>String getHead（Handler h）</p>
+<p>String getTail(Handler h)</p>
+<p>最后，调用setFormatter方法将格式化器安装到处理器中。</p>
+<p><strong>日志记录说明</strong></p>
+<p>一些最常用的操作</p>
+<p>1.为一个简单的应用程序，选择一个日志记录器，并把日志记录器命名为主应用程序包一样的名字，例如，com.mycompany.myprog，这是 一种好的编程习惯。另外，可以通过下列方法得到日志记录器。</p>
+<p>Logger logger =Logger.getLogger(&ldquo;com.company.myprog&rdquo;);</p>
+<p>为了方便起见，可能希望利用一些日志i操作将下列的静态域添加到类中：</p>
+<p>private static final Logger logger =Logger.getLogger(&ldquo;com.mycompany.myprog&rdquo;);</p>
+<p>2.默认的日志配置将级别等于或高于INFO级别的所有消息记录到控制台。用户可以覆盖默认的配置文件。但是改变配置需要做相当多的工作。因此，最好在应用程序中安装一个更加适宜的默认配置。</p>
+<p>下列代码将所有消息记录到应用程序特定的文件中，可以将这段代码放置在应用程序的main方法中。</p>
+<pre><code>  if(System.getProperty(“java.util.logging.config.class”)==null&amp;&amp;System.getProperty(&quot;java.util.logging.config.file&quot;)==null){
+  try
+  {
+  Logger.getLogger(&quot;&quot;).setLevel(Level.ALL);
+  final int LOG_ROTATION_COUNT =10;
+  Handler handler=new FileHandler(&quot;%h/myapp.log&quot;,0,LOG_ROTATION_COUNT);
+  Logger.getLogger(&quot;&quot;).addHandler(handler);
+  }
+  	catch(IOException e)
+  	{
+  		logger.log(Level.SEVERE,&quot;Can't create log file handler&quot;,e);
+  	}
+  }
+</code></pre><p>3.现在，可以记录自己需要的内容。但需要牢记：所有级别为INFO、WARNING和SEVERE的消息都将显示到控制太上。因此最好只将对程序用户有意义的消息设置为这几个级别。将程序员需要的日志记录，设定为FINE是一个很好的选择。</p>
+<p>当调用System.out.println时，实际上生成下面的日志消息；</p>
+<pre><code>logger.fine(&quot;File open dialog canceled&quot;)
+</code></pre><p>另外看几遍日志相关的API</p>
+<p><strong>调试技巧</strong></p>
+<p>假设编写了一个程序 ，对所有的异常进行了捕获和恰当的处理，然后，运行这个程序，但是还是出现问题，现在该怎么办呢。</p>
+<p>当然，如果有一个方便且功能强大的调试器就太好了。以下是一些有价值的建议</p>
+<p>1.可以用写一下方法打印或记录任意变量的值：</p>
+<p>System.out.println(&ldquo;x=&quot;+x);</p>
+<p>或</p>
+<p>Logger.getGlobal（）.info(&ldquo;x=&quot;+x);</p>
+<p>如果x是一个数值，则会被转换成等价的字符串。如果x是一个对象，那么Java就会调用这个对象的toString方法。要想获得隐式参数对象的状态，就可以打印this对象的状态。</p>
+<p>Logger.getGlobal().info(&ldquo;this=&quot;+this);</p>
+<p>Java类库中的绝大多数类都覆盖了toString方法，一遍能够提供有用的类信息。这样会使调试更加便捷。在自定义的类中。也应该这样做。</p>
+<p>2.一个不太为人所知但却非常有效的技巧实在每一个类中放置一个单独的main方法。这样就可以对每一个类进行单元测试。</p>
+<p>利用这种技巧，只需要创建少量的对象，调用所有的方法，并检测每个方法是否能够正确地运行就可以了。另外可以为每个类保留一个main方法，然后分别为每个文件调用Java虚拟机进行运行测试。在运行applet应用程序的时候，这些main方法不会被调用，而在运行应用程序的时候，Java虚拟机只调用启动类的main方法。</p>
+<p>3.JUnit是一个非常常见的单元测试框架，利用他可以很容易地组织测试用例套件。只要修改类，就需要运行测试。在发现bug时，还要补充一些其他的测试用例。</p>
+<p>4.日志代理是一个子类的对象，它可以截获方法调用，并进行日志记录，然后调用超类中的方法</p>
+<p>5.利用Throwable类提供的printStackTrace方法，可以从任何一个异常对象中获得对战情况。下面的代码将捕获任何异常，打印异常对象和堆栈轨迹，然后，重新抛出异常，以便能找到相应的处理器。</p>
+<pre><code>try{
+...
+}
+catch(Throwable t){
+t.printStackTrace();
+throw t;
+}
+</code></pre><p>不一定要通过捕获异常来生成堆栈轨迹。只要在代码的任何位置插入下面这条语句就可以获得堆栈轨迹：</p>
+<p>Thread.dumpStack();</p>
+<p>6.一般来说，堆栈轨迹显示在System.err上。也可以利用printStackTrace(PrintWriter s)方法将它发送到一个文件中。另外，如果想记录或显示堆栈轨迹，可以采用下面的方式，将它捕获到一个字符串中</p>
+<pre><code>StringWriter out =new StringWriter();
+new Throwable().printStackTrace(new PrintWriter(out));
+String description =out.toString();
+</code></pre><p>7.通常，将一个程序中的错误信息保存在一个文件中是非常有用的。然而，错误信息被发送到System.err中，而不是System.out中。</p>
+<p>要想在同一个文件中同时捕获System.err和System.out,需要使用下面这条命令</p>
+<pre><code>java MyProgram 1&gt;errors.txt 2&gt;&amp;1
+</code></pre><p>这条命令将工作在bash和Windows shell中。</p>
+<p>8.让非捕获异常的堆栈轨迹出现在System.err中并不是一个很理想的方法。如果在客户端偶然看到这些消息，则会感到迷惑，并且在需要的时候也无法实现诊断目的。比较好的方式是将这些内容记录到一个文件中。可以调用静态的Thread.setDefaultUncaughtExceptionHandler方法改变非捕获异常的处理器。</p>
+<p>9.要想观察类的加载过程，可以用-verbose标志启动Java虚拟机。有时候，这种方法有助于诊断由于类路径引发的问题。</p>
+<p>10.-Xlint选项告诉编译器对一些普遍容易出现的代码进行检查。例如，如果使用下面这条命令编译：</p>
+<p>javac -Xlint:fallthrough 检查switch语句中是否缺少break语句</p>
+<p>当switch语句中缺乏break语句时，编译器就会给出报告。</p>
+<ol start="11">
+<li>​      Java虚拟机增加了对Java应用程序进行监控和管理的支持。它允许利用虚拟机中的处理装置跟踪内存消耗、线程使用、类加载等情况。这个功能对于想应用程序服务器这样大型的、长时间运行的Java程序来说特别重要。</li>
+</ol>
+<p>12.可以使用jmap实用工具获得一个堆的转储，其中显示了堆中的每个对象。命令如下：</p>
+<pre><code>jmap -dump:format=b,file=dumpFileName processID
+jhat dumpFileName
+</code></pre><p>然后，通过浏览器进行localhost:7000,将会运行一个网络应用程序,借此探查转储对象时堆的内容。。</p>
+<p>13.如果使用-Xprof标志运行Java虚拟机，就会运行一个基本的剖析器来跟踪那些代码中经常被调用的方法。剖析信息将发送给System.out。输出结果中还会显示哪些方法是由即时编译器编译的。</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+    <div class="post-comment">
+      
+      
+
+
+<span id="/post/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E7%AC%AC%E4%B8%83%E7%AB%A0%E7%AC%94%E8%AE%B0-%E5%BC%82%E5%B8%B8%E6%96%AD%E8%A8%80%E5%92%8C%E6%97%A5%E5%BF%97-/" class="leancloud_visitors" data-flag-title="异常、断言和日志">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+  new Valine({
+    el: '#vcomments' ,
+    appId: 'cScQmclMsD4OOWCclCP1pNsz-gzGzoHsz',
+    appKey: 'dtSaHLmdH3J4ICVVInYg9YFM',
+    notify:  false ,
+  verify:  false ,
+  avatar:'mm',
+    placeholder: '说点什么吧...',
+    visitor:  true 
+  });
+</script>
+
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
