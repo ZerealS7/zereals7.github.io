@@ -6,10 +6,19 @@
     <description>Recent content on Zereal-宋致远技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 15 Jul 2021 15:27:03 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 15 Jul 2021 16:06:22 +0800</lastBuildDate>
     
 	<atom:link href="https://zereals7.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>288933200</title>
+      <link>https://zereals7.github.io/post/288933200/</link>
+      <pubDate>Thu, 15 Jul 2021 16:06:22 +0800</pubDate>
+      
+      <guid>https://zereals7.github.io/post/288933200/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Java核心技术第十三章笔记-事件处理部署Java应用程序</title>
