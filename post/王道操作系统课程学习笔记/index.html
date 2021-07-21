@@ -355,6 +355,28 @@
 <p>进程运行结束，或运行过程中遇到不可修复的错误则进入终止态。</p>
 <p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/6481971626703569..jpg" alt="6481971626703569."></p>
 <h3 id="进程控制"><strong>进程控制</strong></h3>
+<p>进程控制的主要功能是对系统中的所有进程实施有效的管理。它具有创建新进程、撤销已有进程、实现进程状态转换等功能。</p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/2994421626854608..jpg" alt="2994421626854608."></p>
+<p>用原语实现进程控制。原语的特点是执行期间不允许中断，只能一气呵成。</p>
+<p>这种不可中断的操作，称为原子操作。</p>
+<p>原语采用“关中断指令”和“开中断指令”实现。</p>
+<p>显然。关/开中断指令的权限非常大，必然是只允许运行在核心态下执行的特权指令。</p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/5774251626855304..jpg" alt="5774251626855304."></p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/7332671626855543..jpg" alt="7332671626855543."><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/6482961626855382..jpg" alt="6482961626855382."></p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/7785791626855618..jpg" alt="7785791626855618."></p>
+<h3 id="进程通信"><strong>进程通信</strong></h3>
+<p>进程通信指的是进程之间的信息交换。</p>
+<p>进程是分配系统资源的单位，因此各进程拥有的内存地址空间相互独立</p>
+<p>为了保证安全，一个进程不能直接访问另一个进程的地址空间。</p>
+<p>但是进程之间的信息交换又是必须实现的。为了保证进程间的安全通信，操作系统提供了3种方法。</p>
+<p>分别是共享存储，信息传递，管道通信。</p>
+<p><strong>共享存储</strong></p>
+<p><img src="https://gitee.com/zerealsong/blogimage/raw/master/img/2883151626856348..jpg" alt="2883151626856348."></p>
+<p><strong>管道通信</strong></p>
+<p><!-- raw HTML omitted --></p>
+<p><strong>![6481691626856913.](C:\Users\zereal\Documents\Tencent Files\644349596\FileRecv\MobileFile\6481691626856913..jpg)消息传递</strong></p>
+<p><!-- raw HTML omitted --></p>
+<p><!-- raw HTML omitted --></p>
 
     </div>
     <div class="post-footer">
