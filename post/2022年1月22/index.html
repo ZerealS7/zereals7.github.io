@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>2022年1月22 // Zereal-宋致远技术博客</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.72.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75，minimum-scale=0.75, maximum-scale=0.75, user-scalable=no" />
+    <meta name="author" content="Zereal" />
+    <meta name="description" content="" />
+    <meta name="referrer" content="never"/>
+    <link rel="stylesheet" href="https://zereals7.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="2022年1月22"/>
+<meta name="twitter:description" content="【机器学习】 线性模型形式简单、易于建模。许多功能更为强大的非线性模型可在线性模型的基础上通过引入层级结构或高维映射而得。此外，由于w直观表达了各属性在预测中的重要性，因此线性模型有很好的可解释性。
+线性回归
+对离散属性，若属性间存在序的关系，可通过连续化将其转化为连续值例如二值属性.
+均方误差有非常好的几何意义，它对应了常用的欧几里得距离。基于均方误差最小化来进行模型求解的方法称为最小二乘法。
+线性回归中，最小二乘法就是试图找到一条直线，使所有样本到直线的欧氏距离之和最小。
+决策树
+决策树是一类常见的机器学习方法，以二分类任务为例，我们希望从给定巡礼那数据集学得一个模型用以对新示例进行分类。一般的，一颗决策树包含一个根结点、若干个内部结点和若干个叶结点。
+决策树学习的目的是为了产生一颗泛化能力强，即处理未见示例能力强的决策树，其基本流程遵循简单而直观的分而治之策略。
+显然，决策树的生成是一个递归过程，在决策树算法中，有三种情况会导致递归返回。
+、1.当前结点包含的样本全属于同一类别，无需划分。
+2.当前属性集为空，或是所有样本在所有属性上取值相同，无法划分。
+3.当前结点包含的样本集合为空，不能划分。
+一般而言，随着划分过程不断进行，我们希望决策树的分支结点所包含的样本尽可能属于同一类别，即结点的纯度越来越高。
+信息熵
+是度量看样本集合纯度最常用的一种指标。信息熵越小纯度越高。
+一般而言，信息增益越大，则意味着使用属性a来进行划分获得的纯度提升越大。
+计算出最大的信息增益对应的属性可作为进行划分的。然后再以子节点最大信息增益对应的属性进行划分，最后可以得到决策树。
+实际上，信息增益准则对可取值数目较多的属性有所偏好，为减少这种偏好可能带来不利影响，决策树算法不使用信息增益，而是使用增益率来选择最优划分属性。增益率准则对可取值较少的属性有所偏好，算法并不是直接选择增益率最大的候选划分属性，而是使用一个启发式：先从候选划分属性中找出信息增益高于平均水平的属性，再从中选择增益率最高的。
+基尼指数
+决策树使用基尼指数来选择划分属性
+数据集D的纯度可用基尼值来度量。
+基尼越小数据集D的纯度越高。我们再候选属性集合A中，选择那个使得划分后基尼指数最小的属性作为最优划分属性。
+剪枝处理
+剪枝是决策树算法对付过拟合的主要手段，再决策树学习中，为了尽可能正确分类训练样本，结点划分过程将不断重复，有时会造成决策树分支过多，这时就可能因训练样本学得太好了，以至于把训练集自身的一些特点当作所有数据都具有的一般性质而导致过拟合。因此，可通过主动去掉一些分支来降低过拟合的风险。"/>
+
+    <meta property="og:title" content="2022年1月22" />
+<meta property="og:description" content="【机器学习】 线性模型形式简单、易于建模。许多功能更为强大的非线性模型可在线性模型的基础上通过引入层级结构或高维映射而得。此外，由于w直观表达了各属性在预测中的重要性，因此线性模型有很好的可解释性。
+线性回归
+对离散属性，若属性间存在序的关系，可通过连续化将其转化为连续值例如二值属性.
+均方误差有非常好的几何意义，它对应了常用的欧几里得距离。基于均方误差最小化来进行模型求解的方法称为最小二乘法。
+线性回归中，最小二乘法就是试图找到一条直线，使所有样本到直线的欧氏距离之和最小。
+决策树
+决策树是一类常见的机器学习方法，以二分类任务为例，我们希望从给定巡礼那数据集学得一个模型用以对新示例进行分类。一般的，一颗决策树包含一个根结点、若干个内部结点和若干个叶结点。
+决策树学习的目的是为了产生一颗泛化能力强，即处理未见示例能力强的决策树，其基本流程遵循简单而直观的分而治之策略。
+显然，决策树的生成是一个递归过程，在决策树算法中，有三种情况会导致递归返回。
+、1.当前结点包含的样本全属于同一类别，无需划分。
+2.当前属性集为空，或是所有样本在所有属性上取值相同，无法划分。
+3.当前结点包含的样本集合为空，不能划分。
+一般而言，随着划分过程不断进行，我们希望决策树的分支结点所包含的样本尽可能属于同一类别，即结点的纯度越来越高。
+信息熵
+是度量看样本集合纯度最常用的一种指标。信息熵越小纯度越高。
+一般而言，信息增益越大，则意味着使用属性a来进行划分获得的纯度提升越大。
+计算出最大的信息增益对应的属性可作为进行划分的。然后再以子节点最大信息增益对应的属性进行划分，最后可以得到决策树。
+实际上，信息增益准则对可取值数目较多的属性有所偏好，为减少这种偏好可能带来不利影响，决策树算法不使用信息增益，而是使用增益率来选择最优划分属性。增益率准则对可取值较少的属性有所偏好，算法并不是直接选择增益率最大的候选划分属性，而是使用一个启发式：先从候选划分属性中找出信息增益高于平均水平的属性，再从中选择增益率最高的。
+基尼指数
+决策树使用基尼指数来选择划分属性
+数据集D的纯度可用基尼值来度量。
+基尼越小数据集D的纯度越高。我们再候选属性集合A中，选择那个使得划分后基尼指数最小的属性作为最优划分属性。
+剪枝处理
+剪枝是决策树算法对付过拟合的主要手段，再决策树学习中，为了尽可能正确分类训练样本，结点划分过程将不断重复，有时会造成决策树分支过多，这时就可能因训练样本学得太好了，以至于把训练集自身的一些特点当作所有数据都具有的一般性质而导致过拟合。因此，可通过主动去掉一些分支来降低过拟合的风险。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zereals7.github.io/post/2022%E5%B9%B41%E6%9C%8822/" />
+<meta property="article:published_time" content="2021-06-06T16:23:47+08:00" />
+<meta property="article:modified_time" content="2021-06-06T16:23:47+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://zereals7.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="Zereal" /></a>
+      <h1>Zereal</h1>
+      <p>Java coder</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ZerealS7" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">2022年1月22</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jun 6, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          1 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      <h2 id="机器学习">【机器学习】</h2>
+<p>线性模型形式简单、易于建模。许多功能更为强大的非线性模型可在线性模型的基础上通过引入层级结构或高维映射而得。此外，由于w直观表达了各属性在预测中的重要性，因此线性模型有很好的可解释性。</p>
+<p><strong>线性回归</strong></p>
+<p>对离散属性，若属性间存在序的关系，可通过连续化将其转化为连续值例如二值属性.</p>
+<p>均方误差有非常好的几何意义，它对应了常用的欧几里得距离。基于均方误差最小化来进行模型求解的方法称为最小二乘法。</p>
+<p>线性回归中，最小二乘法就是试图找到一条直线，使所有样本到直线的欧氏距离之和最小。</p>
+<p><strong>决策树</strong></p>
+<p>决策树是一类常见的机器学习方法，以二分类任务为例，我们希望从给定巡礼那数据集学得一个模型用以对新示例进行分类。一般的，一颗决策树包含一个根结点、若干个内部结点和若干个叶结点。</p>
+<p>决策树学习的目的是为了产生一颗泛化能力强，即处理未见示例能力强的决策树，其基本流程遵循简单而直观的分而治之策略。</p>
+<p>显然，决策树的生成是一个递归过程，在决策树算法中，有三种情况会导致递归返回。</p>
+<p>、1.当前结点包含的样本全属于同一类别，无需划分。</p>
+<p>2.当前属性集为空，或是所有样本在所有属性上取值相同，无法划分。</p>
+<p>3.当前结点包含的样本集合为空，不能划分。</p>
+<p>一般而言，随着划分过程不断进行，我们希望决策树的分支结点所包含的样本尽可能属于同一类别，即结点的纯度越来越高。</p>
+<p><strong>信息熵</strong></p>
+<p>是度量看样本集合纯度最常用的一种指标。信息熵越小纯度越高。</p>
+<p>一般而言，信息增益越大，则意味着使用属性a来进行划分获得的纯度提升越大。</p>
+<p>计算出最大的信息增益对应的属性可作为进行划分的。然后再以子节点最大信息增益对应的属性进行划分，最后可以得到决策树。</p>
+<p>实际上，信息增益准则对可取值数目较多的属性有所偏好，为减少这种偏好可能带来不利影响，决策树算法不使用信息增益，而是使用增益率来选择最优划分属性。增益率准则对可取值较少的属性有所偏好，算法并不是直接选择增益率最大的候选划分属性，而是使用一个启发式：先从候选划分属性中找出信息增益高于平均水平的属性，再从中选择增益率最高的。</p>
+<p><strong>基尼指数</strong></p>
+<p>决策树使用基尼指数来选择划分属性</p>
+<p>数据集D的纯度可用基尼值来度量。</p>
+<p>基尼越小数据集D的纯度越高。我们再候选属性集合A中，选择那个使得划分后基尼指数最小的属性作为最优划分属性。</p>
+<p><strong>剪枝处理</strong></p>
+<p>剪枝是决策树算法对付过拟合的主要手段，再决策树学习中，为了尽可能正确分类训练样本，结点划分过程将不断重复，有时会造成决策树分支过多，这时就可能因训练样本学得太好了，以至于把训练集自身的一些特点当作所有数据都具有的一般性质而导致过拟合。因此，可通过主动去掉一些分支来降低过拟合的风险。</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+    <div class="post-comment">
+      
+      
+
+
+<span id="/post/2022%E5%B9%B41%E6%9C%8822/" class="leancloud_visitors" data-flag-title="2022年1月22">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+  new Valine({
+    el: '#vcomments' ,
+    appId: 'cScQmclMsD4OOWCclCP1pNsz-gzGzoHsz',
+    appKey: 'dtSaHLmdH3J4ICVVInYg9YFM',
+    notify:  false ,
+  verify:  false ,
+  avatar:'mm',
+    placeholder: '说点什么吧...',
+    visitor:  true 
+  });
+</script>
+
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
